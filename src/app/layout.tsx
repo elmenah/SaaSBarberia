@@ -1,0 +1,62 @@
+import type { Metadata } from "next";
+import { Montserrat, Cormorant } from "next/font/google";
+import { Toaster } from "sonner";
+import { AuthProvider } from "@/context/auth-context";
+import "./globals.css";
+
+/* ProMax Luxury Serif — Cormorant títulos, Montserrat cuerpo */
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
+const cormorant = Cormorant({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: "BarberOS — El sistema para tu barbería",
+    template: "%s | BarberOS",
+  },
+  description:
+    "Agenda online, automatización de WhatsApp y gestión de clientes — todo lo que tu barbería necesita en una sola plataforma.",
+  keywords: ["barbería", "reservas online", "agenda barbería", "WhatsApp", "automatización", "gestión clientes"],
+  authors: [{ name: "BarberOS" }],
+  openGraph: {
+    type: "website",
+    locale: "es_419",
+    title: "BarberOS",
+    description: "Reservas online, automatización de WhatsApp y gestión de clientes para barberías modernas.",
+  },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es-CL" suppressHydrationWarning>
+      <body className={`${montserrat.variable} ${cormorant.variable} font-body antialiased`}>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "#111111",
+              border: "1px solid rgba(202,138,4,0.2)",
+              color: "#FFFFFF",
+              fontFamily: "Montserrat, sans-serif",
+              fontSize: "0.875rem",
+            },
+          }}
+        />
+      </body>
+    </html>
+  );
+}

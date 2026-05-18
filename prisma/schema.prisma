@@ -1,0 +1,301 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               String       @id @default(uuid())
+  supabaseId       String       @unique @map("supabase_id")
+  email            String       @unique
+  name             String
+  avatarUrl        String?      @map("avatar_url")
+  role             UserRole     @default(OWNER)
+  phone            String?
+  isActive         Boolean      @default(true) @map("is_active")
+  lastLoginAt      DateTime?    @map("last_login_at")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  auditLogs        AuditLog[]
+  barberProfile    Barber?
+  ownedBarbershops Barbershop[] @relation("BarbershopOwner")
+
+  @@map("users")
+}
+
+model Barbershop {
+  id                 String             @id @default(uuid())
+  slug               String             @unique
+  name               String
+  logoUrl            String?            @map("logo_url")
+  address            String?
+  city               String?
+  country            String             @default("AR")
+  phone              String?
+  email              String?
+  whatsappNumber     String?            @map("whatsapp_number")
+  timezone           String             @default("America/Argentina/Buenos_Aires")
+  currency           String             @default("ARS")
+  isActive           Boolean            @default(true) @map("is_active")
+  settings           Json               @default("{}")
+  ownerId            String             @map("owner_id")
+  subscriptionPlan   SubscriptionPlan   @default(FREE) @map("subscription_plan")
+  subscriptionStatus SubscriptionStatus @default(TRIALING) @map("subscription_status")
+  trialEndsAt        DateTime?          @map("trial_ends_at")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  appointments       Appointment[]
+  auditLogs          AuditLog[]
+  automationLogs     AutomationLog[]
+  barbers            Barber[]
+  owner              User               @relation("BarbershopOwner", fields: [ownerId], references: [id])
+  clients            Client[]
+  services           Service[]
+  reviews            Review[]
+
+  @@index([ownerId])
+  @@map("barbershops")
+}
+
+model Barber {
+  id           String          @id @default(uuid())
+  userId       String          @unique @map("user_id")
+  barbershopId String          @map("barbershop_id")
+  specialties  String[]        @default([])
+  bio          String?
+  avatarUrl    String?         @map("avatar_url")
+  isActive     Boolean         @default(true) @map("is_active")
+  schedule         Json            @default("{}")
+  certifications   Json            @default("[]") @map("certifications")
+  colorTag         String          @default("#6366f1") @map("color_tag")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+  appointments Appointment[]
+  services     BarberService[]
+  barbershop   Barbershop      @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([barbershopId])
+  @@map("barbers")
+}
+
+model BarberService {
+  barberId  String  @map("barber_id")
+  serviceId String  @map("service_id")
+  barber    Barber  @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([barberId, serviceId])
+  @@map("barber_services")
+}
+
+model Client {
+  id             String          @id @default(uuid())
+  barbershopId   String          @map("barbershop_id")
+  name           String
+  phone          String
+  email          String?
+  whatsapp       String?
+  birthdate      DateTime?
+  avatarUrl      String?         @map("avatar_url")
+  notes          String?
+  tags           String[]        @default([])
+  totalVisits    Int             @default(0) @map("total_visits")
+  totalSpent     Decimal         @default(0) @map("total_spent") @db.Decimal(10, 2)
+  lastVisitAt    DateTime?       @map("last_visit_at")
+  isVip          Boolean         @default(false) @map("is_vip")
+  isActive       Boolean         @default(true) @map("is_active")
+  referredBy     String?         @map("referred_by")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  appointments   Appointment[]
+  automationLogs AutomationLog[]
+  barbershop     Barbershop      @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  @@unique([barbershopId, phone])
+  @@index([barbershopId])
+  @@index([barbershopId, lastVisitAt])
+  @@map("clients")
+}
+
+model Service {
+  id                  String               @id @default(uuid())
+  barbershopId        String               @map("barbershop_id")
+  name                String
+  description         String?
+  price               Decimal              @db.Decimal(10, 2)
+  durationMins        Int                  @map("duration_mins")
+  category            String               @default("general")
+  isActive            Boolean              @default(true) @map("is_active")
+  sortOrder           Int                  @default(0) @map("sort_order")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  appointmentServices AppointmentService[]
+  barbers             BarberService[]
+  barbershop          Barbershop           @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  @@index([barbershopId])
+  @@map("services")
+}
+
+model Appointment {
+  id             String               @id @default(uuid())
+  barbershopId   String               @map("barbershop_id")
+  clientId       String               @map("client_id")
+  barberId       String               @map("barber_id")
+  startsAt       DateTime             @map("starts_at")
+  endsAt         DateTime             @map("ends_at")
+  status         AppointmentStatus    @default(PENDING)
+  totalPrice     Decimal              @map("total_price") @db.Decimal(10, 2)
+  totalDuration  Int                  @map("total_duration")
+  notes          String?
+  internalNotes  String?              @map("internal_notes")
+  reminderSentAt   DateTime?            @map("reminder_sent_at")
+  reminder24hSentAt DateTime?           @map("reminder_24h_sent_at")
+  reminder1hSentAt  DateTime?           @map("reminder_1h_sent_at")
+  reviewRequestSentAt DateTime?         @map("review_request_sent_at")
+  confirmedAt      DateTime?            @map("confirmed_at")
+  cancelledAt      DateTime?            @map("cancelled_at")
+  cancelReason   String?              @map("cancel_reason")
+  source         String               @default("manual")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+  services       AppointmentService[]
+  barber         Barber               @relation(fields: [barberId], references: [id])
+  barbershop     Barbershop           @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+  client         Client               @relation(fields: [clientId], references: [id])
+  automationLogs AutomationLog[]
+
+  @@index([barbershopId, startsAt])
+  @@index([barbershopId, status])
+  @@index([clientId])
+  @@index([barberId, startsAt])
+  @@map("appointments")
+}
+
+model AppointmentService {
+  id            String      @id @default(uuid())
+  appointmentId String      @map("appointment_id")
+  serviceId     String      @map("service_id")
+  price         Decimal     @db.Decimal(10, 2)
+  durationMins  Int         @map("duration_mins")
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  service       Service     @relation(fields: [serviceId], references: [id])
+
+  @@unique([appointmentId, serviceId])
+  @@map("appointment_services")
+}
+
+model Review {
+  id            String      @id @default(uuid())
+  barbershopId  String      @map("barbershop_id")
+  appointmentId String?     @map("appointment_id")
+  clientName    String      @map("client_name")
+  clientPhone   String?     @map("client_phone")
+  rating        Int         // 1-5
+  comment       String?
+  isVisible     Boolean     @default(true) @map("is_visible")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  barbershop    Barbershop  @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  @@index([barbershopId])
+  @@index([barbershopId, isVisible])
+  @@map("reviews")
+}
+
+model AutomationLog {
+  id            String            @id @default(uuid())
+  barbershopId  String            @map("barbershop_id")
+  appointmentId String?           @map("appointment_id")
+  clientId      String?           @map("client_id")
+  trigger       AutomationTrigger
+  status        AutomationStatus  @default(PENDING)
+  webhookUrl    String            @map("webhook_url")
+  payload       Json
+  response      Json?
+  errorMessage  String?           @map("error_message")
+  retryCount    Int               @default(0) @map("retry_count")
+  sentAt        DateTime?         @map("sent_at")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  appointment   Appointment?      @relation(fields: [appointmentId], references: [id])
+  barbershop    Barbershop        @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+  client        Client?           @relation(fields: [clientId], references: [id])
+
+  @@index([barbershopId, trigger])
+  @@index([barbershopId, status])
+  @@index([createdAt])
+  @@map("automation_logs")
+}
+
+model AuditLog {
+  id           String     @id @default(uuid())
+  barbershopId String     @map("barbershop_id")
+  userId       String     @map("user_id")
+  action       String
+  entity       String
+  entityId     String?    @map("entity_id")
+  before       Json?
+  after        Json?
+  ipAddress    String?    @map("ip_address")
+  userAgent    String?    @map("user_agent")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id])
+
+  @@index([barbershopId, entity])
+  @@index([barbershopId, createdAt])
+  @@map("audit_logs")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  OWNER
+  BARBER
+  RECEPTIONIST
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum AutomationTrigger {
+  NEW_APPOINTMENT
+  APPOINTMENT_CONFIRMED
+  APPOINTMENT_CANCELLED
+  APPOINTMENT_REMINDER_24H
+  APPOINTMENT_REMINDER_1H
+  CLIENT_INACTIVE_30D
+  CLIENT_BIRTHDAY
+  POST_SERVICE_REVIEW
+}
+
+enum AutomationStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum SubscriptionPlan {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELLED
+  PAUSED
+}

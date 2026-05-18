@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -H \"X-N8N-API-KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMjMxOTA3My1lNTVjLTRjMTItOTVlMC05Mjc4NDY4ZmUxNmQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzc5MDU2MDc5fQ.OLEtd62YKIN0tuxuUDdcRkfDq7PjNf86SkjKgjMxFHA\" \"https://n8n.centralflash.me/api/v1/workflows?limit=20\")"
+    ]
+  }
+}

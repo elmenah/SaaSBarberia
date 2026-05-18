@@ -1,0 +1,170 @@
+/* ── UI/UX ProMax — Luxury Serif: Cormorant + Montserrat ─────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── ProMax Design Tokens — OLED Dark + Gold ─────────────────────────────── */
+:root {
+  --bg-black:    #000000;
+  --bg-dark:     #0A0A0A;
+  --bg-surface:  #111111;
+  --bg-card:     #141414;
+  --bg-hover:    #1A1A1A;
+
+  --gold:        #CA8A04;
+  --gold-light:  #EAB308;
+  --gold-pale:   #FDE68A;
+  --gold-glow:   rgba(202,138,4,0.12);
+  --gold-border: rgba(202,138,4,0.28);
+
+  --text-white:  #FFFFFF;
+  --text-mid:    #A1A1AA;
+  --text-muted:  #52525B;
+  --text-dim:    #3F3F46;
+
+  --border:      rgba(255,255,255,0.06);
+  --border-md:   rgba(255,255,255,0.10);
+
+  --success: #22C55E;
+  --error:   #EF4444;
+  --warning: #F59E0B;
+  --info:    #3B82F6;
+
+  /* shadcn tokens */
+  --background: 0 0% 0%;
+  --foreground:  0 0% 100%;
+  --card:        0 0% 8%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 45 93% 40%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 10%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 10%;
+  --muted-foreground: 240 5% 65%;
+  --accent: 0 0% 12%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 8%;
+  --input:  0 0% 8%;
+  --ring:   45 93% 40%;
+  --radius: 0.625rem;
+  --sidebar-background: 0 0% 3%;
+  --sidebar-foreground: 0 0% 85%;
+  --sidebar-primary: 45 93% 40%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 0 0% 8%;
+  --sidebar-accent-foreground: 0 0% 85%;
+  --sidebar-border: 0 0% 7%;
+  --sidebar-ring: 45 93% 40%;
+  --chart-1: 45 93% 40%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 221 83% 53%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+@layer base {
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg-black);
+    color: var(--text-white);
+    /* ProMax: Montserrat body, Cormorant para headings vía clase */
+    font-family: 'Montserrat', system-ui, sans-serif;
+    @apply antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Cormorant', Georgia, serif;
+  }
+
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 999px; }
+}
+
+/* ── Components ───────────────────────────────────────────────────────────── */
+@layer components {
+  .card-dark {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .card-gold {
+    background: linear-gradient(145deg, #120F00, #111111);
+    border: 1px solid var(--gold-border);
+    border-radius: 16px;
+  }
+
+  /* Input oscuro con focus gold */
+  .input-dark {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--text-white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-dark::placeholder { color: var(--text-dim); }
+  .input-dark:focus { border-color: var(--gold-border); }
+
+  /* Step indicator activo */
+  .step-active {
+    background: var(--gold);
+    color: #000;
+    font-weight: 700;
+  }
+  .step-done {
+    background: rgba(202,138,4,0.15);
+    color: var(--gold);
+    border: 1px solid var(--gold-border);
+  }
+  .step-pending {
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+}
+
+/* ── Utilities ────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .font-display { font-family: 'Cormorant', Georgia, serif; }
+  .font-body    { font-family: 'Montserrat', sans-serif; }
+
+  .text-gold { color: var(--gold); }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #CA8A04, #EAB308, #FDE68A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .border-gold { border-color: var(--gold-border) !important; }
+
+  .glow-gold { box-shadow: 0 0 32px var(--gold-glow); }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-up { animation: fade-up 0.5s ease-out forwards; }
+
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateX(12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .animate-slide-in { animation: slide-in 0.3s ease-out forwards; }
+}
