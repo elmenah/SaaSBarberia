@@ -77,6 +77,12 @@ export async function PATCH(req: NextRequest) {
     }
   }
 
+  // Mergear settings en vez de reemplazar
+  if (data.settings && typeof data.settings === "object") {
+    const current = (barbershop.settings as Record<string, unknown>) ?? {};
+    data.settings = { ...current, ...(data.settings as Record<string, unknown>) };
+  }
+
   const updated = await prisma.barbershop.update({
     where: { id: barbershop.id },
     data,
