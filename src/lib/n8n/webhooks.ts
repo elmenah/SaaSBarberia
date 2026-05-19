@@ -90,6 +90,16 @@ export async function fireWebhook({
 
 // ── Helpers por caso de uso ─────────────────────────────────────────────────
 
+function formatPhone(phone: string): string {
+  return phone.replace(/[^0-9]/g, "");
+}
+
+function formatWhatsAppDate(date: Date): string {
+  const fecha = date.toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" });
+  const hora  = date.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" });
+  return `${fecha} a las ${hora}`;
+}
+
 export async function notifyNewAppointment(args: {
   barbershopId: string;
   barbershopName: string;
@@ -101,6 +111,23 @@ export async function notifyNewAppointment(args: {
   startsAt: Date;
   totalPrice: number;
 }) {
+  const precio = args.totalPrice
+    ? `$${Number(args.totalPrice).toLocaleString("es-CL")}`
+    : "";
+
+  const whatsappMessage = [
+    `✅ *Turno confirmado*`,
+    ``,
+    `Hola ${args.clientName}! Tu turno en *${args.barbershopName}* quedó reservado.`,
+    ``,
+    `📅 *Fecha:* ${formatWhatsAppDate(args.startsAt)}`,
+    `💈 *Barbero:* ${args.barberName}`,
+    `✂️ *Servicio:* ${args.serviceName}`,
+    precio ? `💰 *Precio:* ${precio}` : null,
+    ``,
+    `Si no podés asistir, avisanos con tiempo.`,
+  ].filter(Boolean).join("\n");
+
   return fireWebhook({
     trigger: "NEW_APPOINTMENT",
     barbershopId: args.barbershopId,
@@ -108,11 +135,13 @@ export async function notifyNewAppointment(args: {
     appointmentId: args.appointmentId,
     data: {
       appointmentId: args.appointmentId,
-      client: { name: args.clientName, phone: args.clientPhone },
+      client: { name: args.clientName, phone: formatPhone(args.clientPhone) },
       barber: args.barberName,
       service: args.serviceName,
       startsAt: args.startsAt.toISOString(),
       totalPrice: args.totalPrice,
+      whatsappPhone:   formatPhone(args.clientPhone),
+      whatsappMessage,
     },
   });
 }
@@ -123,9 +152,21 @@ export async function notifyCancelledAppointment(args: {
   appointmentId: string;
   clientName: string;
   clientPhone: string;
+  barberName?: string;
   startsAt: Date;
   cancelReason?: string;
 }) {
+  const whatsappMessage = [
+    `❌ *Turno cancelado*`,
+    ``,
+    `Hola ${args.clientName}, tu turno en *${args.barbershopName}* fue cancelado.`,
+    ``,
+    `📅 *Fecha:* ${formatWhatsAppDate(args.startsAt)}`,
+    args.barberName ? `💈 *Barbero:* ${args.barberName}` : null,
+    ``,
+    `Podés reservar un nuevo turno cuando quieras.`,
+  ].filter(Boolean).join("\n");
+
   return fireWebhook({
     trigger: "APPOINTMENT_CANCELLED",
     barbershopId: args.barbershopId,
@@ -133,9 +174,11 @@ export async function notifyCancelledAppointment(args: {
     appointmentId: args.appointmentId,
     data: {
       appointmentId: args.appointmentId,
-      client: { name: args.clientName, phone: args.clientPhone },
+      client: { name: args.clientName, phone: formatPhone(args.clientPhone) },
       startsAt: args.startsAt.toISOString(),
       cancelReason: args.cancelReason,
+      whatsappPhone:   formatPhone(args.clientPhone),
+      whatsappMessage,
     },
   });
 }
