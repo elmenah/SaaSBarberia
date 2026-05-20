@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/", "/login", "/register", "/forgot-password", "/dashboard", "/book", "/demo"];
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/forgot-password", "/book", "/demo"];
 const AUTH_ROUTES   = ["/login", "/register"];
 // /setup es accesible solo para usuarios autenticados (no está en PUBLIC_ROUTES ni AUTH_ROUTES)
 

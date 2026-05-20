@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
         ownerId: newUser.id,
         subscriptionPlan: "FREE",
         subscriptionStatus: "TRIALING",
-        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       },
     });
   }

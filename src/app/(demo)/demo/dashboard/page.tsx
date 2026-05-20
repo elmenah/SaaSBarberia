@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import {
   TrendingUp, Users, Calendar, DollarSign,
-  CheckCircle2, Clock, Scissors, Zap,
+  CheckCircle2, Clock, Scissors, Copy, Check, ExternalLink,
 } from "lucide-react";
 import { formatCurrency, formatTime } from "@/lib/utils";
 
@@ -36,6 +38,14 @@ const TOP_SERVICES = [
    Página
 ════════════════════════════════════════════════════════════════════════════ */
 export default function DemoDashboardPage() {
+  const [copied, setCopied] = useState(false);
+
+  function copyLink() {
+    navigator.clipboard.writeText("https://barberos.app/book/el-clasico").catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   return (
     <div className="flex flex-col gap-5">
 
@@ -113,35 +123,64 @@ export default function DemoDashboardPage() {
           </div>
         </div>
 
-        {/* Estado del sistema */}
-        <div className="rounded-2xl p-5" style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <div className="flex items-center gap-2 mb-5">
-            <Zap className="w-4 h-4" style={{ color: "#CA8A04" }} />
-            <h2 className="text-sm font-semibold text-white font-body">Estado del sistema</h2>
+        {/* Página de reservas + acciones rápidas */}
+        <div className="rounded-2xl p-5 flex flex-col gap-5" style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.05)" }}>
+
+          {/* URL pública */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider font-body mb-3" style={{ color: "#3F3F46" }}>
+              Tu página de reservas
+            </p>
+            <div className="flex items-center gap-2 p-2.5 rounded-xl"
+              style={{ backgroundColor: "#0D0D0D", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <span className="flex-1 text-xs font-mono truncate min-w-0" style={{ color: "#71717A" }}>
+                /book/el-clasico
+              </span>
+              <button onClick={copyLink}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold font-body transition-all flex-shrink-0"
+                style={copied
+                  ? { backgroundColor: "rgba(34,197,94,0.1)", color: "#22C55E" }
+                  : { backgroundColor: "rgba(202,138,4,0.1)", color: "#CA8A04" }
+                }>
+                {copied ? <><Check className="w-3 h-3" />Copiado</> : <><Copy className="w-3 h-3" />Copiar</>}
+              </button>
+            </div>
+            <Link href="/demo/book/el-clasico"
+              className="flex items-center gap-1.5 mt-2 text-xs font-body hover:opacity-80 transition-opacity"
+              style={{ color: "#52525B" }}>
+              <ExternalLink className="w-3 h-3" />
+              Ver cómo la ven tus clientes
+            </Link>
           </div>
-          <div className="flex flex-col gap-4">
-            {[
-              { label: "Base de datos",       status: "ok",      desc: "Conectada a Supabase"     },
-              { label: "Autenticación",        status: "ok",      desc: "Supabase Auth activo"      },
-              { label: "WhatsApp (n8n)",       status: "ok",      desc: "Evolution API conectado"   },
-              { label: "Pagos (MercadoPago)",  status: "ok",      desc: "Plan Profesional activo"   },
-            ].map((item, i, arr) => (
-              <div key={item.label} className="flex flex-col gap-1">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium font-body" style={{ color: "#A1A1AA" }}>{item.label}</p>
-                  <span
-                    className="text-xs font-medium px-2 py-0.5 rounded-full font-body"
-                    style={{ color: "#22C55E", backgroundColor: "rgba(34,197,94,0.08)" }}
-                  >
-                    ✓ OK
-                  </span>
-                </div>
-                <p className="text-xs font-body" style={{ color: "#52525B" }}>{item.desc}</p>
-                {i < arr.length - 1 && <div className="mt-2 h-px" style={{ backgroundColor: "rgba(255,255,255,0.04)" }} />}
-              </div>
-            ))}
+
+          {/* Divisor */}
+          <div className="h-px" style={{ backgroundColor: "rgba(255,255,255,0.04)" }} />
+
+          {/* Acciones rápidas */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider font-body mb-3" style={{ color: "#3F3F46" }}>
+              Acciones rápidas
+            </p>
+            <div className="flex flex-col gap-2">
+              {[
+                { label: "Nueva reserva",       href: "/demo/dashboard/reservas",     icon: Calendar  },
+                { label: "Agregar cliente",      href: "/demo/dashboard/clientes",     icon: Users     },
+                { label: "Gestionar servicios",  href: "/demo/dashboard/servicios",    icon: Scissors  },
+              ].map(({ label, href, icon: Icon }) => (
+                <Link key={href} href={href}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-white/[0.03] group"
+                  style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: "rgba(202,138,4,0.08)" }}>
+                    <Icon className="w-3.5 h-3.5" style={{ color: "#CA8A04" }} />
+                  </div>
+                  <span className="text-sm font-body font-medium text-white">{label}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
+
       </div>
 
       {/* ── Servicios más vendidos ────────────────────────────────────── */}

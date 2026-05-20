@@ -4,9 +4,10 @@ import { useEffect }   from "react";
 import { useRouter }   from "next/navigation";
 import { useAuth }     from "@/context/auth-context";
 import { RoleProvider } from "@/lib/role-context";
-import { Sidebar }      from "./Sidebar";
-import { TopBar }       from "./TopBar";
-import { BottomNav }    from "./BottomNav";
+import { Sidebar }          from "./Sidebar";
+import { TopBar }           from "./TopBar";
+import { BottomNav }        from "./BottomNav";
+import { TrialExpiredGate } from "./TrialExpiredGate";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, barbershop, loading } = useAuth();
@@ -49,7 +50,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             className="flex-1 overflow-y-auto p-4 md:p-6"
             style={{ backgroundColor: "#0A0A0A" }}
           >
-            {children}
+            <TrialExpiredGate>
+              {children}
+            </TrialExpiredGate>
           </main>
 
           {/* Bottom nav — solo visible en mobile */}

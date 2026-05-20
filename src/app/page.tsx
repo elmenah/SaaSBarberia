@@ -84,7 +84,7 @@ const FAQS = [
   },
   {
     q: "¿Puedo probar antes de pagar?",
-    a: "Claro. Tienes 14 días de prueba gratuita en todos los planes, sin necesidad de tarjeta de crédito.",
+    a: "Claro. Tienes 7 días de prueba gratuita en todos los planes, sin necesidad de tarjeta de crédito.",
   },
 ];
 
@@ -484,7 +484,7 @@ export default function LandingPage() {
               Precios transparentes
             </h2>
             <p className="mt-4 text-base font-body font-light" style={{ color: "#71717A" }}>
-              14 días de prueba gratuita. Sin tarjeta de crédito.
+              7 días de prueba gratuita. Sin tarjeta de crédito.
             </p>
           </div>
 
@@ -695,7 +695,7 @@ export default function LandingPage() {
           </h2>
           <p className="text-base mb-10 font-body font-light" style={{ color: "#71717A" }}>
             Únete a cientos de barberías que ya automatizan sus operaciones con BarberOS.<br />
-            Prueba gratuita de 14 días — sin compromisos.
+            Prueba gratuita de 7 días — sin compromisos.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link

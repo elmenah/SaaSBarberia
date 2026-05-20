@@ -4,18 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Calendar, ClipboardList,
-  Users, UserCog, BadgeCheck, Settings,
+  UserCog, BadgeCheck, CreditCard,
   Crown, Scissors as ScissorsIcon,
 } from "lucide-react";
 import { useRole } from "@/lib/role-context";
 
 /* ── Nav items por rol ───────────────────────────────────────────────────── */
 const NAV_OWNER = [
-  { label: "Inicio",    href: "/dashboard",               icon: LayoutDashboard },
-  { label: "Agenda",    href: "/dashboard/agenda",         icon: Calendar        },
-  { label: "Reservas",  href: "/dashboard/reservas",       icon: ClipboardList   },
-  { label: "Barberos",  href: "/dashboard/barberos",       icon: UserCog         },
-  { label: "Config",    href: "/dashboard/configuracion",  icon: Settings        },
+  { label: "Inicio",   href: "/dashboard",          icon: LayoutDashboard },
+  { label: "Agenda",   href: "/dashboard/agenda",   icon: Calendar        },
+  { label: "Reservas", href: "/dashboard/reservas", icon: ClipboardList   },
+  { label: "Barberos", href: "/dashboard/barberos", icon: UserCog         },
+  { label: "Plan",     href: "/dashboard/billing",  icon: CreditCard      },
 ];
 
 const NAV_BARBER = [
@@ -25,9 +25,9 @@ const NAV_BARBER = [
 ];
 
 export function BottomNav() {
-  const pathname       = usePathname();
-  const { role, setRole } = useRole();
-  const navItems       = role === "owner" ? NAV_OWNER : NAV_BARBER;
+  const pathname           = usePathname();
+  const { role, setRole }  = useRole();
+  const navItems           = role === "owner" ? NAV_OWNER : NAV_BARBER;
 
   return (
     <nav
@@ -48,7 +48,7 @@ export function BottomNav() {
             href={item.href}
             className="flex flex-col items-center justify-center gap-0.5 flex-1 transition-all"
             style={{
-              color: isActive ? "#CA8A04" : "#3F3F46",
+              color:     isActive ? "#CA8A04" : "#3F3F46",
               borderTop: isActive ? "2px solid #CA8A04" : "2px solid transparent",
             }}
           >
@@ -72,7 +72,7 @@ export function BottomNav() {
           style={{ color: "#CA8A04" }}
         >
           {role === "owner"
-            ? <Crown       className="w-4 h-4" />
+            ? <Crown        className="w-4 h-4" />
             : <ScissorsIcon className="w-4 h-4" />
           }
           <span className="text-[9px] font-semibold font-body leading-tight">

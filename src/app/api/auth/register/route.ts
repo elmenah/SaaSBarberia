@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Crear barbería con trial de 14 días
+    // Crear barbería con trial de 7 días
     const slug = slugify(`${barbershopName}-${Date.now()}`);
     const barbershop = await prisma.barbershop.create({
       data: {
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         ownerId: newUser.id,
         subscriptionPlan: "FREE",
         subscriptionStatus: "TRIALING",
-        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       },
     });
 
