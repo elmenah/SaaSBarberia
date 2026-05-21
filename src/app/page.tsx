@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import {
@@ -67,12 +67,12 @@ function fmt(n: number) {
 /* ── FAQ ──────────────────────────────────────────────────────────────────── */
 const FAQS = [
   {
-    q: "¿Cuánto tiempo toma configurar BarberOS?",
-    a: "Menos de 10 minutos. Creas la cuenta, cargas tus servicios y barberos, y ya puedes recibir reservas online.",
+    q: "¿Cuánto tiempo toma configurar Mibarberia?",
+    a: "Menos de 10 minutos. Creas la cuenta, cargas tus servicios y Mibarberia, y ya puedes recibir reservas online.",
   },
   {
     q: "¿Necesito instalar algo en mi computadora?",
-    a: "No. BarberOS funciona 100% en el navegador. Disponible desde cualquier dispositivo, sin instalaciones.",
+    a: "No. Mibarberia funciona 100% en el navegador. Disponible desde cualquier dispositivo, sin instalaciones.",
   },
   {
     q: "¿Cómo funcionan los mensajes automáticos de WhatsApp?",
@@ -146,7 +146,7 @@ export default function LandingPage() {
           <Link href="/" className="flex items-center gap-2">
             <Scissors className="w-4 h-4" style={{ color: "#CA8A04" }} />
             <span className="text-xl font-semibold tracking-tight text-white" style={{ fontFamily: "Cormorant, serif" }}>
-              BarberOS
+              Mibarberia
             </span>
           </Link>
 
@@ -371,7 +371,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
-              { n: "01", title: "Configura en 10 minutos",   desc: "Cargas tus servicios, barberos y horarios. En minutos ya puedes recibir reservas — sin instalar nada."        },
+              { n: "01", title: "Configura en 10 minutos",   desc: "Cargas tus servicios, Mibarberia y horarios. En minutos ya puedes recibir reservas — sin instalar nada."        },
               { n: "02", title: "Tus clientes agendan solos", desc: "Por WhatsApp, Instagram o tu link directo. El sistema confirma, recuerda y gestiona todo sin que intervengas." },
               { n: "03", title: "La barbería trabaja sola",   desc: "Clientes inactivos reciben promos automáticas. Tú ves las estadísticas y cobras. Nada más."                   },
             ].map((step) => (
@@ -444,7 +444,7 @@ export default function LandingPage() {
               LO QUE DICEN
             </p>
             <h2 className="text-3xl md:text-4xl font-display font-medium text-white tracking-tight">
-              Barberías que ya crecieron con BarberOS
+              Barberías que ya crecieron con Mibarberia
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -514,7 +514,7 @@ export default function LandingPage() {
           </div>
 
           {/* ── Cards grid ─────────────────────────────────────────────── */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
 
             {/* ── INDIVIDUAL ─────────────────────────────────────────── */}
             <div
@@ -532,7 +532,7 @@ export default function LandingPage() {
               <hr style={{ borderColor: "rgba(255,255,255,0.05)" }} />
               <p className="text-xs font-body font-medium" style={{ color: "#71717A" }}>Arranca digital hoy, sin complicaciones</p>
               <ul className="flex flex-col gap-2.5 flex-1">
-                {["Agenda online profesional","Citas ilimitadas","1 profesional","1 sucursal"].map((f) => (
+                {["Agenda online profesional","Citas ilimitadas","Notificaciones automáticas por email","1 profesional","1 sucursal"].map((f) => (
                   <li key={f} className="flex items-center gap-2.5">
                     <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#CA8A04" }} />
                     <span className="text-sm font-body font-light" style={{ color: "#A1A1AA" }}>{f}</span>
@@ -575,7 +575,7 @@ export default function LandingPage() {
                 <hr style={{ borderColor: "rgba(202,138,4,0.15)" }} />
                 <p className="text-xs font-body font-medium" style={{ color: "#A1A1AA" }}>Automatiza, escala y mantén el control sin esfuerzo</p>
                 <ul className="flex flex-col gap-2.5 flex-1">
-                  {["Hasta 7 profesionales","1 sucursal","130 WhatsApps/mes","Monitor en tiempo real","Recordatorios automáticos","CRM avanzado"].map((f) => (
+                  {["Hasta 7 profesionales","1 sucursal","130 WhatsApps/mes","Notificaciones automáticas por email","Monitor en tiempo real","Recordatorios automáticos","CRM avanzado"].map((f) => (
                     <li key={f} className="flex items-center gap-2.5">
                       <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#CA8A04" }} />
                       <span className="text-sm font-body font-light" style={{ color: "#A1A1AA" }}>{f}</span>
@@ -590,41 +590,6 @@ export default function LandingPage() {
                   Suscríbete ya →
                 </Link>
               </div>
-            </div>
-
-            {/* ── ENTERPRISE ─────────────────────────────────────────── */}
-            <div
-              className="relative p-6 rounded-2xl flex flex-col gap-5"
-              style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.07)" }}
-            >
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest font-body mb-1" style={{ color: "#71717A" }}>Enterprise</p>
-                <p className="text-xs font-body mb-3" style={{ color: "#52525B" }}>Múltiples sucursales, un solo sistema</p>
-                <div className="flex items-end gap-1">
-                  <span className="text-3xl font-bold text-white font-body">${fmt(applyDiscount(BASE_PRICES.enterprise, billingPeriod))}</span>
-                  <span className="text-xs mb-1 font-body" style={{ color: "#71717A" }}>/ 1 mes</span>
-                </div>
-              </div>
-              <hr style={{ borderColor: "rgba(255,255,255,0.05)" }} />
-              <p className="text-xs font-body font-medium" style={{ color: "#71717A" }}>Potencia real para barberías que no paran de crecer</p>
-              <ul className="flex flex-col gap-2.5 flex-1">
-                {["Hasta 10 profesionales","3 sucursales","500 WhatsApps/mes","Dominio personalizado","API access","Soporte prioritario"].map((f, i) => (
-                  <li key={f} className="flex items-center gap-2.5">
-                    <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#CA8A04" }} />
-                    <span className="text-sm font-body font-light" style={{ color: "#A1A1AA" }}>{f}</span>
-                    {i === 3 && (
-                      <span className="ml-auto text-xs font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(239,68,68,0.12)", color: "#EF4444" }}>HOT</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/register"
-                className="w-full py-2.5 rounded-xl text-center text-sm font-bold font-body uppercase tracking-wider transition-all"
-                style={{ border: "1.5px solid rgba(255,255,255,0.12)", color: "#A1A1AA" }}
-              >
-                Suscríbete ya →
-              </Link>
             </div>
 
           </div>
@@ -694,7 +659,7 @@ export default function LandingPage() {
             <span className="text-gradient-gold">tu barbería?</span>
           </h2>
           <p className="text-base mb-10 font-body font-light" style={{ color: "#71717A" }}>
-            Únete a cientos de barberías que ya automatizan sus operaciones con BarberOS.<br />
+            Únete a cientos de barberías que ya automatizan sus operaciones con Mibarberia.<br />
             Prueba gratuita de 7 días — sin compromisos.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
@@ -727,10 +692,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Scissors className="w-3.5 h-3.5 text-gold" />
-            <span className="text-sm font-semibold font-display text-gold">BarberOS</span>
+            <span className="text-sm font-semibold font-display text-gold">Mibarberia</span>
           </div>
           <p className="text-xs font-body" style={{ color: "#3F3F46" }}>
-            © {new Date().getFullYear()} BarberOS. Todos los derechos reservados.
+            © {new Date().getFullYear()} Mibarberia. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-6">
             {["Privacidad", "Términos", "Soporte"].map((l) => (

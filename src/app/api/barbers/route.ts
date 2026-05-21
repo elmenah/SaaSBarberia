@@ -1,7 +1,10 @@
-import { requireAuth } from "@/lib/auth/session";
+﻿import { requireAuth } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { getEffectiveLimits } from "@/lib/plans";
+import { writeAuditLog } from "@/lib/audit";
+import { rateLimit, getClientIp, rateLimitResponse, API_LIMIT } from "@/lib/rate-limit";
 
 const CreateBarberSchema = z.object({
   name:       z.string().min(2),
@@ -9,10 +12,11 @@ const CreateBarberSchema = z.object({
   phone:      z.string().optional(),
   colorTag:   z.string().default("#6366f1"),
   bio:        z.string().optional(),
+  email:      z.string().email().optional(),
 });
 
-// GET /api/barbers?includeStats=true — lista barberos con stats opcionales del mes
-export async function GET(request: Request) {
+// GET /api/barbers?includeStats=true — lista Mibarberia con stats opcionales del mes
+export async function GET(request: NextRequest) {
   const session = await requireAuth();
   if (!session?.barbershop) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
@@ -29,7 +33,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ data: barbers });
   }
 
-  // Stats del mes actual por barbero (reservas no canceladas)
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
@@ -60,23 +63,58 @@ export async function GET(request: Request) {
 }
 
 // POST /api/barbers — crea un barbero (User + Barber)
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  // ── Rate limit ─────────────────────────────────────────────────────────────
+  const ip = getClientIp(request);
+  const rl = rateLimit(`barbers:${ip}`, API_LIMIT.limit, API_LIMIT.windowMs);
+  if (!rl.success) return rateLimitResponse(rl.retryAfter) as NextResponse;
+
+  // ── Auth ───────────────────────────────────────────────────────────────────
   const session = await requireAuth();
   if (!session?.barbershop) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const body = await request.json();
+  const { barbershop, dbUser } = session;
+
+  // ── Feature gating: límite de Mibarberia según plan ─────────────────────────
+  const limits = getEffectiveLimits(
+    barbershop.subscriptionPlan,
+    barbershop.subscriptionStatus,
+    barbershop.trialEndsAt,
+  );
+
+  const currentCount = await prisma.barber.count({
+    where: { barbershopId: barbershop.id, isActive: true },
+  });
+
+  if (currentCount >= limits.maxBarbers) {
+    return NextResponse.json(
+      {
+        error: `Tu plan permite hasta ${limits.maxBarbers} barbero${limits.maxBarbers !== 1 ? "s" : ""}. Actualizá tu plan para agregar más.`,
+        code:  "PLAN_LIMIT_REACHED",
+        limit: limits.maxBarbers,
+      },
+      { status: 403 }
+    );
+  }
+
+  // ── Validación ─────────────────────────────────────────────────────────────
+  const body  = await request.json();
   const parse = CreateBarberSchema.safeParse(body);
-  if (!parse.success) return NextResponse.json({ error: parse.error.errors.map(e => e.message).join(", ") }, { status: 422 });
+  if (!parse.success) {
+    return NextResponse.json(
+      { error: parse.error.errors.map((e) => e.message).join(", ") },
+      { status: 422 }
+    );
+  }
 
-  const { name, specialty, phone, colorTag, bio } = parse.data;
+  const { name, specialty, phone, colorTag, bio, email } = parse.data;
+  const finalEmail = email ?? `${name.toLowerCase().replace(/\s+/g, ".")}.${Date.now()}@placeholder.Mibarberia.app`;
 
-  // Crear un User placeholder (sin supabaseId real hasta que acepte la invitación)
-  const email = body.email ?? `${name.toLowerCase().replace(/\s+/g, ".")}.${Date.now()}@placeholder.barberos.app`;
-
+  // ── Crear en DB ────────────────────────────────────────────────────────────
   const user = await prisma.user.create({
     data: {
       supabaseId: `placeholder-${Date.now()}`,
-      email,
+      email:      finalEmail,
       name,
       phone,
       role: "BARBER",
@@ -85,13 +123,24 @@ export async function POST(request: Request) {
 
   const barber = await prisma.barber.create({
     data: {
-      userId:      user.id,
-      barbershopId: session.barbershop.id,
-      specialties: [specialty],
+      userId:       user.id,
+      barbershopId: barbershop.id,
+      specialties:  [specialty],
       colorTag,
       bio,
     },
     include: { user: true },
+  });
+
+  // ── AuditLog ───────────────────────────────────────────────────────────────
+  writeAuditLog({
+    barbershopId: barbershop.id,
+    userId:       dbUser.id,
+    action:       "BARBER_CREATED",
+    entity:       "Barber",
+    entityId:     barber.id,
+    after:        { name, specialty, colorTag },
+    ipAddress:    ip,
   });
 
   return NextResponse.json({ data: barber }, { status: 201 });

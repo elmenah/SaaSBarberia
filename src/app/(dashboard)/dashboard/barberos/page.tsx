@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/auth-context";
@@ -34,7 +34,7 @@ function getInitials(name: string) {
   return name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 }
 
-export default function BarberosPage() {
+export default function MibarberiaPage() {
   const { barbershop, user } = useAuth();
   const [barbers,    setBarbers]    = useState<BarberFromAPI[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -162,7 +162,7 @@ export default function BarberosPage() {
               const totalTurnos   = barbers.reduce((sum, b) => sum + (b.stats?.turnosMes   ?? 0), 0);
               const totalIngresos = barbers.reduce((sum, b) => sum + (b.stats?.ingresosMes ?? 0), 0);
               return [
-                { label: "Barberos totales", value: barbers.length,              icon: Scissors,   color: "#CA8A04" },
+                { label: "Mibarberia totales", value: barbers.length,              icon: Scissors,   color: "#CA8A04" },
                 { label: "Activos",          value: activeCount,                 icon: Power,      color: "#22C55E" },
                 { label: "Turnos este mes",  value: totalTurnos,                 icon: Calendar,   color: "#3B82F6" },
                 { label: "Ingresos del mes", value: formatCurrency(totalIngresos), icon: DollarSign, color: "#8B5CF6" },
@@ -356,7 +356,7 @@ export default function BarberosPage() {
                     )}
                     {owner ? (
                       <Link
-                        href="/dashboard/barberos/perfil"
+                        href="/dashboard/Mibarberia/perfil"
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-body transition-all flex-1 justify-center hover:opacity-80"
                         style={{ backgroundColor: "rgba(202,138,4,0.08)", color: "#CA8A04", border: "1px solid rgba(202,138,4,0.2)" }}>
                         <Edit2 className="w-3.5 h-3.5" />

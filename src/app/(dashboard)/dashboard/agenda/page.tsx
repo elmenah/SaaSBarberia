@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
@@ -162,7 +162,7 @@ export default function AgendaPage() {
   const weekDays  = getDaysOfWeek(currentDate);
   const monthYear = currentDate.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
 
-  /* ── Barberos ────────────────────────────────────────────────────────── */
+  /* ── Mibarberia ────────────────────────────────────────────────────────── */
   const fetchBarbers = useCallback(() => {
     if (!barbershop?.id) { setLoading(false); return; }
     fetch("/api/barbers")

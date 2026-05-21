@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, PreApproval, Payment } from "mercadopago";
+﻿import { MercadoPagoConfig, PreApproval, Payment } from "mercadopago";
 
 // ─── Cliente MP ────────────────────────────────────────────────────────────────
 
@@ -54,7 +54,7 @@ export const PLANS: Record<PlanKey, PlanDef> = {
     whatsappPerMonth: 130,
     highlight:        true,
     features: [
-      "Hasta 7 barberos",
+      "Hasta 7 Mibarberia",
       "130 mensajes WhatsApp/mes",
       "Notificaciones por email",
       "Automatizaciones completas",
@@ -72,7 +72,7 @@ export const PLANS: Record<PlanKey, PlanDef> = {
     barbers:          10,
     whatsappPerMonth: 500,
     features: [
-      "Hasta 10 barberos",
+      "Hasta 10 Mibarberia",
       "500 mensajes WhatsApp/mes",
       "Notificaciones por email",
       "Todo lo del plan Profesional",
@@ -101,7 +101,7 @@ export async function createMpSubscription(args: {
 
   const result = await mpPreApproval.create({
     body: {
-      reason:             `${plan.name} — BarberOS`,
+      reason:             `${plan.name} — Mibarberia`,
       payer_email:        args.payerEmail,
       external_reference: `${args.barbershopId}:${args.planKey}`,
       back_url:           args.backUrl,

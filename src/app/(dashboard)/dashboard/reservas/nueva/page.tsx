@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -117,12 +117,12 @@ export default function NuevaReservaPage() {
   const [busqueda, setBusqueda] = useState("");
 
   /* ── Datos de la DB ───────────────────────────────────────────────────── */
-  const [barberos,        setBarberos]        = useState<BarberAPI[]>([]);
+  const [Mibarberia,        setMibarberia]        = useState<BarberAPI[]>([]);
   const [servicios,       setServicios]       = useState<ServiceAPI[]>([]);
   const [clientes,        setClientes]        = useState<ClientAPI[]>([]);
   const [slots,           setSlots]           = useState<{ hora: string; disponible: boolean }[]>([]);
   const [schedule,        setSchedule]        = useState<WeekSchedule | null>(null);
-  const [loadingBarberos, setLoadingBarberos] = useState(true);
+  const [loadingMibarberia, setLoadingMibarberia] = useState(true);
   const [loadingServicios,setLoadingServicios]= useState(true);
   const [loadingClientes, setLoadingClientes] = useState(true);
   const [loadingSlots,    setLoadingSlots]    = useState(false);
@@ -162,14 +162,14 @@ export default function NuevaReservaPage() {
     return ds?.enabled ?? true; // sin horario configurado, todo abierto
   }
 
-  /* ── Fetch barberos ───────────────────────────────────────────────────── */
+  /* ── Fetch Mibarberia ───────────────────────────────────────────────────── */
   useEffect(() => {
     if (!barbershop?.id) return;
     fetch("/api/barbers")
       .then((r) => r.json())
-      .then(({ data }) => setBarberos((data ?? []).filter((b: BarberAPI) => b.isActive)))
+      .then(({ data }) => setMibarberia((data ?? []).filter((b: BarberAPI) => b.isActive)))
       .catch(console.error)
-      .finally(() => setLoadingBarberos(false));
+      .finally(() => setLoadingMibarberia(false));
   }, [barbershop?.id]);
 
   /* ── Fetch servicios ──────────────────────────────────────────────────── */
@@ -371,20 +371,20 @@ export default function NuevaReservaPage() {
           <div className="flex flex-col gap-4">
             <h2 className="text-lg font-display font-medium text-white mb-2">Seleccionar barbero</h2>
 
-            {loadingBarberos ? (
+            {loadingMibarberia ? (
               Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)
-            ) : barberos.length === 0 ? (
+            ) : Mibarberia.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-10">
                 <Scissors className="w-8 h-8" style={{ color: "#27272A" }} />
-                <p className="text-sm font-body" style={{ color: "#3F3F46" }}>No tenés barberos activos todavía</p>
-                <Link href="/dashboard/barberos"
+                <p className="text-sm font-body" style={{ color: "#3F3F46" }}>No tenés Mibarberia activos todavía</p>
+                <Link href="/dashboard/Mibarberia"
                   className="text-xs font-semibold font-body px-4 py-2 rounded-xl"
                   style={{ backgroundColor: "rgba(202,138,4,0.1)", color: "#CA8A04", border: "1px solid rgba(202,138,4,0.2)" }}>
                   Agregar barbero
                 </Link>
               </div>
             ) : (
-              barberos.map((b) => {
+              Mibarberia.map((b) => {
                 const color    = b.colorTag ?? "#CA8A04";
                 const selected = reserva.barbero?.id === b.id;
                 return (

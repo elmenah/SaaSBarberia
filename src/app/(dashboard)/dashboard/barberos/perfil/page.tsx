@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import {
@@ -230,12 +230,12 @@ export default function BarberPerfilPage() {
       </div>
       <p className="text-white font-semibold font-body text-lg">No tenés perfil de barbero</p>
       <p className="text-sm font-body" style={{ color: "#52525B" }}>
-        Tu cuenta de dueño todavía no tiene un perfil de barbero asociado. Crealo desde la sección Barberos.
+        Tu cuenta de dueño todavía no tiene un perfil de barbero asociado. Crealo desde la sección Mibarberia.
       </p>
-      <Link href="/dashboard/barberos"
+      <Link href="/dashboard/Mibarberia"
         className="mt-2 px-5 py-2.5 rounded-xl text-sm font-bold font-body text-black"
         style={{ backgroundColor: "#CA8A04" }}>
-        Ir a Barberos
+        Ir a Mibarberia
       </Link>
     </div>
   );
@@ -248,7 +248,7 @@ export default function BarberPerfilPage() {
 
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Link href="/dashboard/barberos"
+        <Link href="/dashboard/Mibarberia"
           className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors hover:bg-white/5"
           style={{ border: "1px solid rgba(255,255,255,0.07)", color: "#71717A" }}>
           <ArrowLeft className="w-4 h-4" />

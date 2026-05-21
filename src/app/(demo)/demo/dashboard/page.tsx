@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -41,7 +41,7 @@ export default function DemoDashboardPage() {
   const [copied, setCopied] = useState(false);
 
   function copyLink() {
-    navigator.clipboard.writeText("https://barberos.app/book/el-clasico").catch(() => {});
+    navigator.clipboard.writeText("https://Mibarberia.app/book/el-clasico").catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }

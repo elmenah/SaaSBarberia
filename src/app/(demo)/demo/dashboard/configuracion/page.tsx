@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Check, Copy, ExternalLink, Clock, Globe, CheckCircle2, Plus, Trash2, Ban } from "lucide-react";
@@ -39,7 +39,7 @@ const TABS = ["Horarios", "Bloqueos", "Enlace público", "Perfil de barbería"] 
 type Tab = typeof TABS[number];
 
 const SLUG       = "el-clasico";
-const PUBLIC_URL = `https://barberos.app/book/${SLUG}`;
+const PUBLIC_URL = `https://Mibarberia.app/book/${SLUG}`;
 
 export default function DemoConfiguracionPage() {
   const [activeTab, setActiveTab] = useState<Tab>("Horarios");
@@ -302,7 +302,7 @@ export default function DemoConfiguracionPage() {
             <div className="flex flex-col gap-3">
               {[
                 { step: "1", title: "Elige el servicio",       desc: "Ve tu lista de servicios con precio y duración"      },
-                { step: "2", title: "Elige al barbero",        desc: "Ve los barberos disponibles y sus especialidades"    },
+                { step: "2", title: "Elige al barbero",        desc: "Ve los Mibarberia disponibles y sus especialidades"    },
                 { step: "3", title: "Elige fecha y hora",      desc: "Selecciona un horario libre según tu disponibilidad" },
                 { step: "4", title: "Ingresa sus datos",       desc: "Nombre y teléfono para enviarte la confirmación"     },
                 { step: "5", title: "Confirmación automática", desc: "Recibe un WhatsApp de confirmación al instante"      },
@@ -340,7 +340,7 @@ export default function DemoConfiguracionPage() {
               )}
               {field === "slug" && (
                 <p className="text-xs font-body mt-1" style={{ color: "#3F3F46" }}>
-                  Tu URL quedará: barberos.app/book/<span style={{ color: "#CA8A04" }}>el-clasico</span>
+                  Tu URL quedará: Mibarberia.app/book/<span style={{ color: "#CA8A04" }}>el-clasico</span>
                 </p>
               )}
             </div>

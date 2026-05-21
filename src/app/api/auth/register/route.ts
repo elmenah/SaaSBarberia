@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { rateLimit, getClientIp, rateLimitResponse, REGISTER_LIMIT } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -11,6 +12,11 @@ import { NextRequest, NextResponse } from "next/server";
  * El flujo con confirmación de email usa /api/auth/callback en su lugar.
  */
 export async function POST(request: NextRequest) {
+  // ── Rate limit: 5 registros por 10 minutos por IP ──────────────────────────
+  const ip = getClientIp(request);
+  const rl = rateLimit(`register:${ip}`, REGISTER_LIMIT.limit, REGISTER_LIMIT.windowMs);
+  if (!rl.success) return rateLimitResponse(rl.retryAfter) as NextResponse;
+
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();

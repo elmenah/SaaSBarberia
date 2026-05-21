@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Check, Copy, ExternalLink, Clock, Globe, CheckCircle2, Plus, Trash2, Ban, Image as ImageIcon, Instagram, Upload, X } from "lucide-react";
@@ -171,7 +171,7 @@ export default function ConfiguracionPage() {
 
   /* ── Helpers URL ─────────────────────────────────────────────────────── */
   const slug       = authBarbershop?.slug ?? profileSlug ?? "mi-barberia";
-  const PUBLIC_URL = `${typeof window !== "undefined" ? window.location.origin : "https://barberos.app"}/book/${slug}`;
+  const PUBLIC_URL = `${typeof window !== "undefined" ? window.location.origin : "https://Mibarberia.app"}/book/${slug}`;
 
   /* ── Horarios ────────────────────────────────────────────────────────── */
   function updateDay(day: string, field: keyof DaySchedule, value: string | boolean) {
@@ -753,7 +753,7 @@ export default function ConfiguracionPage() {
             <div className="flex flex-col gap-3">
               {[
                 { step: "1", title: "Elige el servicio",         desc: "Ve tu lista de servicios con precio y duración" },
-                { step: "2", title: "Elige al barbero",          desc: "Ve los barberos disponibles y sus especialidades" },
+                { step: "2", title: "Elige al barbero",          desc: "Ve los Mibarberia disponibles y sus especialidades" },
                 { step: "3", title: "Elige fecha y hora",        desc: "Selecciona un horario libre según tu disponibilidad" },
                 { step: "4", title: "Ingresa sus datos",         desc: "Nombre y teléfono para enviarte la confirmación" },
                 { step: "5", title: "Confirmación automática",   desc: "Recibe un WhatsApp de confirmación al instante" },
@@ -930,7 +930,7 @@ export default function ConfiguracionPage() {
                   className="input-dark"
                 />
                 <p className="text-xs font-body mt-1" style={{ color: "#3F3F46" }}>
-                  Tu URL quedará: barberos.app/book/<span style={{ color: "#CA8A04" }}>{profileSlug || "tu-slug"}</span>
+                  Tu URL quedará: Mibarberia.app/book/<span style={{ color: "#CA8A04" }}>{profileSlug || "tu-slug"}</span>
                 </p>
               </div>
 

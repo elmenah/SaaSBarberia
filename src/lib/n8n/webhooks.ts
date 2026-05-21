@@ -1,4 +1,4 @@
-import type { AutomationTrigger, WebhookPayload } from "@/types";
+﻿import type { AutomationTrigger, WebhookPayload } from "@/types";
 import { prisma } from "@/lib/prisma";
 
 const WEBHOOK_URLS: Partial<Record<AutomationTrigger, string | undefined>> = {
@@ -55,8 +55,8 @@ export async function fireWebhook({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-BarberOS-Secret": process.env.N8N_API_KEY ?? "",
-        "X-BarberOS-Barbershop": barbershopId,
+        "X-Mibarberia-Secret": process.env.N8N_API_KEY ?? "",
+        "X-Mibarberia-Barbershop": barbershopId,
       },
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(10_000),

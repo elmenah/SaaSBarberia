@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import { writeAuditLog } from "@/lib/audit";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -91,6 +92,17 @@ export async function PATCH(req: NextRequest) {
       phone: true, email: true, whatsappNumber: true, settings: true,
       subscriptionPlan: true, subscriptionStatus: true, trialEndsAt: true,
     },
+  });
+
+  // AuditLog (fire-and-forget)
+  const { settings: _s, ...loggableData } = data;
+  writeAuditLog({
+    barbershopId: barbershop.id,
+    userId:       session.dbUser.id,
+    action:       "SETTINGS_UPDATED",
+    entity:       "Barbershop",
+    entityId:     barbershop.id,
+    after:        loggableData as import("@prisma/client").Prisma.InputJsonValue,
   });
 
   return NextResponse.json({ barbershop: updated });

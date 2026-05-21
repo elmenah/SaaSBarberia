@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { notifyNewAppointment } from "@/lib/n8n/webhooks";
 import { sendNewAppointmentEmails } from "@/lib/email/send-appointment-emails";
+import { rateLimit, getClientIp, rateLimitResponse, BOOK_LIMIT } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const BookSchema = z.object({
@@ -19,6 +20,11 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
+
+  // ── Rate limit: 10 reservas por minuto por IP ──────────────────────────────
+  const ip = getClientIp(request);
+  const rl = rateLimit(`book:${ip}`, BOOK_LIMIT.limit, BOOK_LIMIT.windowMs);
+  if (!rl.success) return rateLimitResponse(rl.retryAfter) as NextResponse;
 
   const barbershop = await prisma.barbershop.findUnique({
     where: { slug },

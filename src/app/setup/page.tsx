@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -139,7 +139,7 @@ export default function SetupPage() {
         <div className="flex items-center gap-2 mb-10">
           <Scissors className="w-4 h-4" style={{ color: "#CA8A04" }} />
           <span className="text-xl font-semibold tracking-tight" style={{ color: "#CA8A04", fontFamily: "Cormorant, serif" }}>
-            BarberOS
+            Mibarberia
           </span>
         </div>
 

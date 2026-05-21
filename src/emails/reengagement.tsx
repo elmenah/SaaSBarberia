@@ -1,4 +1,4 @@
-import {
+﻿import {
   Body, Button, Container, Head, Heading, Html,
   Preview, Section, Text, Tailwind,
 } from "@react-email/components";
@@ -53,7 +53,7 @@ export default function ReengagementEmail({
                 Si no querés recibir más emails, ignorá este mensaje.
               </Text>
               <Text className="text-[#525252] text-xs m-0 mt-2">
-                Powered by <strong className="text-[#737373]">BarberOS</strong>
+                Powered by <strong className="text-[#737373]">Mibarberia</strong>
               </Text>
             </Section>
 

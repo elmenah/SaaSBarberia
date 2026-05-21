@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { mpPreApproval, verifyMpSignature, type PlanKey, PLANS } from "@/lib/mercadopago";
+import { writeAuditLog } from "@/lib/audit";
+import { rateLimit, getClientIp, rateLimitResponse, WEBHOOK_LIMIT } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -8,6 +10,11 @@ import { NextRequest, NextResponse } from "next/server";
  * Configurar en MP Dashboard → Notificaciones → URL: https://yourapp.com/api/payments/webhook
  */
 export async function POST(req: NextRequest) {
+  // ── Rate limit ────────────────────────────────────────────────────────────
+  const ip = getClientIp(req);
+  const rl = rateLimit(`mp-webhook:${ip}`, WEBHOOK_LIMIT.limit, WEBHOOK_LIMIT.windowMs);
+  if (!rl.success) return rateLimitResponse(rl.retryAfter) as NextResponse;
+
   // ── 1. Leer headers de firma ─────────────────────────────────────────────
   const xSignature  = req.headers.get("x-signature");
   const xRequestId  = req.headers.get("x-request-id");
@@ -97,6 +104,15 @@ export async function POST(req: NextRequest) {
 
       console.info(`[mp/webhook] Suscripción ACTIVA: ${barbershopId} → ${planKey}`);
 
+      writeAuditLog({
+        barbershopId,
+        userId:   barbershop.ownerId,
+        action:   "PLAN_ACTIVATED",
+        entity:   "Barbershop",
+        entityId: barbershopId,
+        after:    { plan: planKey, mpSubscriptionId, activatedAt: new Date().toISOString() },
+      });
+
     } else if (status === "cancelled") {
       // Suscripción cancelada
       await prisma.barbershop.update({
@@ -115,6 +131,15 @@ export async function POST(req: NextRequest) {
       });
 
       console.info(`[mp/webhook] Suscripción CANCELADA: ${barbershopId}`);
+
+      writeAuditLog({
+        barbershopId,
+        userId:   barbershop.ownerId,
+        action:   "PLAN_CANCELLED",
+        entity:   "Barbershop",
+        entityId: barbershopId,
+        after:    { cancelledAt: new Date().toISOString() },
+      });
 
     } else if (status === "paused") {
       await prisma.barbershop.update({

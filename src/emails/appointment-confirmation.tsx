@@ -1,4 +1,4 @@
-import {
+﻿import {
   Body,
   Button,
   Container,
@@ -189,7 +189,7 @@ export default function AppointmentConfirmationEmail({
                 Si necesitás cancelar, comunicate con {barbershopName}.
               </Text>
               <Text className="text-[#525252] text-xs m-0 mt-2">
-                Powered by <strong className="text-[#737373]">BarberOS</strong>
+                Powered by <strong className="text-[#737373]">Mibarberia</strong>
               </Text>
             </Section>
 

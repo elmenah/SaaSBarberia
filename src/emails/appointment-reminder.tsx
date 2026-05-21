@@ -1,4 +1,4 @@
-import {
+﻿import {
   Body, Button, Container, Head, Heading, Hr, Html,
   Preview, Row, Column, Section, Text, Tailwind,
 } from "@react-email/components";
@@ -130,7 +130,7 @@ export default function AppointmentReminderEmail({
                 Si no podés asistir, avisanos con anticipación.
               </Text>
               <Text className="text-[#525252] text-xs m-0 mt-2">
-                Powered by <strong className="text-[#737373]">BarberOS</strong>
+                Powered by <strong className="text-[#737373]">Mibarberia</strong>
               </Text>
             </Section>
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Bell, Search, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ export function TopBar() {
   const pathname = usePathname();
   const router   = useRouter();
   const { user, barbershop, signOut } = useAuth();
-  const title    = PAGE_TITLES[pathname] ?? "BarberOS";
+  const title    = PAGE_TITLES[pathname] ?? "Mibarberia";
 
   // Nombre e iniciales del usuario autenticado (fallback al mock para la demo)
   const shopName  = barbershop?.name ?? "El Clásico";

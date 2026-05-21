@@ -198,7 +198,7 @@ export default function ReviewPage() {
         </form>
 
         <p className="text-center text-xs mt-6" style={{ color: "#27272A" }}>
-          Powered by <span style={{ color: "#CA8A04" }}>BarberOS</span>
+          Powered by <span style={{ color: "#CA8A04" }}>Mibarberia</span>
         </p>
       </div>
     </div>

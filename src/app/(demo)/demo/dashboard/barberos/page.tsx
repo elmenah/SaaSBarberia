@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import {
@@ -32,7 +32,7 @@ const INITIAL_BARBERS: Barber[] = [
 const COLORS = ["#CA8A04","#3B82F6","#8B5CF6","#22C55E","#EF4444","#F59E0B","#EC4899","#14B8A6"];
 const EMPTY_FORM = { name: "", specialty: "", phone: "", color: "#CA8A04" };
 
-export default function DemoBarberosPage() {
+export default function DemoMibarberiaPage() {
   const [barbers, setBarbers]     = useState<Barber[]>(INITIAL_BARBERS);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing]     = useState<Barber | null>(null);
@@ -72,7 +72,7 @@ export default function DemoBarberosPage() {
       {/* ── Stats ─────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: "Barberos totales",  value: barbers.length,               icon: Scissors,   color: "#CA8A04" },
+          { label: "Mibarberia totales",  value: barbers.length,               icon: Scissors,   color: "#CA8A04" },
           { label: "Activos este mes",  value: activeCount,                  icon: Power,      color: "#22C55E" },
           { label: "Turnos este mes",   value: totalAppts,                   icon: Calendar,   color: "#3B82F6" },
           { label: "Ingresos del mes",  value: formatCurrency(totalRevenue), icon: DollarSign, color: "#8B5CF6" },

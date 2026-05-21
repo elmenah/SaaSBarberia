@@ -1,4 +1,4 @@
-import {
+﻿import {
   Body,
   Container,
   Head,
@@ -134,7 +134,7 @@ export default function AppointmentCancelledEmail({
             {/* Footer */}
             <Section className="text-center">
               <Text className="text-[#525252] text-xs m-0">
-                Powered by <strong className="text-[#737373]">BarberOS</strong>
+                Powered by <strong className="text-[#737373]">Mibarberia</strong>
               </Text>
             </Section>
 

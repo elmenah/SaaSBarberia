@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Fuente única de verdad para los servicios de la barbería.
  * El dueño los gestiona en /dashboard/servicios
- * y tanto los barberos como el booking público los consumen desde acá.
+ * y tanto los Mibarberia como el booking público los consumen desde acá.
  */
 export const SERVICIOS = [
   { id: "corte",       name: "Corte clásico",           category: "Cortes",   price: 8000,  durationMins: 30, icon: "✂️" },

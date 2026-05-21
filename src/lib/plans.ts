@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Feature gating — límites por plan de suscripción.
  * Usar en API routes y Server Components para controlar acceso.
  */
@@ -62,7 +62,7 @@ export function getEffectiveLimits(
   return PLAN_LIMITS[plan] ?? PLAN_LIMITS.FREE;
 }
 
-/** Verifica si el plan puede agregar más barberos */
+/** Verifica si el plan puede agregar más Mibarberia */
 export function canAddBarber(
   plan:          string,
   status:        string,

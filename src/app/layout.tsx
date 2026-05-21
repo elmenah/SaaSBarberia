@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Montserrat, Cormorant } from "next/font/google";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/auth-context";
@@ -22,17 +22,17 @@ const cormorant = Cormorant({
 
 export const metadata: Metadata = {
   title: {
-    default: "BarberOS — El sistema para tu barbería",
-    template: "%s | BarberOS",
+    default: "Mibarberia — El sistema para tu barbería",
+    template: "%s | Mibarberia",
   },
   description:
     "Agenda online, automatización de WhatsApp y gestión de clientes — todo lo que tu barbería necesita en una sola plataforma.",
   keywords: ["barbería", "reservas online", "agenda barbería", "WhatsApp", "automatización", "gestión clientes"],
-  authors: [{ name: "BarberOS" }],
+  authors: [{ name: "Mibarberia" }],
   openGraph: {
     type: "website",
     locale: "es_419",
-    title: "BarberOS",
+    title: "Mibarberia",
     description: "Reservas online, automatización de WhatsApp y gestión de clientes para barberías modernas.",
   },
 };

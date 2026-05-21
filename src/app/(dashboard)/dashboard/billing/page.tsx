@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
@@ -52,7 +52,7 @@ const PLANS: Plan[] = [
     highlight:        true,
     icon:             Crown,
     features: [
-      "Hasta 7 barberos",
+      "Hasta 7 Mibarberia",
       "130 mensajes WhatsApp/mes",
       "Notificaciones por email",
       "Automatizaciones completas",
@@ -71,7 +71,7 @@ const PLANS: Plan[] = [
     highlight:        false,
     icon:             Building2,
     features: [
-      "Hasta 10 barberos",
+      "Hasta 10 Mibarberia",
       "500 mensajes WhatsApp/mes",
       "Notificaciones por email",
       "Todo lo del plan Profesional",

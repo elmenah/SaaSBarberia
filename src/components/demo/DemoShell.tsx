@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,7 +15,7 @@ const DEMO_NAV = [
   { label: "Agenda",           href: "/demo/dashboard/agenda",           icon: Calendar        },
   { label: "Reservas",         href: "/demo/dashboard/reservas",         icon: ClipboardList   },
   { label: "Clientes",         href: "/demo/dashboard/clientes",         icon: Users           },
-  { label: "Barberos",         href: "/demo/dashboard/barberos",         icon: UserCog         },
+  { label: "Mibarberia",         href: "/demo/dashboard/Mibarberia",         icon: UserCog         },
   { label: "Servicios",        href: "/demo/dashboard/servicios",        icon: Scissors        },
   { label: "Automatizaciones", href: "/demo/dashboard/automatizaciones", icon: Zap             },
 ];
@@ -25,7 +25,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/demo/dashboard/agenda":            "Agenda",
   "/demo/dashboard/reservas":          "Reservas",
   "/demo/dashboard/clientes":          "Clientes",
-  "/demo/dashboard/barberos":          "Barberos",
+  "/demo/dashboard/Mibarberia":          "Mibarberia",
   "/demo/dashboard/servicios":         "Servicios",
   "/demo/dashboard/automatizaciones":  "Automatizaciones",
   "/demo/dashboard/configuracion":     "Configuración",
@@ -57,7 +57,7 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-2">
           <Sparkles className="w-3.5 h-3.5 text-black flex-shrink-0" />
           <span className="text-xs font-semibold text-black font-body hidden sm:block">
-            Estás viendo la demo de BarberOS con datos de ejemplo
+            Estás viendo la demo de Mibarberia con datos de ejemplo
           </span>
           <span className="text-xs font-semibold text-black font-body sm:hidden">
             Modo demo
@@ -90,7 +90,7 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
           >
             {!collapsed && (
               <span className="text-sm font-bold tracking-tight" style={{ color: "#CA8A04" }}>
-                BarberOS
+                Mibarberia
               </span>
             )}
             <button

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Body,
   Container,
   Head,
@@ -152,7 +152,7 @@ export default function NewAppointmentOwnerEmail({
             {/* Footer */}
             <Section className="text-center">
               <Text className="text-[#525252] text-xs m-0">
-                Gestiona este turno desde tu dashboard de BarberOS.
+                Gestiona este turno desde tu dashboard de Mibarberia.
               </Text>
             </Section>
 

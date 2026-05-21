@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -142,7 +142,7 @@ export default function RegisterPage() {
       {/* ── Left — Form ───────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12">
         <Link href="/" className="text-sm font-bold mb-10 lg:hidden" style={{ color: "#CA8A04" }}>
-          BarberOS
+          Mibarberia
         </Link>
 
         <div className="w-full max-w-sm">
@@ -303,13 +303,13 @@ export default function RegisterPage() {
         <Link href="/" className="flex items-center gap-2">
           <Scissors className="w-4 h-4" style={{ color: "#CA8A04" }} />
           <span className="text-xl font-semibold tracking-tight" style={{ color: "#CA8A04", fontFamily: "Cormorant, serif" }}>
-            BarberOS
+            Mibarberia
           </span>
         </Link>
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: "#CA8A04" }}>
-            ¿Por qué BarberOS?
+            ¿Por qué Mibarberia?
           </p>
           <h2 className="text-3xl font-light leading-snug text-white mb-8">
             La plataforma que tu<br />barbería merece

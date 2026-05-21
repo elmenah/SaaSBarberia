@@ -640,7 +640,7 @@ export default function BookPage() {
 
         <footer className="text-center py-6">
           <p className="text-xs font-body" style={{ color: "#27272A" }}>
-            Powered by <span style={{ color: "#CA8A04" }}>BarberOS</span>
+            Powered by <span style={{ color: "#CA8A04" }}>Mibarberia</span>
           </p>
         </footer>
       </div>
@@ -1374,7 +1374,7 @@ export default function BookPage() {
 
       <footer className="text-center py-8 mt-4">
         <p className="text-xs font-body" style={{ color: "#27272A" }}>
-          Powered by <span style={{ color: "#CA8A04" }}>BarberOS</span>
+          Powered by <span style={{ color: "#CA8A04" }}>Mibarberia</span>
         </p>
       </footer>
     </div>

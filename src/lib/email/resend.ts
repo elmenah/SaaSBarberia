@@ -1,9 +1,9 @@
-import { Resend } from "resend";
+﻿import { Resend } from "resend";
 import { ReactElement } from "react";
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const FROM_EMAIL = process.env.EMAIL_FROM ?? "BarberOS <noreply@barberos.app>";
+export const FROM_EMAIL = process.env.EMAIL_FROM ?? "Mibarberia <noreply@Mibarberia.app>";
 
 // ─── Helper genérico ────────────────────────────────────────────────────────
 export async function sendEmail({

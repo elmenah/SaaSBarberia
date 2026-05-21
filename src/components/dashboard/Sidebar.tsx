@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,7 +20,7 @@ const NAV_OWNER = [
   { label: "Agenda",           href: "/dashboard/agenda",           icon: Calendar        },
   { label: "Reservas",         href: "/dashboard/reservas",         icon: ClipboardList   },
   { label: "Clientes",         href: "/dashboard/clientes",         icon: Users           },
-  { label: "Barberos",         href: "/dashboard/barberos",         icon: UserCog         },
+  { label: "Mibarberia",         href: "/dashboard/Mibarberia",         icon: UserCog         },
   { label: "Servicios",        href: "/dashboard/servicios",        icon: Scissors        },
   { label: "Automatizaciones", href: "/dashboard/automatizaciones", icon: Zap             },
 ];
@@ -28,7 +28,7 @@ const NAV_OWNER = [
 const NAV_BARBER = [
   { label: "Mi Agenda",   href: "/dashboard/agenda",          icon: Calendar     },
   { label: "Reservas",    href: "/dashboard/reservas",        icon: ClipboardList },
-  { label: "Mi perfil",   href: "/dashboard/barberos/perfil", icon: BadgeCheck   },
+  { label: "Mi perfil",   href: "/dashboard/Mibarberia/perfil", icon: BadgeCheck   },
 ];
 
 type Role = "owner" | "barber";
@@ -65,7 +65,7 @@ export function Sidebar() {
       >
         {!collapsed && (
           <span className="text-sm font-bold tracking-tight" style={{ color: "#CA8A04" }}>
-            BarberOS
+            Mibarberia
           </span>
         )}
         <button

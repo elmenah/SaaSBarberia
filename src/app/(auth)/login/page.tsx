@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -64,7 +64,7 @@ export default function LoginPage() {
         style={{ backgroundColor: "#080808", borderRight: "1px solid rgba(255,255,255,0.04)" }}
       >
         <Link href="/" className="text-sm font-bold tracking-tight" style={{ color: "#CA8A04" }}>
-          BarberOS
+          Mibarberia
         </Link>
 
         <div>
@@ -102,7 +102,7 @@ export default function LoginPage() {
       {/* ── Right form panel ─────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12">
         <Link href="/" className="text-sm font-bold mb-10 lg:hidden" style={{ color: "#CA8A04" }}>
-          BarberOS
+          Mibarberia
         </Link>
 
         <div className="w-full max-w-sm">

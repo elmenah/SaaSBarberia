@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,14 +14,14 @@ const NAV_OWNER = [
   { label: "Inicio",   href: "/dashboard",          icon: LayoutDashboard },
   { label: "Agenda",   href: "/dashboard/agenda",   icon: Calendar        },
   { label: "Reservas", href: "/dashboard/reservas", icon: ClipboardList   },
-  { label: "Barberos", href: "/dashboard/barberos", icon: UserCog         },
+  { label: "Mibarberia", href: "/dashboard/Mibarberia", icon: UserCog         },
   { label: "Plan",     href: "/dashboard/billing",  icon: CreditCard      },
 ];
 
 const NAV_BARBER = [
   { label: "Mi Agenda", href: "/dashboard/agenda",          icon: Calendar     },
   { label: "Reservas",  href: "/dashboard/reservas",        icon: ClipboardList },
-  { label: "Mi Perfil", href: "/dashboard/barberos/perfil", icon: BadgeCheck   },
+  { label: "Mi Perfil", href: "/dashboard/Mibarberia/perfil", icon: BadgeCheck   },
 ];
 
 export function BottomNav() {

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   images: {
@@ -12,4 +13,18 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Org y project de tu cuenta en sentry.io
+  org:     process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // Sube source maps solo en CI/producción
+  silent: true,
+
+  // Desactivar en desarrollo para no ralentizar el build
+  disableLogger: true,
+
+  // Tree-shake el SDK de Sentry en el cliente (reduce bundle)
+  widenClientFileUpload: true,
+  sourcemaps: { disable: false },
+});
