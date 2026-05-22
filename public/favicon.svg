@@ -1,18 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="8" fill="#0A0A0A"/>
+  <!-- Fondo negro redondeado -->
+  <rect width="32" height="32" rx="7" fill="#0A0A0A"/>
 
-  <!-- Aros de la tijera -->
-  <circle cx="11" cy="11" r="4.5" fill="none" stroke="#CA8A04" stroke-width="2"/>
-  <circle cx="21" cy="11" r="4.5" fill="none" stroke="#CA8A04" stroke-width="2"/>
+  <!-- Borde dorado sutil -->
+  <rect width="32" height="32" rx="7" fill="none" stroke="#CA8A04" stroke-width="0.6" opacity="0.5"/>
 
-  <!-- Hojas -->
-  <line x1="14.5" y1="14" x2="16" y2="16.5" stroke="#CA8A04" stroke-width="2" stroke-linecap="round"/>
-  <line x1="17.5" y1="14" x2="16" y2="16.5" stroke="#CA8A04" stroke-width="2" stroke-linecap="round"/>
+  <!-- Aro izquierdo -->
+  <circle cx="11" cy="10" r="4.2" fill="none" stroke="#CA8A04" stroke-width="1.8"/>
+  <!-- Aro derecho -->
+  <circle cx="21" cy="10" r="4.2" fill="none" stroke="#CA8A04" stroke-width="1.8"/>
 
-  <!-- Mangos -->
-  <line x1="16" y1="16.5" x2="11" y2="24" stroke="#CA8A04" stroke-width="2" stroke-linecap="round"/>
-  <line x1="16" y1="16.5" x2="21" y2="24" stroke="#CA8A04" stroke-width="2" stroke-linecap="round"/>
+  <!-- Hoja izquierda (diagonal \ ) -->
+  <line x1="14.5" y1="13.5" x2="10" y2="25" stroke="#CA8A04" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Hoja derecha (diagonal / ) -->
+  <line x1="17.5" y1="13.5" x2="22" y2="25" stroke="#CA8A04" stroke-width="1.8" stroke-linecap="round"/>
 
-  <!-- Pivote -->
-  <circle cx="16" cy="16.5" r="1.5" fill="#CA8A04"/>
+  <!-- Línea separadora -->
+  <line x1="8" y1="27.5" x2="24" y2="27.5" stroke="#CA8A04" stroke-width="0.8" opacity="0.6"/>
 </svg>

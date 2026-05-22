@@ -1,11 +1,19 @@
 import webpush from "web-push";
 import { prisma } from "@/lib/prisma";
 
-webpush.setVapidDetails(
-  process.env.VAPID_EMAIL!,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
+// Inicialización lazy — no se ejecuta en build time, solo al primer envío
+let initialized = false;
+function initWebPush() {
+  if (initialized) return;
+  const email  = process.env.VAPID_EMAIL;
+  const pubKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const prvKey = process.env.VAPID_PRIVATE_KEY;
+  if (!email || !pubKey || !prvKey) {
+    throw new Error("[Push] Faltan variables de entorno VAPID. Configurá VAPID_EMAIL, NEXT_PUBLIC_VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY en Vercel.");
+  }
+  webpush.setVapidDetails(email, pubKey, prvKey);
+  initialized = true;
+}
 
 export { webpush };
 
@@ -22,6 +30,7 @@ export type PushPayload = {
  * Si el endpoint ya no existe (410), limpia la suscripción de la DB.
  */
 export async function sendPushToUser(userId: string, payload: PushPayload) {
+  initWebPush();
   const subscriptions = await prisma.pushSubscription.findMany({
     where: { userId },
   });
@@ -54,6 +63,7 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
  * Envía push a todos los usuarios de una barbería (dueño + barberos).
  */
 export async function sendPushToBarbershop(barbershopId: string, payload: PushPayload) {
+  initWebPush();
   const subscriptions = await prisma.pushSubscription.findMany({
     where: { barbershopId },
   });
