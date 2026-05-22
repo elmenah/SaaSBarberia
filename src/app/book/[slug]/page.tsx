@@ -632,15 +632,15 @@ export default function BookPage() {
           {/* Botón principal */}
           <button
             onClick={() => setShowLanding(false)}
-            className="w-full py-4 rounded-2xl text-base font-bold font-body text-black mb-12 transition-all hover:opacity-90 active:scale-95"
+            className="w-full py-4 rounded-2xl text-base font-bold font-body text-white mb-12 transition-all hover:opacity-90 active:scale-95"
             style={{ backgroundColor: coverColor }}>
             Quiero reservar
           </button>
         </div>
 
         <footer className="text-center py-6">
-          <p className="text-xs font-body" style={{ color: "#27272A" }}>
-            Powered by <span style={{ color: "#CA8A04" }}>Mibarberia</span>
+          <p className="text-xs font-body" style={{ color: "#71717A" }}>
+            Powered by <span style={{ color: "#CA8A04", fontWeight: 600 }}>Mibarberia</span>
           </p>
         </footer>
       </div>
@@ -1238,7 +1238,11 @@ export default function BookPage() {
         </p>
       </div>
 
-      <button onClick={resetBooking} className="text-sm font-body font-medium transition-colors" style={{ color: "#52525B" }}>
+      <button
+        onClick={resetBooking}
+        className="text-sm font-body font-semibold px-6 py-2.5 rounded-xl transition-all hover:opacity-90 active:scale-95"
+        style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "#A1A1AA", border: "1px solid rgba(255,255,255,0.1)" }}
+      >
         Reservar otro turno
       </button>
     </div>
@@ -1373,8 +1377,8 @@ export default function BookPage() {
       )}
 
       <footer className="text-center py-8 mt-4">
-        <p className="text-xs font-body" style={{ color: "#27272A" }}>
-          Powered by <span style={{ color: "#CA8A04" }}>Mibarberia</span>
+        <p className="text-xs font-body" style={{ color: "#71717A" }}>
+          Powered by <span style={{ color: "#CA8A04", fontWeight: 600 }}>Mibarberia</span>
         </p>
       </footer>
     </div>

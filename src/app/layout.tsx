@@ -1,7 +1,8 @@
-﻿import type { Metadata } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Montserrat, Cormorant } from "next/font/google";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/auth-context";
+import { RegisterSW } from "@/components/pwa/RegisterSW";
 import "./globals.css";
 
 /* ProMax Luxury Serif — Cormorant títulos, Montserrat cuerpo */
@@ -20,6 +21,13 @@ const cormorant = Cormorant({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#CA8A04",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   title: {
     default: "Mibarberia — El sistema para tu barbería",
@@ -29,6 +37,24 @@ export const metadata: Metadata = {
     "Agenda online, automatización de WhatsApp y gestión de clientes — todo lo que tu barbería necesita en una sola plataforma.",
   keywords: ["barbería", "reservas online", "agenda barbería", "WhatsApp", "automatización", "gestión clientes"],
   authors: [{ name: "Mibarberia" }],
+  // PWA
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Mibarberia",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/api/pwa/icon?size=192", sizes: "192x192", type: "image/png" },
+      { url: "/api/pwa/icon?size=512", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.svg",
+    apple: [
+      { url: "/api/pwa/icon?size=192", sizes: "192x192", type: "image/png" },
+    ],
+  },
   openGraph: {
     type: "website",
     locale: "es_419",
@@ -44,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           {children}
         </AuthProvider>
+        <RegisterSW />
         <Toaster
           position="top-right"
           toastOptions={{

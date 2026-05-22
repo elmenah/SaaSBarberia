@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/auth-context";
-import { Search, Plus, Filter, MoreHorizontal, Clock, CheckCircle, XCircle, UserX } from "lucide-react";
+import { Search, Plus, Filter, MoreHorizontal, Clock, XCircle, UserX, DollarSign, Tag } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 
@@ -12,11 +12,113 @@ type Appointment = {
   status: string;
   source: string;
   totalPrice: number;
+  paidAmount?: number | null;
   totalDuration: number;
   client: { name: string };
   barber: { user: { name: string } };
   services: { service: { name: string } }[];
 };
+
+// ── Modal: registrar descuento en turno completado ────────────────────────────
+function DiscountModal({
+  appointment,
+  onConfirm,
+  onCancel,
+}: {
+  appointment: Appointment;
+  onConfirm: (paidAmount: number) => void;
+  onCancel: () => void;
+}) {
+  const currentPaid = appointment.paidAmount ?? appointment.totalPrice;
+  const [value, setValue] = useState(String(currentPaid));
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { inputRef.current?.focus(); inputRef.current?.select(); }, []);
+
+  const parsed = parseFloat(value.replace(",", "."));
+  const discount = !isNaN(parsed) ? appointment.totalPrice - parsed : 0;
+
+  function handleConfirm() {
+    if (!isNaN(parsed) && parsed >= 0) onConfirm(parsed);
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
+    >
+      <div
+        className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-5"
+        style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.08)" }}
+      >
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "rgba(202,138,4,0.1)" }}>
+            <Tag className="w-4 h-4" style={{ color: "#CA8A04" }} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white font-body">Registrar descuento</p>
+            <p className="text-xs font-body" style={{ color: "#52525B" }}>{appointment.client.name} · precio original: {formatCurrency(appointment.totalPrice)}</p>
+          </div>
+        </div>
+
+        {/* Input */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium font-body" style={{ color: "#71717A" }}>
+            Monto real cobrado
+          </label>
+          <div
+            className="flex items-center gap-2 px-4 py-3 rounded-xl"
+            style={{ backgroundColor: "#0A0A0A", border: "1px solid rgba(255,255,255,0.1)" }}
+          >
+            <DollarSign className="w-4 h-4 flex-shrink-0" style={{ color: "#52525B" }} />
+            <input
+              ref={inputRef}
+              type="number"
+              min="0"
+              step="100"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") onCancel(); }}
+              className="bg-transparent text-sm outline-none w-full font-body"
+              style={{ color: "#E4E4E7" }}
+            />
+          </div>
+          {discount > 0 && (
+            <p className="text-xs font-body" style={{ color: "#CA8A04" }}>
+              Descuento aplicado: {formatCurrency(discount)} — el dashboard reflejará el monto real
+            </p>
+          )}
+          {discount < 0 && (
+            <p className="text-xs font-body" style={{ color: "#EF4444" }}>
+              El monto no puede superar el precio original
+            </p>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl text-sm font-medium font-body transition-all hover:bg-white/5"
+            style={{ border: "1px solid rgba(255,255,255,0.08)", color: "#71717A" }}
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={isNaN(parsed) || discount < 0}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold font-body text-black transition-all hover:opacity-90 disabled:opacity-40"
+            style={{ backgroundColor: "#CA8A04" }}
+          >
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
   COMPLETED:   { label: "Completada",     color: "#22C55E", bg: "rgba(34,197,94,0.08)"   },
@@ -52,9 +154,10 @@ function Skeleton({ className = "" }: { className?: string }) {
 /* ── Menú contextual — usa position:fixed para no quedar cortado por overflow:hidden ── */
 type MenuPos = { top?: number; bottom?: number; right: number };
 
-function ActionMenu({ appointment, onStatusChange }: {
+function ActionMenu({ appointment, onStatusChange, onDiscount }: {
   appointment: Appointment;
   onStatusChange: (id: string, status: string) => void;
+  onDiscount: (appointment: Appointment) => void;
 }) {
   const [open, setOpen]   = useState(false);
   const [pos,  setPos]    = useState<MenuPos>({ top: 0, right: 0 });
@@ -94,11 +197,14 @@ function ActionMenu({ appointment, onStatusChange }: {
     setOpen(true);
   }
 
-  const actions = [
-    { label: "Marcar completada",     icon: CheckCircle, status: "COMPLETED", color: "#22C55E" },
-    { label: "Marcar no se presentó", icon: UserX,       status: "NO_SHOW",   color: "#EF4444" },
-    { label: "Cancelar reserva",      icon: XCircle,     status: "CANCELLED", color: "#EF4444" },
-  ].filter(a => a.status !== appointment.status);
+  // Acciones de cambio de estado (completar es automático)
+  const statusActions = [
+    { label: "Marcar no se presentó", icon: UserX,   status: "NO_SHOW",   color: "#EF4444" },
+    { label: "Cancelar reserva",      icon: XCircle, status: "CANCELLED", color: "#EF4444" },
+  ].filter(a => a.status !== appointment.status && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(appointment.status));
+
+  // Mostrar "Registrar descuento" si el turno ya está completado
+  const showDiscount = ["COMPLETED", "IN_PROGRESS"].includes(appointment.status);
 
   return (
     <>
@@ -124,10 +230,20 @@ function ActionMenu({ appointment, onStatusChange }: {
             boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
           }}
         >
-          {actions.map(({ label, icon: Icon, status, color }) => (
+          {showDiscount && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setOpen(false); onDiscount(appointment); }}
+              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-body text-left hover:bg-white/5 transition-colors"
+              style={{ color: "#CA8A04" }}
+            >
+              <Tag className="w-3.5 h-3.5 flex-shrink-0" />
+              Registrar descuento
+            </button>
+          )}
+          {statusActions.map(({ label, icon: Icon, status, color }) => (
             <button
               key={status}
-              onClick={(e) => { e.stopPropagation(); onStatusChange(appointment.id, status); setOpen(false); }}
+              onClick={(e) => { e.stopPropagation(); setOpen(false); onStatusChange(appointment.id, status); }}
               className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-body text-left hover:bg-white/5 transition-colors"
               style={{ color }}
             >
@@ -135,6 +251,9 @@ function ActionMenu({ appointment, onStatusChange }: {
               {label}
             </button>
           ))}
+          {!showDiscount && statusActions.length === 0 && (
+            <p className="px-3 py-2.5 text-xs font-body" style={{ color: "#3F3F46" }}>Sin acciones disponibles</p>
+          )}
         </div>
       )}
     </>
@@ -146,6 +265,7 @@ export default function ReservasPage() {
   const [reservas, setReservas] = useState<Appointment[]>([]);
   const [loading, setLoading]   = useState(true);
   const [activeFilter, setActiveFilter] = useState("Todas");
+  const [discountingAppt, setDiscountingAppt] = useState<Appointment | null>(null);
 
   // Auto-transición de estados al cargar la página (IN_PROGRESS / COMPLETED)
   useEffect(() => {
@@ -168,14 +288,17 @@ export default function ReservasPage() {
       .finally(() => setLoading(false));
   }, [barbershop?.id, activeFilter]);
 
-  async function handleStatusChange(id: string, status: string) {
+  async function handleStatusChange(id: string, status: string, paidAmount?: number) {
     // Optimistic update
     setReservas(prev => prev.map(r => r.id === id ? { ...r, status } : r));
     try {
+      const body: Record<string, unknown> = { status };
+      if (paidAmount !== undefined) body.paidAmount = paidAmount;
+
       const res = await fetch(`/api/appointments/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         // Revert on error — reload
@@ -187,7 +310,32 @@ export default function ReservasPage() {
     }
   }
 
+  async function handleDiscountConfirm(paidAmount: number) {
+    if (!discountingAppt) return;
+    const appt = discountingAppt;
+    setDiscountingAppt(null);
+    // Optimistic update
+    setReservas(prev => prev.map(r => r.id === appt.id ? { ...r, paidAmount } : r));
+    try {
+      await fetch(`/api/appointments/${appt.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paidAmount }),
+      });
+    } catch {
+      console.error("Error registrando descuento");
+    }
+  }
+
   return (
+    <>
+    {discountingAppt && (
+      <DiscountModal
+        appointment={discountingAppt}
+        onConfirm={handleDiscountConfirm}
+        onCancel={() => setDiscountingAppt(null)}
+      />
+    )}
     <div className="flex flex-col gap-5">
 
       {/* ── Barra de acciones ─────────────────────────────────────────── */}
@@ -246,11 +394,11 @@ export default function ReservasPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate font-body">{r.client.name}</p>
                       <p className="text-xs font-body" style={{ color: "#52525B" }}>
-                        {r.barber.user.name.split(" ")[0]} · {formatTime(r.startsAt)} · {r.totalDuration} min · {formatCurrency(r.totalPrice)}
+                        {r.barber.user.name.split(" ")[0]} · {formatTime(r.startsAt)} · {r.totalDuration} min · {formatCurrency(r.paidAmount ?? r.totalPrice)}
                       </p>
                     </div>
                     <span className="text-xs font-semibold px-2 py-1 rounded-full flex-shrink-0 font-body" style={{ color: st.color, backgroundColor: st.bg }}>{st.label}</span>
-                    <ActionMenu appointment={r} onStatusChange={handleStatusChange} />
+                    <ActionMenu appointment={r} onStatusChange={handleStatusChange} onDiscount={setDiscountingAppt} />
                   </div>
                 );
               })
@@ -317,11 +465,18 @@ export default function ReservasPage() {
                       <span className="text-xs font-body" style={{ color: "#3F3F46" }}>{formatDate(r.startsAt)} · {r.totalDuration} min</span>
                     </div>
                     <div className="col-span-1 hidden sm:block">
-                      <span className="text-sm font-semibold text-white font-body">{formatCurrency(r.totalPrice)}</span>
+                      <span className="text-sm font-semibold text-white font-body">
+                        {formatCurrency(r.paidAmount ?? r.totalPrice)}
+                      </span>
+                      {r.paidAmount != null && r.paidAmount !== r.totalPrice && (
+                        <span className="block text-xs font-body line-through" style={{ color: "#3F3F46" }}>
+                          {formatCurrency(r.totalPrice)}
+                        </span>
+                      )}
                     </div>
                     <div className="col-span-1 flex items-center gap-2">
                       <span className="text-xs font-medium px-2.5 py-1 rounded-full font-body whitespace-nowrap" style={{ color: st.color, backgroundColor: st.bg }}>{st.label}</span>
-                      <ActionMenu appointment={r} onStatusChange={handleStatusChange} />
+                      <ActionMenu appointment={r} onStatusChange={handleStatusChange} onDiscount={setDiscountingAppt} />
                     </div>
                   </div>
                 );
@@ -329,5 +484,6 @@ export default function ReservasPage() {
         }
       </div>
     </div>
+    </>
   );
 }

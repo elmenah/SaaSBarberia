@@ -16,16 +16,9 @@ export default function LoyaltyRewardEmail({
   totalVisits    = 5,
   bookingUrl,
 }: LoyaltyRewardEmailProps) {
-  const isFreecut   = totalVisits % 5 === 0 && totalVisits % 10 !== 0;
-  const isDiscount  = totalVisits % 10 === 0;
-
-  const emoji   = isDiscount ? "🎁" : "🎉";
-  const reward  = isDiscount
-    ? "¡Corte número 10 — descuento especial!"
-    : "¡Corte número 5 — el próximo es gratis!";
-  const detail  = isDiscount
-    ? "Por ser un cliente fiel, tu próxima visita tiene un descuento especial. Presentá este email al llegar."
-    : "Completaste 5 cortes. Tu próxima visita es completamente gratis. Presentá este email al llegar.";
+  const emoji  = "🎉";
+  const reward = `¡Corte número ${totalVisits} — el próximo es gratis!`;
+  const detail = `Completaste ${totalVisits} cortes. Tu próxima visita es completamente gratis. Presentá este email al llegar.`;
 
   return (
     <Html>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { notifyNewAppointment } from "@/lib/n8n/webhooks";
+import { sendPushToBarbershop } from "@/lib/push";
 import { sendNewAppointmentEmails } from "@/lib/email/send-appointment-emails";
 import { rateLimit, getClientIp, rateLimitResponse, BOOK_LIMIT } from "@/lib/rate-limit";
 import { z } from "zod";
@@ -28,7 +29,7 @@ export async function POST(
 
   const barbershop = await prisma.barbershop.findUnique({
     where: { slug },
-    select: { id: true, name: true, phone: true, address: true, email: true },
+    select: { id: true, name: true, phone: true, address: true, email: true, timezone: true },
   });
 
   if (!barbershop) {
@@ -128,6 +129,16 @@ export async function POST(
   });
 
   const serviceNames = services.map((s) => s.name).join(", ");
+
+  // Push notification a los dispositivos del equipo
+  const hora = startsAtDate.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: barbershop.timezone });
+  const dia  = startsAtDate.toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "short", timeZone: barbershop.timezone });
+  sendPushToBarbershop(barbershop.id, {
+    title: `🔔 Nueva reserva — ${client.name}`,
+    body:  `${serviceNames} con ${barber.user.name} · ${dia} a las ${hora}`,
+    url:   "/dashboard/reservas",
+    tag:   `new-appointment-${appointment.id}`,
+  }).catch(console.error);
 
   // Disparar webhook n8n (no bloquea la respuesta)
   notifyNewAppointment({

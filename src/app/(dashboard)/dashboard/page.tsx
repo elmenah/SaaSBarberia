@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { toast } from "sonner";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, Users, Calendar,
   DollarSign, CheckCircle2, Clock, Scissors,
-  ExternalLink, Copy, Check,
+  ExternalLink, Copy, Check, Flame, Receipt,
 } from "lucide-react";
 import { formatCurrency, formatTime } from "@/lib/utils";
 
@@ -28,6 +30,12 @@ type Metrics = {
   completionRate: number;
   todayAppointments: number;
   topServices: TopService[];
+  // Cierre del día
+  todayRevenue: number;
+  todayCompleted: number;
+  todayAvgTicket: number;
+  // Insight
+  bestDayOfWeek: string | null;
 };
 
 type Appointment = {
@@ -59,10 +67,23 @@ function Skeleton({ className = "" }: { className?: string }) {
 
 export default function DashboardPage() {
   const { barbershop } = useAuth();
+  const searchParams = useSearchParams();
   const [metrics, setMetrics]   = useState<Metrics | null>(null);
   const [today,   setToday]     = useState<Appointment[]>([]);
   const [loading, setLoading]   = useState(true);
   const [copied,  setCopied]    = useState(false);
+
+  // Toast de bienvenida al iniciar sesión
+  useEffect(() => {
+    if (searchParams.get("welcome") === "1") {
+      toast.success("¡Bienvenido de nuevo!", {
+        description: "Sesión iniciada correctamente.",
+        duration: 4000,
+      });
+      // Limpiar el query param sin recargar
+      window.history.replaceState({}, "", "/dashboard");
+    }
+  }, [searchParams]);
 
   const publicUrl = barbershop?.slug
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/book/${barbershop.slug}`
@@ -349,6 +370,65 @@ export default function DashboardPage() {
             </div>
           );
         })()}
+      </div>
+
+      {/* ── Cierre del día + Día más fuerte ─────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+        {/* Ingresos de hoy */}
+        <div className="p-5 rounded-2xl flex flex-col gap-3" style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium font-body" style={{ color: "#52525B" }}>Ingresos hoy</p>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: "rgba(34,197,94,0.08)" }}>
+              <Receipt className="w-4 h-4" style={{ color: "#22C55E" }} />
+            </div>
+          </div>
+          {loading ? <Skeleton className="h-7 w-28" /> : (
+            <p className="text-xl font-bold text-white font-body">{formatCurrency(metrics?.todayRevenue ?? 0)}</p>
+          )}
+          <p className="text-xs font-body" style={{ color: "#3F3F46" }}>
+            {loading ? "—" : `${metrics?.todayCompleted ?? 0} ${metrics?.todayCompleted === 1 ? "cliente atendido" : "clientes atendidos"}`}
+          </p>
+        </div>
+
+        {/* Ticket promedio hoy */}
+        <div className="p-5 rounded-2xl flex flex-col gap-3" style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium font-body" style={{ color: "#52525B" }}>Ticket promedio hoy</p>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: "rgba(167,139,250,0.08)" }}>
+              <DollarSign className="w-4 h-4" style={{ color: "#A78BFA" }} />
+            </div>
+          </div>
+          {loading ? <Skeleton className="h-7 w-24" /> : (
+            <p className="text-xl font-bold text-white font-body">
+              {metrics?.todayCompleted ? formatCurrency(metrics.todayAvgTicket) : "—"}
+            </p>
+          )}
+          <p className="text-xs font-body" style={{ color: "#3F3F46" }}>
+            Por servicio completado
+          </p>
+        </div>
+
+        {/* Día más fuerte */}
+        <div className="p-5 rounded-2xl flex flex-col gap-3" style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium font-body" style={{ color: "#52525B" }}>Tu día más fuerte</p>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: "rgba(202,138,4,0.08)" }}>
+              <Flame className="w-4 h-4" style={{ color: "#CA8A04" }} />
+            </div>
+          </div>
+          {loading ? <Skeleton className="h-7 w-24" /> : (
+            <p className="text-xl font-bold text-white font-body">
+              {metrics?.bestDayOfWeek ?? "Sin datos"}
+            </p>
+          )}
+          <p className="text-xs font-body" style={{ color: "#3F3F46" }}>
+            {metrics?.bestDayOfWeek
+              ? `Los ${metrics.bestDayOfWeek}s son tu día pico 💪`
+              : "Basado en últimos 3 meses"}
+          </p>
+        </div>
+
       </div>
     </div>
   );

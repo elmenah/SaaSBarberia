@@ -1,5 +1,14 @@
 ﻿import type { AutomationTrigger, WebhookPayload } from "@/types";
 import { prisma } from "@/lib/prisma";
+import { getEffectiveLimits } from "@/lib/plans";
+
+/** Cuenta cuántos WhatsApps (webhooks SENT) se enviaron este mes para la barbería */
+async function getMonthlyWhatsAppUsage(barbershopId: string): Promise<number> {
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  return prisma.automationLog.count({
+    where: { barbershopId, status: "SENT", sentAt: { gte: startOfMonth } },
+  });
+}
 
 const WEBHOOK_URLS: Partial<Record<AutomationTrigger, string | undefined>> = {
   NEW_APPOINTMENT: process.env.N8N_WEBHOOK_NEW_APPOINTMENT,
@@ -28,6 +37,32 @@ export async function fireWebhook({
   const webhookUrl =
     WEBHOOK_URLS[trigger] ??
     `${process.env.N8N_WEBHOOK_BASE_URL}/${trigger.toLowerCase().replace(/_/g, "-")}`;
+
+  // ── Verificar límite de WhatsApp del plan ───────────────────────────────
+  const shop = await prisma.barbershop.findUnique({
+    where: { id: barbershopId },
+    select: { subscriptionPlan: true, subscriptionStatus: true, trialEndsAt: true },
+  });
+  if (shop) {
+    const limits = getEffectiveLimits(shop.subscriptionPlan, shop.subscriptionStatus, shop.trialEndsAt);
+    if (limits.whatsappPerMonth === 0) {
+      // Plan sin WhatsApp — no enviar ni logear (no consume cuota)
+      return;
+    }
+    const usage = await getMonthlyWhatsAppUsage(barbershopId);
+    if (usage >= limits.whatsappPerMonth) {
+      // Límite alcanzado — loguear como SKIPPED para visibilidad
+      await prisma.automationLog.create({
+        data: {
+          barbershopId, appointmentId, clientId, trigger,
+          status: "SKIPPED",
+          webhookUrl,
+          payload: { trigger, barbershopId, reason: "monthly_limit_reached", usage, limit: limits.whatsappPerMonth } as Parameters<typeof prisma.automationLog.create>[0]["data"]["payload"],
+        },
+      });
+      return;
+    }
+  }
 
   const payload: WebhookPayload = {
     trigger,

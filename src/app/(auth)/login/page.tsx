@@ -1,11 +1,18 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Loader2, Check, Scissors } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+
+const PERKS = [
+  "Panel de control en tiempo real",
+  "Notificaciones automáticas por WhatsApp",
+  "Recordatorios 24h y 1h antes del turno",
+  "Recuperación automática de clientes",
+];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,7 +53,7 @@ export default function LoginPage() {
         );
         return;
       }
-      router.push("/dashboard");
+      router.push("/dashboard?welcome=1");
       router.refresh();
     } catch {
       toast.error("Error inesperado. Intenta nuevamente.");
@@ -58,48 +65,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: "#000000" }}>
 
-      {/* ── Left branding panel ──────────────────────────────────────────── */}
-      <div
-        className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12"
-        style={{ backgroundColor: "#080808", borderRight: "1px solid rgba(255,255,255,0.04)" }}
-      >
-        <Link href="/" className="text-sm font-bold tracking-tight" style={{ color: "#CA8A04" }}>
-          Mibarberia
-        </Link>
-
-        <div>
-          <blockquote className="text-2xl font-light leading-relaxed mb-6" style={{ color: "#A1A1AA" }}>
-            "Las automatizaciones me ahorran 3 horas por semana. Los no-shows bajaron un 80%."
-          </blockquote>
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-black text-sm font-bold"
-              style={{ backgroundColor: "#CA8A04" }}
-            >
-              CR
-            </div>
-            <div>
-              <p className="text-sm font-medium text-white">Carlos Rodríguez</p>
-              <p className="text-xs" style={{ color: "#52525B" }}>Dueño — Barbería El Estilo, Córdoba</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-8">
-          {[
-            { v: "500+", l: "Barberías" },
-            { v: "98%",  l: "Satisfacción" },
-            { v: "2x",   l: "Más reservas" },
-          ].map((s) => (
-            <div key={s.l}>
-              <p className="text-2xl font-bold" style={{ color: "#CA8A04" }}>{s.v}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#52525B" }}>{s.l}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Right form panel ─────────────────────────────────────────────── */}
+      {/* ── Left — Form ───────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12">
         <Link href="/" className="text-sm font-bold mb-10 lg:hidden" style={{ color: "#CA8A04" }}>
           Mibarberia
@@ -108,7 +74,9 @@ export default function LoginPage() {
         <div className="w-full max-w-sm">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-white mb-1">Bienvenido de vuelta</h1>
-            <p className="text-sm" style={{ color: "#52525B" }}>Ingresa a tu cuenta para continuar</p>
+            <p className="text-sm" style={{ color: "#52525B" }}>
+              Ingresá a tu cuenta para continuar
+            </p>
           </div>
 
           {/* Google OAuth */}
@@ -152,10 +120,7 @@ export default function LoginPage() {
                 placeholder="tu@email.com"
                 required
                 className="w-full px-4 py-3 rounded-xl text-white text-sm placeholder:text-zinc-700 outline-none transition-all"
-                style={{
-                  backgroundColor: "#111111",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                }}
+                style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.07)" }}
                 onFocus={(e) => (e.currentTarget.style.border = "1px solid rgba(202,138,4,0.4)")}
                 onBlur={(e)  => (e.currentTarget.style.border = "1px solid rgba(255,255,255,0.07)")}
               />
@@ -177,10 +142,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   required
                   className="w-full px-4 py-3 pr-12 rounded-xl text-white text-sm placeholder:text-zinc-700 outline-none transition-all"
-                  style={{
-                    backgroundColor: "#111111",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                  }}
+                  style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.07)" }}
                   onFocus={(e) => (e.currentTarget.style.border = "1px solid rgba(202,138,4,0.4)")}
                   onBlur={(e)  => (e.currentTarget.style.border = "1px solid rgba(255,255,255,0.07)")}
                 />
@@ -209,11 +171,46 @@ export default function LoginPage() {
           </form>
 
           <p className="text-center text-sm mt-8" style={{ color: "#52525B" }}>
-            ¿No tienes cuenta?{" "}
+            ¿No tenés cuenta?{" "}
             <Link href="/register" className="font-medium transition-colors" style={{ color: "#CA8A04" }}>
-              Regístrate gratis
+              Registrate gratis
             </Link>
           </p>
+        </div>
+      </div>
+
+      {/* ── Right — Branding ──────────────────────────────────────────── */}
+      <div
+        className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12"
+        style={{ backgroundColor: "#080808", borderLeft: "1px solid rgba(255,255,255,0.04)" }}
+      >
+        <Link href="/" className="flex items-center gap-2">
+          <Scissors className="w-4 h-4" style={{ color: "#CA8A04" }} />
+          <span className="text-xl font-semibold tracking-tight" style={{ color: "#CA8A04", fontFamily: "Cormorant, serif" }}>
+            Mibarberia
+          </span>
+        </Link>
+
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: "#CA8A04" }}>
+            Todo en un solo lugar
+          </p>
+          <h2 className="text-3xl font-light leading-snug text-white mb-8">
+            Tu barbería funcionando<br />mientras vos cortás
+          </h2>
+          <ul className="flex flex-col gap-4">
+            {PERKS.map((perk) => (
+              <li key={perk} className="flex items-center gap-3">
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: "rgba(202,138,4,0.12)" }}
+                >
+                  <Check className="w-3.5 h-3.5" style={{ color: "#CA8A04" }} />
+                </div>
+                <span className="text-sm" style={{ color: "#A1A1AA" }}>{perk}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

@@ -35,7 +35,7 @@ export async function sendConfirmationToClient(data: AppointmentEmailData) {
 
   await sendEmail({
     to:      data.clientEmail,
-    subject: `✅ Turno confirmado en ${data.barbershopName}`,
+    subject: `✅ Reserva confirmada en ${data.barbershopName}`,
     react:   createElement(AppointmentConfirmationEmail, {
       clientName:       data.clientName,
       barbershopName:   data.barbershopName,
@@ -111,7 +111,7 @@ export async function sendReminderToClient(
   const label = data.hoursAhead === 1 ? "en 1 hora" : "mañana";
   await sendEmail({
     to:      data.clientEmail,
-    subject: `⏰ Recordatorio: tu turno en ${data.barbershopName} es ${label}`,
+    subject: `⏰ Recordatorio: tu reserva en ${data.barbershopName} es ${label}`,
     react:   createElement(AppointmentReminderEmail, {
       clientName:       data.clientName,
       barbershopName:   data.barbershopName,
@@ -149,14 +149,14 @@ export async function sendReviewRequest({
   const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL}/review/${barbershopSlug}?appt=${appointmentId}`;
   await sendEmail({
     to:      clientEmail,
-    subject: `⭐ ¿Cómo te fue en ${barbershopName}? Dejanos tu opinión`,
+    subject: `⭐ ¿Cómo te fue en ${barbershopName}? Déjanos tu opinión`,
     react:   createElement(ReviewRequestEmail, {
       clientName, barbershopName, barberName, serviceName, reviewUrl,
     }),
   });
 }
 
-// ─── 6. Premio de fidelización (corte #5 gratis / corte #10 descuento) ────────
+// ─── 6. Premio de fidelización (cada 5 cortes el próximo es gratis) ──────────
 export async function sendLoyaltyReward({
   clientName,
   clientEmail,
@@ -170,14 +170,13 @@ export async function sendLoyaltyReward({
   barbershopSlug: string;
   totalVisits:    number;
 }) {
-  const bookingUrl = `${process.env.NEXT_PUBLIC_APP_URL}/book/${barbershopSlug}`;
+  const bookingUrl  = `${process.env.NEXT_PUBLIC_APP_URL}/book/${barbershopSlug}`;
   const isMilestone = totalVisits % 5 === 0;
   if (!isMilestone) return;
 
-  const label = totalVisits % 10 === 0 ? `corte #${totalVisits} — descuento` : `corte #${totalVisits} — ¡el próximo es gratis!`;
   await sendEmail({
     to:      clientEmail,
-    subject: `🎉 ${label} — ${barbershopName}`,
+    subject: `🎉 ¡Corte #${totalVisits} — el próximo es gratis! — ${barbershopName}`,
     react:   createElement(LoyaltyRewardEmail, {
       clientName, barbershopName, totalVisits, bookingUrl,
     }),

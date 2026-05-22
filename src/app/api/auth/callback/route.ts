@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { slugify } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -24,11 +23,14 @@ export async function GET(request: NextRequest) {
     where: { supabaseId: data.user.id },
   });
 
-  if (!existingUser) {
-    const name = data.user.user_metadata?.name ?? data.user.email?.split("@")[0] ?? "Usuario";
-    const barbershopName = data.user.user_metadata?.barbershop_name ?? `${name}'s Barbería`;
+  let isNewUser = false;
 
-    const newUser = await prisma.user.create({
+  if (!existingUser) {
+    isNewUser = true;
+    const name = data.user.user_metadata?.name ?? data.user.email?.split("@")[0] ?? "Usuario";
+
+    // Solo crear el User — la Barbershop se crea en /setup
+    await prisma.user.create({
       data: {
         supabaseId: data.user.id,
         email: data.user.email!,
@@ -36,18 +38,11 @@ export async function GET(request: NextRequest) {
         role: "OWNER",
       },
     });
-
-    await prisma.barbershop.create({
-      data: {
-        name: barbershopName,
-        slug: slugify(`${barbershopName}-${Date.now()}`),
-        ownerId: newUser.id,
-        subscriptionPlan: "FREE",
-        subscriptionStatus: "TRIALING",
-        trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      },
-    });
   }
 
-  return NextResponse.redirect(`${origin}${next}`);
+  if (isNewUser) {
+    return NextResponse.redirect(`${origin}/registro-exitoso`);
+  }
+
+  return NextResponse.redirect(`${origin}${next}?welcome=1`);
 }

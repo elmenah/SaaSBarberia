@@ -29,7 +29,7 @@ export function TopBar() {
 
   async function handleSignOut() {
     await signOut();
-    router.push("/login");
+    window.location.href = "/login";
   }
 
   return (

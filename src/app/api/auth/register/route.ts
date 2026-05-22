@@ -30,21 +30,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    // Si ya existe en DB (p.ej. doble llamada), no recrear
-    const existing = await prisma.user.findUnique({
-      where: { supabaseId: user.id },
-      include: { ownedBarbershops: true },
-    });
-
-    if (existing) {
-      return NextResponse.json({
-        ok: true,
-        existed: true,
-        slug: existing.ownedBarbershops[0]?.slug ?? null,
-      });
-    }
-
-    // Datos enviados desde el form de registro
+    // Datos enviados desde el form de setup
     const body = await request.json().catch(() => ({}));
     const name = body.name
       ?? user.user_metadata?.name
@@ -54,7 +40,38 @@ export async function POST(request: NextRequest) {
       ?? user.user_metadata?.barbershop_name
       ?? `Barbería de ${name}`;
 
-    // Crear usuario en DB
+    // Verificar si ya existe en DB
+    const existing = await prisma.user.findUnique({
+      where: { supabaseId: user.id },
+      include: { ownedBarbershops: true },
+    });
+
+    if (existing) {
+      // User existe — si ya tiene barbería, devolver slug
+      if (existing.ownedBarbershops.length > 0) {
+        return NextResponse.json({
+          ok: true,
+          existed: true,
+          slug: existing.ownedBarbershops[0].slug,
+        });
+      }
+
+      // User existe pero sin barbería (creado por callback OAuth) → crear barbería
+      const slug = slugify(`${barbershopName}-${Date.now()}`);
+      const barbershop = await prisma.barbershop.create({
+        data: {
+          name: barbershopName,
+          slug,
+          ownerId: existing.id,
+          subscriptionPlan: "FREE",
+          subscriptionStatus: "TRIALING",
+          trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      });
+      return NextResponse.json({ ok: true, slug: barbershop.slug });
+    }
+
+    // Usuario completamente nuevo → crear User + Barbershop
     const newUser = await prisma.user.create({
       data: {
         supabaseId: user.id,
@@ -64,7 +81,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Crear barbería con trial de 7 días
     const slug = slugify(`${barbershopName}-${Date.now()}`);
     const barbershop = await prisma.barbershop.create({
       data: {

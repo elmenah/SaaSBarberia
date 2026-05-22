@@ -57,7 +57,7 @@ export default function AppointmentConfirmationEmail({
   totalPrice     = 0,
   bookingUrl,
 }: AppointmentConfirmationEmailProps) {
-  const preview = `Turno confirmado en ${barbershopName} — ${fmtDate(startsAt)} a las ${fmtTime(startsAt)}`;
+  const preview = `Reserva confirmada en ${barbershopName} — ${fmtDate(startsAt)} a las ${fmtTime(startsAt)}`;
 
   return (
     <Html>

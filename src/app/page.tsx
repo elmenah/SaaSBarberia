@@ -1,11 +1,45 @@
 ﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Menu, X, ArrowRight, Check, Zap, Users, Calendar,
   BarChart3, MessageSquare, Shield, Scissors, Bell,
 } from "lucide-react";
 import Link from "next/link";
+import { motion, useInView } from "framer-motion";
+
+/* ── Animation helpers ─────────────────────────────────────────────────────── */
+function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0 }}
+      animate={inView ? { opacity: 1 } : {}}
+      transition={{ duration: 0.7, delay, ease: "easeOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 /* ── Nav ──────────────────────────────────────────────────────────────────── */
 const NAV_LINKS = [
@@ -68,7 +102,7 @@ function fmt(n: number) {
 const FAQS = [
   {
     q: "¿Cuánto tiempo toma configurar Mibarberia?",
-    a: "Menos de 10 minutos. Creas la cuenta, cargas tus servicios y Mibarberia, y ya puedes recibir reservas online.",
+    a: "Menos de 10 minutos. Creás la cuenta, cargás tus servicios y en minutos ya podés recibir reservas online desde tu link propio.",
   },
   {
     q: "¿Necesito instalar algo en mi computadora?",
@@ -76,7 +110,7 @@ const FAQS = [
   },
   {
     q: "¿Cómo funcionan los mensajes automáticos de WhatsApp?",
-    a: "Conectamos tu número de WhatsApp en minutos. Tú defines los mensajes y horarios; el sistema los envía solo — recordatorios antes de cada cita, confirmaciones y campañas de reenganche.",
+    a: "Mibarberia envía automáticamente confirmaciones, recordatorios y campañas de reactivación al WhatsApp de cada uno de tus clientes. Vos conectás tu número una vez y nosotros hacemos el resto.",
   },
   {
     q: "¿Qué pasa con los datos de mis clientes?",
@@ -261,44 +295,75 @@ export default function LandingPage() {
           }}
         />
 
+        {/* ── Orbs animados de fondo ─────────────────────────────────── */}
+        <motion.div
+          className="absolute pointer-events-none"
+          style={{ top: "20%", left: "10%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(202,138,4,0.12) 0%, transparent 70%)", filter: "blur(40px)" }}
+          animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute pointer-events-none"
+          style={{ top: "30%", right: "5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(202,138,4,0.08) 0%, transparent 70%)", filter: "blur(60px)" }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+
         {/* ── Contenido hero ─────────────────────────────────────────── */}
         <div className="relative h-full flex flex-col pt-16">
           <div className="flex-1 flex items-center justify-center">
-            <div className="text-center px-4 max-w-4xl mx-auto animate-fade-up">
+            <div className="text-center px-4 max-w-4xl mx-auto">
 
               {/* Eyebrow */}
-              <div
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-xs font-semibold uppercase tracking-widest"
                 style={{ backgroundColor: "rgba(202,138,4,0.15)", border: "1px solid rgba(202,138,4,0.35)", color: "#CA8A04" }}
               >
                 <Scissors className="w-3 h-3" />
                 Software para Barberías
-              </div>
+              </motion.div>
 
               {/* Títulos */}
-              <h1
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className="leading-none tracking-tighter text-white/55"
                 style={{ fontFamily: "Cormorant, serif", fontSize: "clamp(3.5rem,9vw,7.5rem)", fontWeight: 400, textShadow: "0 2px 24px rgba(0,0,0,0.7)" }}
               >
                 Automatiza
-              </h1>
-              <h1
+              </motion.h1>
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 className="leading-none tracking-tighter text-white"
                 style={{ fontFamily: "Cormorant, serif", fontSize: "clamp(3.5rem,9vw,7.5rem)", fontWeight: 600, marginTop: "-8px", textShadow: "0 2px 24px rgba(0,0,0,0.6)" }}
               >
                 tu barbería.
-              </h1>
+              </motion.h1>
 
               {/* Subtítulo */}
-              <p
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
                 className="text-lg md:text-xl text-white/70 mt-6 mb-8 max-w-2xl mx-auto font-body font-light"
                 style={{ textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}
               >
                 Reservas online, recordatorios automáticos por WhatsApp y recuperación de clientes inactivos — todo desde un solo panel, sin complicaciones.
-              </p>
+              </motion.p>
 
               {/* CTAs */}
-              <div className="flex items-center justify-center gap-4 flex-wrap">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+                className="flex items-center justify-center gap-4 flex-wrap"
+              >
                 <a
                   href="#funciona"
                   className="px-6 py-2.5 rounded-full font-medium text-sm transition-colors font-body"
@@ -323,10 +388,15 @@ export default function LandingPage() {
                   Empezar gratis
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-              </div>
+              </motion.div>
 
               {/* Social proof mini */}
-              <div className="flex items-center justify-center gap-2 mt-10">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+                className="flex items-center justify-center gap-2 mt-10"
+              >
                 <div className="flex -space-x-2">
                   {["JM","PC","SR","DT"].map((i) => (
                     <div
@@ -341,17 +411,26 @@ export default function LandingPage() {
                 <p className="text-white/60 text-xs font-body font-light">
                   +500 barberías ya lo usan
                 </p>
-              </div>
+              </motion.div>
             </div>
           </div>
 
           {/* Scroll indicator */}
-          <div className="flex justify-center pb-8">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="flex justify-center pb-8"
+          >
             <div className="flex flex-col items-center gap-1.5 opacity-40">
-              <div className="w-px h-8 bg-white/60" style={{ animation: "pulse 2s infinite" }} />
+              <motion.div
+                className="w-px h-8 bg-white/60"
+                animate={{ scaleY: [1, 0.5, 1], opacity: [1, 0.3, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              />
               <p className="text-white/60 text-xs font-body tracking-widest uppercase">Scroll</p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -360,34 +439,37 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════════════ */}
       <section id="funciona" className="py-28 px-4" style={{ backgroundColor: "#0A0A0A" }}>
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
+          <FadeUp className="text-center mb-16">
             <p className="text-xs font-semibold uppercase tracking-widest mb-4 font-body text-gold">
               EN 3 PASOS
             </p>
             <h2 className="text-4xl md:text-5xl font-display font-medium text-white tracking-tight">
               Configuración en minutos,<br />resultados desde el primer día
             </h2>
-          </div>
+          </FadeUp>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
-              { n: "01", title: "Configura en 10 minutos",   desc: "Cargas tus servicios, Mibarberia y horarios. En minutos ya puedes recibir reservas — sin instalar nada."        },
+              { n: "01", title: "Configura en 10 minutos",   desc: "Cargas tus servicios, barberos y horarios. En minutos ya puedes recibir reservas — sin instalar nada."        },
               { n: "02", title: "Tus clientes agendan solos", desc: "Por WhatsApp, Instagram o tu link directo. El sistema confirma, recuerda y gestiona todo sin que intervengas." },
               { n: "03", title: "La barbería trabaja sola",   desc: "Clientes inactivos reciben promos automáticas. Tú ves las estadísticas y cobras. Nada más."                   },
-            ].map((step) => (
-              <div
-                key={step.n}
-                className="p-6 rounded-2xl"
-                style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}
-              >
-                <p className="text-5xl font-display font-light mb-4" style={{ color: "rgba(202,138,4,0.25)" }}>
-                  {step.n}
-                </p>
-                <h3 className="text-base font-semibold text-white mb-2 font-body">{step.title}</h3>
-                <p className="text-sm leading-relaxed font-body font-light" style={{ color: "#71717A" }}>
-                  {step.desc}
-                </p>
-              </div>
+            ].map((step, i) => (
+              <FadeUp key={step.n} delay={i * 0.12}>
+                <motion.div
+                  className="p-6 rounded-2xl h-full"
+                  style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}
+                  whileHover={{ borderColor: "rgba(202,138,4,0.25)", y: -4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <p className="text-5xl font-display font-light mb-4" style={{ color: "rgba(202,138,4,0.25)" }}>
+                    {step.n}
+                  </p>
+                  <h3 className="text-base font-semibold text-white mb-2 font-body">{step.title}</h3>
+                  <p className="text-sm leading-relaxed font-body font-light" style={{ color: "#71717A" }}>
+                    {step.desc}
+                  </p>
+                </motion.div>
+              </FadeUp>
             ))}
           </div>
         </div>
@@ -398,7 +480,7 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════════════ */}
       <section id="beneficios" className="py-28 px-4" style={{ backgroundColor: "#000000" }}>
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <FadeUp className="text-center mb-16">
             <p className="text-xs font-semibold uppercase tracking-widest mb-4 font-body text-gold">
               FUNCIONALIDADES
             </p>
@@ -409,26 +491,30 @@ export default function LandingPage() {
             <p className="mt-5 text-base max-w-xl mx-auto font-body font-light" style={{ color: "#71717A" }}>
               Diseñado para barberías modernas que quieren escalar sin complicarse con la administración.
             </p>
-          </div>
+          </FadeUp>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="p-6 rounded-2xl transition-all hover:border-yellow-600/20 group"
-                style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-5"
-                  style={{ backgroundColor: "rgba(202,138,4,0.1)" }}
+            {FEATURES.map((f, i) => (
+              <FadeUp key={f.title} delay={i * 0.08}>
+                <motion.div
+                  className="p-6 rounded-2xl h-full"
+                  style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}
+                  whileHover={{ borderColor: "rgba(202,138,4,0.2)", y: -4, backgroundColor: "#131313" }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <f.icon className="w-5 h-5" style={{ color: "#CA8A04" }} />
-                </div>
-                <h3 className="text-base font-semibold text-white mb-2 font-body">{f.title}</h3>
-                <p className="text-sm leading-relaxed font-body font-light" style={{ color: "#71717A" }}>
-                  {f.desc}
-                </p>
-              </div>
+                  <motion.div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center mb-5"
+                    style={{ backgroundColor: "rgba(202,138,4,0.1)" }}
+                    whileHover={{ backgroundColor: "rgba(202,138,4,0.18)", scale: 1.05 }}
+                  >
+                    <f.icon className="w-5 h-5" style={{ color: "#CA8A04" }} />
+                  </motion.div>
+                  <h3 className="text-base font-semibold text-white mb-2 font-body">{f.title}</h3>
+                  <p className="text-sm leading-relaxed font-body font-light" style={{ color: "#71717A" }}>
+                    {f.desc}
+                  </p>
+                </motion.div>
+              </FadeUp>
             ))}
           </div>
         </div>
@@ -439,35 +525,46 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════════════ */}
       <section className="py-20 px-4" style={{ backgroundColor: "#0A0A0A" }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
+          <FadeUp className="text-center mb-12">
             <p className="text-xs font-semibold uppercase tracking-widest mb-3 font-body text-gold">
               LO QUE DICEN
             </p>
             <h2 className="text-3xl md:text-4xl font-display font-medium text-white tracking-tight">
               Barberías que ya crecieron con Mibarberia
             </h2>
-          </div>
+          </FadeUp>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {TESTIMONIOS.map((t) => (
-              <div
-                key={t.name}
-                className="p-6 rounded-2xl"
-                style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}
-              >
-                {/* Stars */}
-                <div className="flex gap-0.5 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-sm" style={{ color: "#CA8A04" }}>★</span>
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed mb-5 font-body font-light italic" style={{ color: "#A1A1AA" }}>
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div>
-                  <p className="text-sm font-semibold text-white font-body">{t.name}</p>
-                  <p className="text-xs font-body" style={{ color: "#52525B" }}>{t.local}</p>
-                </div>
-              </div>
+            {TESTIMONIOS.map((t, i) => (
+              <FadeUp key={t.name} delay={i * 0.1}>
+                <motion.div
+                  className="p-6 rounded-2xl h-full flex flex-col"
+                  style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}
+                  whileHover={{ borderColor: "rgba(202,138,4,0.15)", y: -3 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {/* Stars */}
+                  <div className="flex gap-0.5 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.span
+                        key={i}
+                        className="text-sm"
+                        style={{ color: "#CA8A04" }}
+                        initial={{ opacity: 0, scale: 0 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 + i * 0.07 }}
+                        viewport={{ once: true }}
+                      >★</motion.span>
+                    ))}
+                  </div>
+                  <p className="text-sm leading-relaxed mb-5 font-body font-light italic flex-1" style={{ color: "#A1A1AA" }}>
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                  <div>
+                    <p className="text-sm font-semibold text-white font-body">{t.name}</p>
+                    <p className="text-xs font-body" style={{ color: "#52525B" }}>{t.local}</p>
+                  </div>
+                </motion.div>
+              </FadeUp>
             ))}
           </div>
         </div>

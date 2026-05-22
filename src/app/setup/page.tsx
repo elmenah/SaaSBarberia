@@ -32,14 +32,15 @@ export default function SetupPage() {
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.replace("/login"); return; }
+      if (!user) { window.location.replace("/login"); return; }
       const meta = user.user_metadata ?? {};
       setForm((prev) => ({
         name:           prev.name           || meta.name || "",
         barbershopName: prev.barbershopName || meta.barbershop_name || "",
       }));
     });
-  }, [router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -204,9 +205,15 @@ export default function SetupPage() {
 
         <p className="text-center text-xs mt-6" style={{ color: "#3F3F46" }}>
           ¿Cuenta equivocada?{" "}
-          <Link href="/login" className="underline transition-colors" style={{ color: "#52525B" }}>
-            Cerrá sesión e ingresá con otra
-          </Link>
+          <form method="POST" action="/api/auth/signout" className="inline">
+            <button
+              type="submit"
+              className="underline transition-colors"
+              style={{ color: "#52525B" }}
+            >
+              Cerrá sesión e ingresá con otra
+            </button>
+          </form>
         </p>
       </div>
     </div>

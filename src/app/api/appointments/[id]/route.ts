@@ -10,6 +10,7 @@ const UpdateSchema = z.object({
   cancelReason: z.string().optional(),
   notes: z.string().optional(),
   internalNotes: z.string().optional(),
+  paidAmount: z.number().positive().optional(),
 });
 
 // PATCH /api/appointments/[id]
@@ -43,20 +44,39 @@ export async function PATCH(
     return NextResponse.json({ error: "Appointment not found" }, { status: 404 });
   }
 
-  const updateData: Record<string, unknown> = { ...parse.data };
+  const { paidAmount, ...restData } = parse.data;
+  const updateData: Record<string, unknown> = { ...restData };
 
   if (parse.data.status === "CONFIRMED") updateData.confirmedAt = new Date();
   if (parse.data.status === "CANCELLED") updateData.cancelledAt = new Date();
-  // Solo incrementar si NO estaba ya completada (evitar doble conteo)
+
+  // ── Caso A: transición a COMPLETED (no estaba completada antes)
   if (parse.data.status === "COMPLETED" && existing.status !== "COMPLETED") {
+    const amountCharged = paidAmount ?? Number(existing.totalPrice);
+    if (paidAmount !== undefined) updateData.paidAmount = paidAmount;
+
     await prisma.client.update({
       where: { id: existing.clientId },
       data: {
         totalVisits: { increment: 1 },
-        totalSpent:  { increment: Number(existing.totalPrice) },
+        totalSpent:  { increment: amountCharged },
         lastVisitAt: existing.startsAt,
       },
     });
+  }
+
+  // ── Caso B: solo actualiza paidAmount en turno ya COMPLETADO (registro de descuento)
+  if (paidAmount !== undefined && existing.status === "COMPLETED" && parse.data.status === undefined) {
+    updateData.paidAmount = paidAmount;
+    // Ajustar totalSpent del cliente: quitar monto anterior, sumar nuevo
+    const oldAmount = Number((existing as { paidAmount?: number | null }).paidAmount ?? existing.totalPrice);
+    const diff = paidAmount - oldAmount;
+    if (diff !== 0) {
+      await prisma.client.update({
+        where: { id: existing.clientId },
+        data: { totalSpent: { increment: diff } },
+      });
+    }
   }
 
   const updated = await prisma.appointment.update({

@@ -26,6 +26,21 @@ export default function RegisterPage() {
   const [loading,       setLoading]       = useState(false);
   const [emailSent,     setEmailSent]     = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [touched,       setTouched]       = useState<Record<string, boolean>>({});
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const pwdRules = {
+    length:   form.password.length >= 8,
+    upper:    /[A-Z]/.test(form.password),
+    number:   /[0-9]/.test(form.password),
+  };
+  const pwdStrength = Object.values(pwdRules).filter(Boolean).length; // 0-3
+  const pwdStrengthColor = pwdStrength === 3 ? "#22C55E" : pwdStrength === 2 ? "#CA8A04" : "#EF4444";
+  const pwdStrengthLabel = pwdStrength === 3 ? "Segura" : pwdStrength === 2 ? "Media" : "Débil";
+
+  function handleBlur(field: string) {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  }
 
   async function handleGoogle() {
     setLoadingGoogle(true);
@@ -50,12 +65,23 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (form.password.length < 8) {
-      toast.error("La contraseña debe tener al menos 8 caracteres");
+    // Marcar todos como tocados para mostrar errores
+    setTouched({ name: true, barbershopName: true, email: true, password: true });
+
+    if (!form.name.trim() || form.name.trim().length < 2) {
+      toast.error("Ingresá tu nombre completo");
       return;
     }
-    if (!form.name.trim() || !form.barbershopName.trim()) {
-      toast.error("Completá todos los campos");
+    if (!form.barbershopName.trim()) {
+      toast.error("Ingresá el nombre de tu barbería");
+      return;
+    }
+    if (!EMAIL_RE.test(form.email)) {
+      toast.error("Ingresá un email válido");
+      return;
+    }
+    if (!pwdRules.length) {
+      toast.error("La contraseña debe tener al menos 8 caracteres");
       return;
     }
     setLoading(true);
@@ -194,12 +220,26 @@ export default function RegisterPage() {
                 value={form.name}
                 onChange={handleChange}
                 placeholder="Nicolás García"
+                minLength={2}
                 required
                 className="w-full px-4 py-3 rounded-xl text-white text-sm placeholder:text-zinc-700 outline-none transition-all"
-                style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.07)" }}
+                style={{
+                  backgroundColor: "#111111",
+                  border: touched.name && form.name.trim().length < 2
+                    ? "1px solid rgba(239,68,68,0.5)"
+                    : "1px solid rgba(255,255,255,0.07)",
+                }}
                 onFocus={(e) => (e.currentTarget.style.border = "1px solid rgba(202,138,4,0.4)")}
-                onBlur={(e)  => (e.currentTarget.style.border = "1px solid rgba(255,255,255,0.07)")}
+                onBlur={(e)  => {
+                  handleBlur("name");
+                  e.currentTarget.style.border = form.name.trim().length < 2
+                    ? "1px solid rgba(239,68,68,0.5)"
+                    : "1px solid rgba(255,255,255,0.07)";
+                }}
               />
+              {touched.name && form.name.trim().length < 2 && (
+                <p className="text-xs" style={{ color: "#EF4444" }}>Ingresá tu nombre completo</p>
+              )}
             </div>
 
             {/* Nombre barbería */}
@@ -230,10 +270,21 @@ export default function RegisterPage() {
                 placeholder="tu@email.com"
                 required
                 className="w-full px-4 py-3 rounded-xl text-white text-sm placeholder:text-zinc-700 outline-none transition-all"
-                style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.07)" }}
+                style={{
+                  backgroundColor: "#111111",
+                  border: touched.email && form.email && !EMAIL_RE.test(form.email)
+                    ? "1px solid rgba(239,68,68,0.5)"
+                    : "1px solid rgba(255,255,255,0.07)",
+                }}
                 onFocus={(e) => (e.currentTarget.style.border = "1px solid rgba(202,138,4,0.4)")}
-                onBlur={(e)  => (e.currentTarget.style.border = "1px solid rgba(255,255,255,0.07)")}
+                onBlur={(e)  => {
+                  handleBlur("email");
+                  e.currentTarget.style.border = "1px solid rgba(255,255,255,0.07)";
+                }}
               />
+              {touched.email && form.email && !EMAIL_RE.test(form.email) && (
+                <p className="text-xs" style={{ color: "#EF4444" }}>Ingresá un email válido (ej: nombre@correo.com)</p>
+              )}
             </div>
 
             {/* Password */}
@@ -261,6 +312,34 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {/* Barra de fuerza */}
+              {form.password.length > 0 && (
+                <div className="flex flex-col gap-1.5 mt-0.5">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="flex-1 h-1 rounded-full transition-all duration-300"
+                        style={{ backgroundColor: i < pwdStrength ? pwdStrengthColor : "rgba(255,255,255,0.06)" }} />
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-3">
+                      {[
+                        { ok: pwdRules.length, label: "8+ caracteres" },
+                        { ok: pwdRules.upper,  label: "Mayúscula" },
+                        { ok: pwdRules.number, label: "Número" },
+                      ].map(({ ok, label }) => (
+                        <span key={label} className="text-xs flex items-center gap-1 font-body"
+                          style={{ color: ok ? "#22C55E" : "#3F3F46" }}>
+                          {ok ? "✓" : "·"} {label}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-xs font-semibold font-body" style={{ color: pwdStrengthColor }}>
+                      {pwdStrengthLabel}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Submit */}
@@ -329,18 +408,6 @@ export default function RegisterPage() {
           </ul>
         </div>
 
-        <div className="flex gap-8">
-          {[
-            { v: "500+", l: "Barberías" },
-            { v: "80%",  l: "Menos no-shows" },
-            { v: "14d",  l: "Prueba gratis" },
-          ].map((s) => (
-            <div key={s.l}>
-              <p className="text-2xl font-bold" style={{ color: "#CA8A04" }}>{s.v}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#52525B" }}>{s.l}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

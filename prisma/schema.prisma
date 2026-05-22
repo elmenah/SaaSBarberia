@@ -23,6 +23,7 @@ model User {
   auditLogs        AuditLog[]
   barberProfile    Barber?
   ownedBarbershops Barbershop[] @relation("BarbershopOwner")
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -151,6 +152,7 @@ model Appointment {
   endsAt         DateTime             @map("ends_at")
   status         AppointmentStatus    @default(PENDING)
   totalPrice     Decimal              @map("total_price") @db.Decimal(10, 2)
+  paidAmount     Decimal?             @map("paid_amount") @db.Decimal(10, 2)
   totalDuration  Int                  @map("total_duration")
   notes          String?
   internalNotes  String?              @map("internal_notes")
@@ -229,6 +231,23 @@ model AutomationLog {
   @@index([barbershopId, status])
   @@index([createdAt])
   @@map("automation_logs")
+}
+
+model PushSubscription {
+  id           String     @id @default(uuid())
+  userId       String     @map("user_id")
+  barbershopId String?    @map("barbershop_id")
+  endpoint     String     @unique
+  p256dh       String
+  auth         String
+  userAgent    String?    @map("user_agent")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([barbershopId])
+  @@map("push_subscriptions")
 }
 
 model AuditLog {

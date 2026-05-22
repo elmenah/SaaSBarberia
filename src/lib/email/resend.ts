@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const FROM_EMAIL = process.env.EMAIL_FROM ?? "Mibarberia <noreply@Mibarberia.app>";
+export const FROM_EMAIL = process.env.EMAIL_FROM ?? "Mibarberia <noreply@mibarberia.site>";
 
 // ─── Helper genérico ────────────────────────────────────────────────────────
 export async function sendEmail({
