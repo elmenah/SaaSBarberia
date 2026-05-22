@@ -32,7 +32,7 @@ const NAV_OWNER = [
   { label: "Agenda",           href: "/dashboard/agenda",           icon: Calendar        },
   { label: "Reservas",         href: "/dashboard/reservas",         icon: ClipboardList   },
   { label: "Clientes",         href: "/dashboard/clientes",         icon: Users           },
-  { label: "Mibarberia",         href: "/dashboard/Mibarberia",         icon: UserCog         },
+  { label: "Mibarberia",         href: "/dashboard/barberos",           icon: UserCog         },
   { label: "Servicios",        href: "/dashboard/servicios",        icon: Scissors        },
   { label: "Automatizaciones", href: "/dashboard/automatizaciones", icon: Zap             },
 ];
@@ -40,7 +40,7 @@ const NAV_OWNER = [
 const NAV_BARBER = [
   { label: "Mi Agenda",   href: "/dashboard/agenda",          icon: Calendar     },
   { label: "Reservas",    href: "/dashboard/reservas",        icon: ClipboardList },
-  { label: "Mi perfil",   href: "/dashboard/Mibarberia/perfil", icon: BadgeCheck   },
+  { label: "Mi perfil",   href: "/dashboard/barberos/perfil",   icon: BadgeCheck   },
 ];
 
 type Role = "owner" | "barber";

@@ -356,7 +356,7 @@ export default function MibarberiaPage() {
                     )}
                     {owner ? (
                       <Link
-                        href="/dashboard/Mibarberia/perfil"
+                        href="/dashboard/barberos/perfil"
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-body transition-all flex-1 justify-center hover:opacity-80"
                         style={{ backgroundColor: "rgba(202,138,4,0.08)", color: "#CA8A04", border: "1px solid rgba(202,138,4,0.2)" }}>
                         <Edit2 className="w-3.5 h-3.5" />
