@@ -253,7 +253,7 @@ model PushSubscription {
 model AuditLog {
   id           String     @id @default(uuid())
   barbershopId String     @map("barbershop_id")
-  userId       String     @map("user_id")
+  userId       String?    @map("user_id")
   action       String
   entity       String
   entityId     String?    @map("entity_id")
@@ -263,7 +263,7 @@ model AuditLog {
   userAgent    String?    @map("user_agent")
   createdAt    DateTime   @default(now()) @map("created_at")
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
-  user         User       @relation(fields: [userId], references: [id])
+  user         User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([barbershopId, entity])
   @@index([barbershopId, createdAt])
