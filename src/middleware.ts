@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/", "/login", "/register", "/forgot-password", "/book", "/demo"];
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/forgot-password", "/set-password", "/book", "/demo"];
 const AUTH_ROUTES   = ["/login", "/register"];
 // /setup es accesible solo para usuarios autenticados (no está en PUBLIC_ROUTES ni AUTH_ROUTES)
 
@@ -30,7 +30,17 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
+
+  // Si llegó un code OAuth a cualquier ruta que no sea el callback → redirigir
+  const code = searchParams.get("code");
+  if (code && pathname !== "/api/auth/callback") {
+    const callbackUrl = new URL("/api/auth/callback", request.url);
+    callbackUrl.searchParams.set("code", code);
+    const next = searchParams.get("next");
+    if (next) callbackUrl.searchParams.set("next", next);
+    return NextResponse.redirect(callbackUrl);
+  }
 
   if (user && AUTH_ROUTES.includes(pathname)) {
     return NextResponse.redirect(new URL("/dashboard", request.url));

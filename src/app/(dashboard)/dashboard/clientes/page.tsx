@@ -166,12 +166,12 @@ export default function ClientesPage() {
         style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="grid grid-cols-12 gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wider font-body"
           style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", color: "#3F3F46" }}>
-          <div className="col-span-3">Cliente</div>
+          <div className="col-span-10 md:col-span-3">Cliente</div>
           <div className="col-span-2 hidden md:block">Contacto</div>
           <div className="col-span-2 hidden lg:block">Visitas</div>
           <div className="col-span-2 hidden lg:block">Total gastado</div>
           <div className="col-span-2 hidden md:block">Última visita</div>
-          <div className="col-span-9 md:col-span-1" />
+          <div className="col-span-2 md:col-span-1" />
         </div>
 
         {loading ? (
@@ -208,7 +208,7 @@ export default function ClientesPage() {
                 }}>
 
                 {/* Avatar + nombre */}
-                <div className="col-span-3 flex items-center gap-3 min-w-0">
+                <div className="col-span-10 md:col-span-3 flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold font-body flex-shrink-0"
                     style={{ backgroundColor: AVATAR_COLORS[idx % AVATAR_COLORS.length] + "22", color: AVATAR_COLORS[idx % AVATAR_COLORS.length] }}>
                     {c.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
@@ -296,7 +296,7 @@ export default function ClientesPage() {
                 </div>
 
                 {/* Acciones */}
-                <div className="col-span-9 md:col-span-1 flex justify-end">
+                <div className="col-span-2 md:col-span-1 flex justify-end">
                   <button className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-white/5"
                     style={{ color: "#3F3F46" }}>
                     <MoreHorizontal className="w-4 h-4" />

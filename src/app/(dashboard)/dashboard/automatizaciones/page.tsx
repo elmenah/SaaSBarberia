@@ -22,7 +22,6 @@ const DEFAULT_TRIGGERS: Trigger[] = [
   { id: "birthday",        name: "Cumpleaños",             description: "Felicitación automática con descuento especial",                  icon: "🎂", isActive: false, sent: 0, failed: 0 },
   { id: "post_service",    name: "Post-servicio (reseña)", description: "Pide una reseña 2 horas después del turno",                     icon: "⭐", isActive: false, sent: 0, failed: 0 },
   { id: "loyalty_5",       name: "Corte #5 — 1 gratis",   description: "Al completar 5 cortes, avisa al cliente que el próximo es gratis", icon: "🎁", isActive: true,  sent: 0, failed: 0 },
-  { id: "loyalty_10",      name: "Corte #10 — Descuento", description: "Al corte número 10 envía automáticamente un cupón de descuento",   icon: "🏷️", isActive: true,  sent: 0, failed: 0 },
 ];
 
 type AutomationSettings = Record<string, boolean>;

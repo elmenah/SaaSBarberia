@@ -5,39 +5,31 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Calendar, ClipboardList,
   UserCog, BadgeCheck, CreditCard, MoreHorizontal,
-  Crown, Scissors as ScissorsIcon, Users, Zap, Settings, X,
+  Users, Zap, Settings, X, Scissors as ScissorsIcon,
 } from "lucide-react";
-import { useRole } from "@/lib/role-context";
 import { useState } from "react";
 
-/* ── Nav items por rol ───────────────────────────────────────────────────── */
-const NAV_OWNER_MAIN = [
-  { label: "Inicio",     href: "/dashboard",           icon: LayoutDashboard },
-  { label: "Agenda",     href: "/dashboard/agenda",    icon: Calendar        },
-  { label: "Reservas",   href: "/dashboard/reservas",  icon: ClipboardList   },
-  { label: "Barbería",   href: "/dashboard/barberos",  icon: UserCog         },
+/* ── Nav principal (siempre visible) ─────────────────────────────────────── */
+const NAV_MAIN = [
+  { label: "Inicio",   href: "/dashboard",          icon: LayoutDashboard },
+  { label: "Agenda",   href: "/dashboard/agenda",   icon: Calendar        },
+  { label: "Reservas", href: "/dashboard/reservas", icon: ClipboardList   },
+  { label: "Barbería", href: "/dashboard/barberos", icon: UserCog         },
 ];
 
-const NAV_OWNER_MORE = [
-  { label: "Clientes",         href: "/dashboard/clientes",         icon: Users       },
-  { label: "Servicios",        href: "/dashboard/servicios",        icon: ScissorsIcon },
-  { label: "Automatizaciones", href: "/dashboard/automatizaciones", icon: Zap         },
-  { label: "Facturación",      href: "/dashboard/billing",          icon: CreditCard  },
-  { label: "Configuración",    href: "/dashboard/configuracion",    icon: Settings    },
-];
-
-const NAV_BARBER = [
-  { label: "Mi Agenda", href: "/dashboard/agenda",          icon: Calendar     },
-  { label: "Reservas",  href: "/dashboard/reservas",        icon: ClipboardList },
-  { label: "Mi Perfil", href: "/dashboard/barberos/perfil", icon: BadgeCheck   },
+/* ── Más opciones ────────────────────────────────────────────────────────── */
+const NAV_MORE = [
+  { label: "Clientes",           href: "/dashboard/clientes",         icon: Users        },
+  { label: "Servicios",          href: "/dashboard/servicios",        icon: ScissorsIcon  },
+  { label: "Automatizaciones",   href: "/dashboard/automatizaciones", icon: Zap          },
+  { label: "Mi perfil barbero",  href: "/dashboard/barberos/perfil",  icon: BadgeCheck   },
+  { label: "Facturación",        href: "/dashboard/billing",          icon: CreditCard   },
+  { label: "Configuración",      href: "/dashboard/configuracion",    icon: Settings     },
 ];
 
 export function BottomNav() {
   const pathname          = usePathname();
-  const { role, setRole } = useRole();
   const [moreOpen, setMoreOpen] = useState(false);
-
-  const navItems = role === "owner" ? NAV_OWNER_MAIN : NAV_BARBER;
 
   return (
     <>
@@ -53,7 +45,7 @@ export function BottomNav() {
 
           {/* Sheet */}
           <div
-            className="relative z-10 rounded-t-2xl pb-6 pt-4 px-4"
+            className="relative z-10 rounded-t-2xl pb-8 pt-4 px-4"
             style={{ backgroundColor: "#0F0F0F", border: "1px solid rgba(255,255,255,0.07)" }}
           >
             {/* Handle */}
@@ -71,7 +63,7 @@ export function BottomNav() {
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              {NAV_OWNER_MORE.map((item) => {
+              {NAV_MORE.map((item) => {
                 const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
                 return (
                   <Link
@@ -104,7 +96,7 @@ export function BottomNav() {
           height: "60px",
         }}
       >
-        {navItems.map((item) => {
+        {NAV_MAIN.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <Link
@@ -124,41 +116,18 @@ export function BottomNav() {
           );
         })}
 
-        {/* Botón "Más" — solo para owner */}
-        {role === "owner" && (
-          <button
-            onClick={() => setMoreOpen(true)}
-            className="flex flex-col items-center justify-center gap-0.5 flex-1 transition-all"
-            style={{
-              color: moreOpen ? "#CA8A04" : "#3F3F46",
-              borderTop: moreOpen ? "2px solid #CA8A04" : "2px solid transparent",
-            }}
-          >
-            <MoreHorizontal className="w-[18px] h-[18px]" />
-            <span className="text-[10px] font-semibold font-body leading-tight">Más</span>
-          </button>
-        )}
-
-        {/* Toggle de rol */}
-        <div
-          className="flex flex-col items-center justify-center px-3 flex-shrink-0"
-          style={{ borderLeft: "1px solid rgba(255,255,255,0.06)" }}
+        {/* Botón "Más" */}
+        <button
+          onClick={() => setMoreOpen(true)}
+          className="flex flex-col items-center justify-center gap-0.5 flex-1 transition-all"
+          style={{
+            color:     moreOpen ? "#CA8A04" : "#3F3F46",
+            borderTop: moreOpen ? "2px solid #CA8A04" : "2px solid transparent",
+          }}
         >
-          <button
-            onClick={() => setRole(role === "owner" ? "barber" : "owner")}
-            className="flex flex-col items-center justify-center gap-0.5 w-10 h-full transition-all"
-            title={role === "owner" ? "Vista Dueño — cambiar a Barbero" : "Vista Barbero — cambiar a Dueño"}
-            style={{ color: "#CA8A04" }}
-          >
-            {role === "owner"
-              ? <Crown        className="w-4 h-4" />
-              : <ScissorsIcon className="w-4 h-4" />
-            }
-            <span className="text-[9px] font-semibold font-body leading-tight">
-              {role === "owner" ? "Dueño" : "Barbero"}
-            </span>
-          </button>
-        </div>
+          <MoreHorizontal className="w-[18px] h-[18px]" />
+          <span className="text-[10px] font-semibold font-body leading-tight">Más</span>
+        </button>
       </nav>
     </>
   );

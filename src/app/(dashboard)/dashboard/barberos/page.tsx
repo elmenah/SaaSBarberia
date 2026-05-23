@@ -145,7 +145,13 @@ export default function MibarberiaPage() {
     fetchBarbers();
   }
 
-  const activeCount  = barbers.filter((b) => b.isActive).length;
+  const activeCount   = barbers.filter((b) => b.isActive).length;
+  // Dueño siempre primero, luego el resto por fecha de creación
+  const sortedBarbers = [...barbers].sort((a, b) => {
+    if (isOwner(a) && !isOwner(b)) return -1;
+    if (!isOwner(a) && isOwner(b)) return 1;
+    return 0;
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -285,7 +291,7 @@ export default function MibarberiaPage() {
                 <Skeleton className="h-9 rounded-xl" />
               </div>
             ))
-          : barbers.map((b) => {
+          : sortedBarbers.map((b) => {
               const color   = b.colorTag ?? "#CA8A04";
               const owner   = isOwner(b);
               return (

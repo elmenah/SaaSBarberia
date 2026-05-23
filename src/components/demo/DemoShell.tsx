@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Calendar, ClipboardList, Users,
   UserCog, Scissors, Zap, Settings, Home, ChevronRight, Sparkles,
+  MoreHorizontal, X,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,7 @@ const DEMO_NAV = [
   { label: "Agenda",           href: "/demo/dashboard/agenda",           icon: Calendar        },
   { label: "Reservas",         href: "/demo/dashboard/reservas",         icon: ClipboardList   },
   { label: "Clientes",         href: "/demo/dashboard/clientes",         icon: Users           },
-  { label: "Mibarberia",         href: "/demo/dashboard/Mibarberia",         icon: UserCog         },
+  { label: "Barbería",         href: "/demo/dashboard/barberos",         icon: UserCog         },
   { label: "Servicios",        href: "/demo/dashboard/servicios",        icon: Scissors        },
   { label: "Automatizaciones", href: "/demo/dashboard/automatizaciones", icon: Zap             },
 ];
@@ -25,25 +26,35 @@ const PAGE_TITLES: Record<string, string> = {
   "/demo/dashboard/agenda":            "Agenda",
   "/demo/dashboard/reservas":          "Reservas",
   "/demo/dashboard/clientes":          "Clientes",
-  "/demo/dashboard/Mibarberia":          "Mibarberia",
+  "/demo/dashboard/barberos":          "Barbería",
   "/demo/dashboard/servicios":         "Servicios",
   "/demo/dashboard/automatizaciones":  "Automatizaciones",
   "/demo/dashboard/configuracion":     "Configuración",
 };
 
-const MOBILE_NAV = [
-  { href: "/demo/dashboard",           icon: LayoutDashboard, label: "Inicio"   },
-  { href: "/demo/dashboard/agenda",    icon: Calendar,        label: "Agenda"   },
-  { href: "/demo/dashboard/reservas",  icon: ClipboardList,   label: "Reservas" },
-  { href: "/demo/dashboard/clientes",  icon: Users,           label: "Clientes" },
+/* ── Mobile nav principal ────────────────────────────────────────────────── */
+const MOBILE_NAV_MAIN = [
+  { href: "/demo/dashboard",          icon: LayoutDashboard, label: "Inicio"   },
+  { href: "/demo/dashboard/agenda",   icon: Calendar,        label: "Agenda"   },
+  { href: "/demo/dashboard/reservas", icon: ClipboardList,   label: "Reservas" },
+  { href: "/demo/dashboard/barberos", icon: UserCog,         label: "Barbería" },
+];
+
+/* ── Mobile nav "Más" ────────────────────────────────────────────────────── */
+const MOBILE_NAV_MORE = [
+  { href: "/demo/dashboard/clientes",         icon: Users,     label: "Clientes"       },
+  { href: "/demo/dashboard/servicios",        icon: Scissors,  label: "Servicios"      },
+  { href: "/demo/dashboard/automatizaciones", icon: Zap,       label: "Automatizaciones" },
+  { href: "/demo/dashboard/configuracion",    icon: Settings,  label: "Configuración"  },
 ];
 
 /* ════════════════════════════════════════════════════════════════════════════
    DemoShell — layout completo para la demo sin autenticación
 ════════════════════════════════════════════════════════════════════════════ */
 export function DemoShell({ children }: { children: React.ReactNode }) {
-  const pathname  = usePathname();
+  const pathname   = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [moreOpen,  setMoreOpen]  = useState(false);
   const title = PAGE_TITLES[pathname] ?? "Demo";
 
   return (
@@ -235,25 +246,87 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
             {children}
           </main>
 
-          {/* Mobile bottom nav */}
+          {/* ── Drawer "Más" ────────────────────────────────────────── */}
+          {moreOpen && (
+            <div className="fixed inset-0 z-50 flex flex-col justify-end md:hidden">
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+                onClick={() => setMoreOpen(false)}
+              />
+              <div
+                className="relative z-10 rounded-t-2xl pb-8 pt-4 px-4"
+                style={{ backgroundColor: "#0F0F0F", border: "1px solid rgba(255,255,255,0.07)" }}
+              >
+                <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ backgroundColor: "rgba(255,255,255,0.1)" }} />
+                <div className="flex items-center justify-between mb-4 px-1">
+                  <p className="text-sm font-semibold text-white font-body">Más opciones</p>
+                  <button
+                    onClick={() => setMoreOpen(false)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "#71717A" }}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {MOBILE_NAV_MORE.map((item) => {
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMoreOpen(false)}
+                        className="flex flex-col items-center gap-2 py-4 px-2 rounded-2xl transition-all"
+                        style={{
+                          backgroundColor: isActive ? "rgba(202,138,4,0.1)" : "rgba(255,255,255,0.03)",
+                          border: isActive ? "1px solid rgba(202,138,4,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                          color: isActive ? "#CA8A04" : "#71717A",
+                        }}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className="text-xs font-semibold font-body text-center leading-tight">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Mobile bottom nav ───────────────────────────────────────── */}
           <nav
-            className="md:hidden flex items-center justify-around px-2 py-2 flex-shrink-0"
-            style={{ backgroundColor: "#080808", borderTop: "1px solid rgba(255,255,255,0.05)" }}
+            className="md:hidden flex items-stretch flex-shrink-0"
+            style={{ backgroundColor: "#080808", borderTop: "1px solid rgba(255,255,255,0.07)", height: "60px" }}
           >
-            {MOBILE_NAV.map((item) => {
+            {MOBILE_NAV_MAIN.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all"
-                  style={{ color: isActive ? "#CA8A04" : "#3F3F46" }}
+                  className="flex flex-col items-center justify-center gap-0.5 flex-1 transition-all"
+                  style={{
+                    color:     isActive ? "#CA8A04" : "#3F3F46",
+                    borderTop: isActive ? "2px solid #CA8A04" : "2px solid transparent",
+                  }}
                 >
-                  <item.icon className="w-5 h-5" />
-                  <span className="text-[10px] font-body font-medium">{item.label}</span>
+                  <item.icon className="w-[18px] h-[18px]" />
+                  <span className="text-[10px] font-semibold font-body leading-tight">{item.label}</span>
                 </Link>
               );
             })}
+            <button
+              onClick={() => setMoreOpen(true)}
+              className="flex flex-col items-center justify-center gap-0.5 flex-1 transition-all"
+              style={{
+                color:     moreOpen ? "#CA8A04" : "#3F3F46",
+                borderTop: moreOpen ? "2px solid #CA8A04" : "2px solid transparent",
+              }}
+            >
+              <MoreHorizontal className="w-[18px] h-[18px]" />
+              <span className="text-[10px] font-semibold font-body leading-tight">Más</span>
+            </button>
           </nav>
         </div>
       </div>

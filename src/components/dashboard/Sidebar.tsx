@@ -5,14 +5,11 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Calendar, Users, Scissors,
   Zap, Settings, LogOut, ChevronRight,
-  UserCog, ClipboardList, BadgeCheck, Crown, Scissors as ScissorsIcon,
+  UserCog, ClipboardList,
   CreditCard, AlertTriangle,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-import { useRole } from "@/lib/role-context";
 import { useAuth } from "@/context/auth-context";
 import { PushButton } from "@/components/pwa/PushButton";
 
@@ -26,39 +23,27 @@ function trialDaysLeft(trialEndsAt: string | null): number | null {
   return Math.max(0, Math.ceil(diff / 86_400_000));
 }
 
-/* ── Nav por rol ─────────────────────────────────────────────────────────── */
-const NAV_OWNER = [
+/* ── Nav ─────────────────────────────────────────────────────────────────── */
+const NAV_ITEMS = [
   { label: "Dashboard",        href: "/dashboard",                  icon: LayoutDashboard },
   { label: "Agenda",           href: "/dashboard/agenda",           icon: Calendar        },
   { label: "Reservas",         href: "/dashboard/reservas",         icon: ClipboardList   },
   { label: "Clientes",         href: "/dashboard/clientes",         icon: Users           },
-  { label: "Mibarberia",         href: "/dashboard/barberos",           icon: UserCog         },
+  { label: "Barbería",         href: "/dashboard/barberos",         icon: UserCog         },
   { label: "Servicios",        href: "/dashboard/servicios",        icon: Scissors        },
   { label: "Automatizaciones", href: "/dashboard/automatizaciones", icon: Zap             },
 ];
 
-const NAV_BARBER = [
-  { label: "Mi Agenda",   href: "/dashboard/agenda",          icon: Calendar     },
-  { label: "Reservas",    href: "/dashboard/reservas",        icon: ClipboardList },
-  { label: "Mi perfil",   href: "/dashboard/barberos/perfil",   icon: BadgeCheck   },
-];
-
-type Role = "owner" | "barber";
-
 export function Sidebar() {
   const pathname        = usePathname();
-  const router          = useRouter();
   const [collapsed, setCollapsed] = useState(false);
-  const { role, setRole } = useRole();
-  const { barbershop }    = useAuth();
+  const { barbershop }  = useAuth();
 
-  const isTrialing = barbershop?.subscriptionStatus === "TRIALING";
-  const isActive   = barbershop?.subscriptionStatus === "ACTIVE";
-  const daysLeft   = trialDaysLeft(barbershop?.trialEndsAt ?? null);
-  const planLabel  = PLAN_LABELS[barbershop?.subscriptionPlan ?? "FREE"] ?? "Gratuito";
+  const isTrialing  = barbershop?.subscriptionStatus === "TRIALING";
+  const isActive    = barbershop?.subscriptionStatus === "ACTIVE";
+  const daysLeft    = trialDaysLeft(barbershop?.trialEndsAt ?? null);
+  const planLabel   = PLAN_LABELS[barbershop?.subscriptionPlan ?? "FREE"] ?? "Gratuito";
   const urgentTrial = isTrialing && daysLeft !== null && daysLeft <= 3;
-
-  const navItems = role === "owner" ? NAV_OWNER : NAV_BARBER;
 
   async function handleLogout() {
     await fetch("/api/auth/signout", { method: "POST" });
@@ -100,50 +85,9 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Role switcher */}
-      {!collapsed && (
-        <div className="px-3 pt-3 pb-1">
-          <div
-            className="flex rounded-xl p-0.5 gap-0.5"
-            style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}
-          >
-            {([
-              { id: "owner",  label: "Dueño",   icon: Crown         },
-              { id: "barber", label: "Barbero",  icon: ScissorsIcon  },
-            ] as { id: Role; label: string; icon: React.ElementType }[]).map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => setRole(id)}
-                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold font-body transition-all"
-                style={
-                  role === id
-                    ? { backgroundColor: "#CA8A04", color: "#000" }
-                    : { color: "#3F3F46" }
-                }
-              >
-                <Icon className="w-3 h-3" />
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Collapsed role indicator */}
-      {collapsed && (
-        <button
-          onClick={() => setRole(role === "owner" ? "barber" : "owner")}
-          className="mx-auto mt-2 w-8 h-8 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: "rgba(202,138,4,0.1)", color: "#CA8A04" }}
-          title={role === "owner" ? "Vista Dueño" : "Vista Barbero"}
-        >
-          {role === "owner" ? <Crown className="w-4 h-4" /> : <ScissorsIcon className="w-4 h-4" />}
-        </button>
-      )}
-
       {/* Nav */}
       <nav className="flex-1 px-2 py-3 flex flex-col gap-0.5 overflow-y-auto">
-        {navItems.map((item) => {
+        {NAV_ITEMS.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
@@ -271,37 +215,33 @@ export function Sidebar() {
         className="px-2 py-4 flex flex-col gap-0.5"
         style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
       >
-        {role === "owner" && (
-          <>
-            <Link
-              href="/dashboard/billing"
-              title={collapsed ? "Facturación" : undefined}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/3 transition-all",
-                pathname.startsWith("/dashboard/billing") && "text-white",
-                collapsed && "justify-center px-0"
-              )}
-              style={pathname.startsWith("/dashboard/billing") ? { backgroundColor: "#161616" } : {}}
-            >
-              <CreditCard
-                className="w-4 h-4 flex-shrink-0"
-                style={{ color: pathname.startsWith("/dashboard/billing") ? "#CA8A04" : undefined }}
-              />
-              {!collapsed && <span>Facturación</span>}
-            </Link>
-            <Link
-              href="/dashboard/configuracion"
-              title={collapsed ? "Configuración" : undefined}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/3 transition-all",
-                collapsed && "justify-center px-0"
-              )}
-            >
-              <Settings className="w-4 h-4 flex-shrink-0" />
-              {!collapsed && <span>Configuración</span>}
-            </Link>
-          </>
-        )}
+        <Link
+          href="/dashboard/billing"
+          title={collapsed ? "Facturación" : undefined}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/3 transition-all",
+            pathname.startsWith("/dashboard/billing") && "text-white",
+            collapsed && "justify-center px-0"
+          )}
+          style={pathname.startsWith("/dashboard/billing") ? { backgroundColor: "#161616" } : {}}
+        >
+          <CreditCard
+            className="w-4 h-4 flex-shrink-0"
+            style={{ color: pathname.startsWith("/dashboard/billing") ? "#CA8A04" : undefined }}
+          />
+          {!collapsed && <span>Facturación</span>}
+        </Link>
+        <Link
+          href="/dashboard/configuracion"
+          title={collapsed ? "Configuración" : undefined}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/3 transition-all",
+            collapsed && "justify-center px-0"
+          )}
+        >
+          <Settings className="w-4 h-4 flex-shrink-0" />
+          {!collapsed && <span>Configuración</span>}
+        </Link>
 
         {!collapsed && <PushButton />}
 

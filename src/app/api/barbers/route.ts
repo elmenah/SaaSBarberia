@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getEffectiveLimits } from "@/lib/plans";
 import { writeAuditLog } from "@/lib/audit";
 import { rateLimit, getClientIp, rateLimitResponse, API_LIMIT } from "@/lib/rate-limit";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const CreateBarberSchema = z.object({
   name:       z.string().min(2),
@@ -108,10 +109,10 @@ export async function POST(request: NextRequest) {
   }
 
   const { name, specialty, phone, colorTag, bio, email } = parse.data;
-  const finalEmail = email ?? `${name.toLowerCase().replace(/\s+/g, ".")}.${Date.now()}@placeholder.Mibarberia.app`;
+  const finalEmail = email ?? `${name.toLowerCase().replace(/\s+/g, ".")}.${Date.now()}@placeholder.mibarberia.app`;
 
   // ── Crear en DB ────────────────────────────────────────────────────────────
-  const user = await prisma.user.create({
+  const newBarberUser = await prisma.user.create({
     data: {
       supabaseId: `placeholder-${Date.now()}`,
       email:      finalEmail,
@@ -123,7 +124,7 @@ export async function POST(request: NextRequest) {
 
   const barber = await prisma.barber.create({
     data: {
-      userId:       user.id,
+      userId:       newBarberUser.id,
       barbershopId: barbershop.id,
       specialties:  [specialty],
       colorTag,
@@ -132,10 +133,29 @@ export async function POST(request: NextRequest) {
     include: { user: true },
   });
 
+  // ── Enviar invite de Supabase si se proporcionó email real ─────────────────
+  if (email && !email.includes("@placeholder.")) {
+    try {
+      const adminClient = createAdminClient();
+      await adminClient.auth.admin.inviteUserByEmail(email, {
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback?next=/dashboard`,
+        data: {
+          name,
+          role:         "BARBER",
+          barberId:     barber.id,
+          barbershopId: barbershop.id,
+        },
+      });
+    } catch (inviteErr) {
+      // No falla la creación si el invite no se puede enviar
+      console.error("[barbers/invite] Error al enviar invite:", inviteErr);
+    }
+  }
+
   // ── AuditLog ───────────────────────────────────────────────────────────────
   writeAuditLog({
     barbershopId: barbershop.id,
-    userId:       dbUser.id,
+    userId:       newBarberUser.id,
     action:       "BARBER_CREATED",
     entity:       "Barber",
     entityId:     barber.id,

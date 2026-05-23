@@ -186,7 +186,11 @@ export default function BillingPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error ?? "Error al iniciar el pago");
+        if (res.status === 503) {
+          toast.error("Pagos no configurados aún. Agregá MERCADOPAGO_ACCESS_TOKEN en Vercel.", { duration: 6000 });
+        } else {
+          toast.error(data.error ?? "Error al iniciar el pago");
+        }
         return;
       }
 
@@ -194,7 +198,7 @@ export default function BillingPage() {
       window.location.href = data.init_point;
 
     } catch {
-      toast.error("Error inesperado. Intentá más tarde.");
+      toast.error("Error de red. Verificá tu conexión e intentá de nuevo.");
     } finally {
       setLoadingPlan(null);
     }

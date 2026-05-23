@@ -53,8 +53,8 @@ export default function LoginPage() {
         );
         return;
       }
-      router.push("/dashboard?welcome=1");
-      router.refresh();
+      // Hard redirect para garantizar que la cookie de sesión se lea correctamente
+      window.location.replace("/dashboard");
     } catch {
       toast.error("Error inesperado. Intenta nuevamente.");
     } finally {
@@ -131,7 +131,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <label className="text-xs font-medium" style={{ color: "#71717A" }}>Contraseña</label>
                 <Link href="/forgot-password" className="text-xs transition-colors" style={{ color: "#CA8A04" }}>
-                  ¿Olvidaste?
+                  ¿Olvidaste tu contraseña?
                 </Link>
               </div>
               <div className="relative">

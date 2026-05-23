@@ -28,8 +28,13 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Rutas de API y auth: siempre network (nunca cachear)
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/auth/")) return;
+  // Rutas de API, auth y dashboard: siempre network (nunca cachear)
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/auth/") ||
+    url.pathname.startsWith("/dashboard") ||
+    url.pathname.startsWith("/setup")
+  ) return;
 
   event.respondWith(
     fetch(event.request)
