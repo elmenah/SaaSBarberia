@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
     try {
       const adminClient = createAdminClient();
       await adminClient.auth.admin.inviteUserByEmail(email, {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback?next=/dashboard`,
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/set-password`,
         data: {
           name,
           role:         "BARBER",

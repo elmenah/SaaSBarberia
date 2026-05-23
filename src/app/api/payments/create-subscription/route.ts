@@ -81,11 +81,26 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ init_point });
-  } catch (err) {
-    console.error("[payments/create-subscription] Error:", err);
-    return NextResponse.json(
-      { error: "Error al crear la suscripción con MercadoPago." },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    const mpErr = err as { status?: number; message?: string; cause?: unknown };
+    console.error("[payments/create-subscription] MP Error:", {
+      status:  mpErr?.status,
+      message: mpErr?.message,
+      cause:   JSON.stringify(mpErr?.cause),
+    });
+
+    // Mensaje legible según el error de MP
+    const mpMessage = mpErr?.message ?? "";
+    let userMessage = "Error al crear la suscripción con MercadoPago.";
+
+    if (mpMessage.includes("not found") || mpMessage.includes("404")) {
+      userMessage = "Plan no encontrado en MercadoPago. Verificá la configuración.";
+    } else if (mpMessage.includes("unauthorized") || mpMessage.includes("401")) {
+      userMessage = "Token de MercadoPago inválido. Verificá MERCADOPAGO_ACCESS_TOKEN en Vercel.";
+    } else if (mpMessage.includes("preapproval") || mpMessage.includes("subscription")) {
+      userMessage = "Las suscripciones recurrentes no están habilitadas en tu cuenta de MercadoPago. Contactá a soporte de MP.";
+    }
+
+    return NextResponse.json({ error: userMessage }, { status: 500 });
   }
 }

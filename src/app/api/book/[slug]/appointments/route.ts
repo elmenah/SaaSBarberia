@@ -142,14 +142,15 @@ export async function POST(
 
   // Disparar webhook n8n (no bloquea la respuesta)
   notifyNewAppointment({
-    barbershopId:   barbershop.id,
-    barbershopName: barbershop.name,
-    appointmentId:  appointment.id,
-    clientName:     client.name,
-    clientPhone:    client.phone,
-    barberName:     barber.user.name,
-    serviceName:    serviceNames,
-    startsAt:       startsAtDate,
+    barbershopId:    barbershop.id,
+    barbershopName:  barbershop.name,
+    barbershopPhone: barbershop.phone,
+    appointmentId:   appointment.id,
+    clientName:      client.name,
+    clientPhone:     client.phone,
+    barberName:      barber.user.name,
+    serviceName:     serviceNames,
+    startsAt:        startsAtDate,
     totalPrice,
   }).catch(console.error);
 

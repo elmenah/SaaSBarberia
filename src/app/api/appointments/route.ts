@@ -184,14 +184,15 @@ export async function POST(request: NextRequest) {
 
   // Disparar webhook n8n
   notifyNewAppointment({
-    barbershopId: barbershop.id,
-    barbershopName: barbershop.name,
-    appointmentId: appointment.id,
-    clientName: appointment.client.name,
-    clientPhone: appointment.client.phone,
-    barberName: appointment.barber.user.name,
-    serviceName: services.map((s) => s.name).join(", "),
-    startsAt: startsAtDate,
+    barbershopId:    barbershop.id,
+    barbershopName:  barbershop.name,
+    barbershopPhone: barbershop.phone,
+    appointmentId:   appointment.id,
+    clientName:      appointment.client.name,
+    clientPhone:     appointment.client.phone,
+    barberName:      appointment.barber.user.name,
+    serviceName:     services.map((s) => s.name).join(", "),
+    startsAt:        startsAtDate,
     totalPrice,
   }).catch(console.error);
 

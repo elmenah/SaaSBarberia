@@ -1,6 +1,7 @@
 ﻿import type { AutomationTrigger, WebhookPayload } from "@/types";
 import { prisma } from "@/lib/prisma";
 import { getEffectiveLimits } from "@/lib/plans";
+import { buildConfirmUrl, buildCancelUrl } from "@/lib/appointment-token";
 
 /** Cuenta cuántos WhatsApps (webhooks SENT) se enviaron este mes para la barbería */
 async function getMonthlyWhatsAppUsage(barbershopId: string): Promise<number> {
@@ -11,10 +12,11 @@ async function getMonthlyWhatsAppUsage(barbershopId: string): Promise<number> {
 }
 
 const WEBHOOK_URLS: Partial<Record<AutomationTrigger, string | undefined>> = {
-  NEW_APPOINTMENT: process.env.N8N_WEBHOOK_NEW_APPOINTMENT,
-  APPOINTMENT_CANCELLED: process.env.N8N_WEBHOOK_CANCEL_APPOINTMENT,
+  NEW_APPOINTMENT:          process.env.N8N_WEBHOOK_NEW_APPOINTMENT,
+  APPOINTMENT_CANCELLED:    process.env.N8N_WEBHOOK_CANCEL_APPOINTMENT,
   APPOINTMENT_REMINDER_24H: process.env.N8N_WEBHOOK_REMINDER,
-  CLIENT_INACTIVE_30D: process.env.N8N_WEBHOOK_INACTIVE_CLIENT,
+  APPOINTMENT_REMINDER_1H:  process.env.N8N_WEBHOOK_REMINDER_1H,
+  CLIENT_INACTIVE_30D:      process.env.N8N_WEBHOOK_INACTIVE_CLIENT,
 };
 
 type FireWebhookArgs = {
@@ -138,6 +140,7 @@ function formatWhatsAppDate(date: Date): string {
 export async function notifyNewAppointment(args: {
   barbershopId: string;
   barbershopName: string;
+  barbershopPhone?: string | null;
   appointmentId: string;
   clientName: string;
   clientPhone: string;
@@ -160,7 +163,9 @@ export async function notifyNewAppointment(args: {
     `✂️ *Servicio:* ${args.serviceName}`,
     precio ? `💰 *Precio:* ${precio}` : null,
     ``,
-    `Si no podés asistir, avisanos con tiempo.`,
+    args.barbershopPhone
+      ? `Si no puedes asistir, avisanos con tiempo al ${formatPhone(args.barbershopPhone)}.`
+      : `Si no puedes asistir, avisanos con tiempo.`,
   ].filter(Boolean).join("\n");
 
   return fireWebhook({
@@ -214,6 +219,75 @@ export async function notifyCancelledAppointment(args: {
       cancelReason: args.cancelReason,
       whatsappPhone:   formatPhone(args.clientPhone),
       whatsappMessage,
+    },
+  });
+}
+
+export async function notifyReminder(args: {
+  barbershopId:    string;
+  barbershopName:  string;
+  barbershopPhone?: string | null;
+  appointmentId:   string;
+  clientName:      string;
+  clientPhone:     string;
+  barberName:      string;
+  serviceName:     string;
+  startsAt:        Date;
+  totalPrice:      number;
+  hoursAhead:      1 | 24;
+}) {
+  const trigger: AutomationTrigger =
+    args.hoursAhead === 1 ? "APPOINTMENT_REMINDER_1H" : "APPOINTMENT_REMINDER_24H";
+
+  const precio      = args.totalPrice ? `$${Number(args.totalPrice).toLocaleString("es-CL")}` : "";
+  const label       = args.hoursAhead === 1 ? "en 1 hora" : "mañana";
+  const confirmUrl  = buildConfirmUrl(args.appointmentId);
+  const cancelUrl   = buildCancelUrl(args.appointmentId);
+
+  const whatsappMessage = [
+    args.hoursAhead === 1 ? `⏰ *Recordatorio — tu turno es en 1 hora*` : `📅 *Recordatorio — tu turno es mañana*`,
+    ``,
+    `Hola ${args.clientName}! Te recordamos tu turno en *${args.barbershopName}*.`,
+    ``,
+    `📅 *Fecha:* ${formatWhatsAppDate(args.startsAt)}`,
+    `💈 *Barbero:* ${args.barberName}`,
+    `✂️ *Servicio:* ${args.serviceName}`,
+    precio ? `💰 *Precio:* ${precio}` : null,
+    ``,
+    `¿Podés asistir?`,
+    `✅ Confirmar: ${confirmUrl}`,
+    `❌ Cancelar: ${cancelUrl}`,
+  ].filter(Boolean).join("\n");
+
+  // Payload de botones interactivos para Evolution API (n8n lo usa directamente)
+  const evolutionButtons = {
+    title:    `Recordatorio ${label}`,
+    text:     `Hola ${args.clientName}! Tu turno en *${args.barbershopName}* es ${label}.\n\n📅 ${formatWhatsAppDate(args.startsAt)}\n💈 ${args.barberName} — ${args.serviceName}`,
+    footer:   args.barbershopPhone ? `Consultas: ${formatPhone(args.barbershopPhone)}` : args.barbershopName,
+    buttons:  [
+      { type: "reply", reply: { id: `confirm:${args.appointmentId}`, title: "✅ Sí, confirmar" } },
+      { type: "reply", reply: { id: `cancel:${args.appointmentId}`,  title: "❌ No puedo ir"   } },
+    ],
+  };
+
+  return fireWebhook({
+    trigger,
+    barbershopId:   args.barbershopId,
+    barbershopName: args.barbershopName,
+    appointmentId:  args.appointmentId,
+    data: {
+      appointmentId:   args.appointmentId,
+      hoursAhead:      args.hoursAhead,
+      client:          { name: args.clientName, phone: formatPhone(args.clientPhone) },
+      barber:          args.barberName,
+      service:         args.serviceName,
+      startsAt:        args.startsAt.toISOString(),
+      totalPrice:      args.totalPrice,
+      whatsappPhone:   formatPhone(args.clientPhone),
+      whatsappMessage,
+      evolutionButtons,   // n8n usa esto para enviar el mensaje interactivo
+      confirmUrl,
+      cancelUrl,
     },
   });
 }

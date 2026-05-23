@@ -10,7 +10,7 @@ import { toast } from "sonner";
 const PERKS = [
   "7 días de prueba gratuita, sin tarjeta",
   "Reservas online desde el primer día",
-  "Notificaciones automáticas por WhatsApp",
+  "Notificaciones automáticas",
   "Soporte en tiempo real",
 ];
 

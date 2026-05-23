@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendReminderToClient } from "@/lib/email/send-appointment-emails";
+import { notifyReminder } from "@/lib/n8n/webhooks";
 
 // GET /api/cron/reminders — envía recordatorios 24h y 1h antes del turno
 // Ejecutado por Vercel Cron cada 30 minutos
@@ -33,22 +34,42 @@ export async function GET(request: NextRequest) {
 
   let sent24 = 0;
   for (const appt of appts24) {
-    if (!appt.client.email) continue;
+    const serviceNames = appt.services.map(s => s.service.name).join(", ");
     try {
-      await sendReminderToClient({
-        clientName:      appt.client.name,
-        clientEmail:     appt.client.email,
-        clientPhone:     appt.client.phone,
-        barbershopName:  appt.barbershop.name,
-        barbershopEmail: appt.barbershop.email,
-        barbershopAddress: appt.barbershop.address,
-        barberName:      appt.barber.user.name,
-        serviceName:     appt.services.map(s => s.service.name).join(", "),
-        startsAt:        appt.startsAt,
-        totalPrice:      Number(appt.totalPrice),
-        slug:            appt.barbershop.slug,
-        hoursAhead:      24,
-      });
+      await Promise.allSettled([
+        // Email (solo si tiene email)
+        appt.client.email
+          ? sendReminderToClient({
+              clientName:       appt.client.name,
+              clientEmail:      appt.client.email,
+              clientPhone:      appt.client.phone,
+              barbershopName:   appt.barbershop.name,
+              barbershopEmail:  appt.barbershop.email,
+              barbershopAddress: appt.barbershop.address,
+              barberName:       appt.barber.user.name,
+              serviceName:      serviceNames,
+              startsAt:         appt.startsAt,
+              totalPrice:       Number(appt.totalPrice),
+              slug:             appt.barbershop.slug,
+              appointmentId:    appt.id,
+              hoursAhead:       24,
+            })
+          : Promise.resolve(),
+        // WhatsApp via n8n (siempre, solo necesita teléfono)
+        notifyReminder({
+          barbershopId:    appt.barbershopId,
+          barbershopName:  appt.barbershop.name,
+          barbershopPhone: appt.barbershop.phone,
+          appointmentId:   appt.id,
+          clientName:      appt.client.name,
+          clientPhone:     appt.client.phone,
+          barberName:      appt.barber.user.name,
+          serviceName:     serviceNames,
+          startsAt:        appt.startsAt,
+          totalPrice:      Number(appt.totalPrice),
+          hoursAhead:      24,
+        }),
+      ]);
       await prisma.appointment.update({
         where: { id: appt.id },
         data:  { reminder24hSentAt: new Date() },
@@ -77,22 +98,42 @@ export async function GET(request: NextRequest) {
 
   let sent1 = 0;
   for (const appt of appts1) {
-    if (!appt.client.email) continue;
+    const serviceNames = appt.services.map(s => s.service.name).join(", ");
     try {
-      await sendReminderToClient({
-        clientName:      appt.client.name,
-        clientEmail:     appt.client.email,
-        clientPhone:     appt.client.phone,
-        barbershopName:  appt.barbershop.name,
-        barbershopEmail: appt.barbershop.email,
-        barbershopAddress: appt.barbershop.address,
-        barberName:      appt.barber.user.name,
-        serviceName:     appt.services.map(s => s.service.name).join(", "),
-        startsAt:        appt.startsAt,
-        totalPrice:      Number(appt.totalPrice),
-        slug:            appt.barbershop.slug,
-        hoursAhead:      1,
-      });
+      await Promise.allSettled([
+        // Email (solo si tiene email)
+        appt.client.email
+          ? sendReminderToClient({
+              clientName:       appt.client.name,
+              clientEmail:      appt.client.email,
+              clientPhone:      appt.client.phone,
+              barbershopName:   appt.barbershop.name,
+              barbershopEmail:  appt.barbershop.email,
+              barbershopAddress: appt.barbershop.address,
+              barberName:       appt.barber.user.name,
+              serviceName:      serviceNames,
+              startsAt:         appt.startsAt,
+              totalPrice:       Number(appt.totalPrice),
+              slug:             appt.barbershop.slug,
+              appointmentId:    appt.id,
+              hoursAhead:       1,
+            })
+          : Promise.resolve(),
+        // WhatsApp via n8n con links de confirmar/cancelar
+        notifyReminder({
+          barbershopId:    appt.barbershopId,
+          barbershopName:  appt.barbershop.name,
+          barbershopPhone: appt.barbershop.phone,
+          appointmentId:   appt.id,
+          clientName:      appt.client.name,
+          clientPhone:     appt.client.phone,
+          barberName:      appt.barber.user.name,
+          serviceName:     serviceNames,
+          startsAt:        appt.startsAt,
+          totalPrice:      Number(appt.totalPrice),
+          hoursAhead:      1,
+        }),
+      ]);
       await prisma.appointment.update({
         where: { id: appt.id },
         data:  { reminder1hSentAt: new Date() },

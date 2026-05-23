@@ -32,7 +32,7 @@ export const PLANS: Record<PlanKey, PlanDef> = {
     name:             "Individual",
     description:      "Para el barbero que trabaja solo",
     price:            9990,
-    currency:         "ARS",
+    currency:         "CLP",
     barbers:          1,
     whatsappPerMonth: 0,
     features: [
@@ -49,7 +49,7 @@ export const PLANS: Record<PlanKey, PlanDef> = {
     name:             "Profesional",
     description:      "Para barberías con equipo",
     price:            24990,
-    currency:         "ARS",
+    currency:         "CLP",
     barbers:          7,
     whatsappPerMonth: 130,
     highlight:        true,
@@ -68,7 +68,7 @@ export const PLANS: Record<PlanKey, PlanDef> = {
     name:             "Enterprise",
     description:      "Para cadenas de barberías",
     price:            49990,
-    currency:         "ARS",
+    currency:         "CLP",
     barbers:          10,
     whatsappPerMonth: 500,
     features: [

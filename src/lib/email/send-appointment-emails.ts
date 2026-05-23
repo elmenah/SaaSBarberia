@@ -8,6 +8,7 @@ import ReviewRequestEmail           from "@/emails/review-request";
 import LoyaltyRewardEmail           from "@/emails/loyalty-reward";
 import ReengagementEmail            from "@/emails/reengagement";
 import BirthdayEmail                from "@/emails/birthday";
+import { buildConfirmUrl, buildCancelUrl } from "@/lib/appointment-token";
 
 // ─── Tipos compartidos ───────────────────────────────────────────────────────
 interface AppointmentEmailData {
@@ -105,10 +106,14 @@ export async function sendNewAppointmentEmails(data: AppointmentEmailData) {
 
 // ─── 4. Recordatorio 24h o 1h ────────────────────────────────────────────────
 export async function sendReminderToClient(
-  data: AppointmentEmailData & { hoursAhead: number }
+  data: AppointmentEmailData & { hoursAhead: number; appointmentId?: string }
 ) {
   if (!data.clientEmail) return;
   const label = data.hoursAhead === 1 ? "en 1 hora" : "mañana";
+
+  const confirmUrl = data.appointmentId ? buildConfirmUrl(data.appointmentId) : undefined;
+  const cancelUrl  = data.appointmentId ? buildCancelUrl(data.appointmentId)  : undefined;
+
   await sendEmail({
     to:      data.clientEmail,
     subject: `⏰ Recordatorio: tu reserva en ${data.barbershopName} es ${label}`,
@@ -121,6 +126,8 @@ export async function sendReminderToClient(
       startsAt:         data.startsAt,
       totalPrice:       data.totalPrice,
       hoursAhead:       data.hoursAhead,
+      confirmUrl,
+      cancelUrl,
       bookingUrl:       data.slug ? `${process.env.NEXT_PUBLIC_APP_URL}/book/${data.slug}` : undefined,
     }),
   });

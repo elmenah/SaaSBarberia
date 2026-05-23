@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/auth-context";
-import { Search, Plus, Filter, MoreHorizontal, Clock, XCircle, UserX, DollarSign, Tag } from "lucide-react";
+import { Search, Plus, Filter, MoreHorizontal, Clock, XCircle, UserX, DollarSign, Tag, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 
@@ -154,10 +154,11 @@ function Skeleton({ className = "" }: { className?: string }) {
 /* ── Menú contextual — usa position:fixed para no quedar cortado por overflow:hidden ── */
 type MenuPos = { top?: number; bottom?: number; right: number };
 
-function ActionMenu({ appointment, onStatusChange, onDiscount }: {
+function ActionMenu({ appointment, onStatusChange, onDiscount, onDelete }: {
   appointment: Appointment;
   onStatusChange: (id: string, status: string) => void;
   onDiscount: (appointment: Appointment) => void;
+  onDelete: (appointment: Appointment) => void;
 }) {
   const [open, setOpen]   = useState(false);
   const [pos,  setPos]    = useState<MenuPos>({ top: 0, right: 0 });
@@ -254,9 +255,73 @@ function ActionMenu({ appointment, onStatusChange, onDiscount }: {
           {!showDiscount && statusActions.length === 0 && (
             <p className="px-3 py-2.5 text-xs font-body" style={{ color: "#3F3F46" }}>Sin acciones disponibles</p>
           )}
+          {/* Separador + Eliminar siempre disponible */}
+          <div className="my-1" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }} />
+          <button
+            onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(appointment); }}
+            className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-body text-left hover:bg-red-500/10 transition-colors"
+            style={{ color: "#EF4444" }}
+          >
+            <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
+            Eliminar reserva
+          </button>
         </div>
       )}
     </>
+  );
+}
+
+function DeleteConfirmModal({
+  appointment,
+  onConfirm,
+  onCancel,
+}: {
+  appointment: Appointment;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
+    >
+      <div
+        className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-5"
+        style={{ backgroundColor: "#111111", border: "1px solid rgba(239,68,68,0.2)" }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "rgba(239,68,68,0.1)" }}>
+            <Trash2 className="w-4 h-4" style={{ color: "#EF4444" }} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white font-body">Eliminar reserva</p>
+            <p className="text-xs font-body" style={{ color: "#52525B" }}>
+              {appointment.client.name} · {formatTime(appointment.startsAt)}
+            </p>
+          </div>
+        </div>
+        <p className="text-sm font-body" style={{ color: "#71717A" }}>
+          Esta acción es permanente y no se puede deshacer. ¿Confirmar?
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl text-sm font-medium font-body transition-all hover:bg-white/5"
+            style={{ border: "1px solid rgba(255,255,255,0.08)", color: "#71717A" }}
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold font-body transition-all hover:opacity-90"
+            style={{ backgroundColor: "#EF4444", color: "#fff" }}
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -266,6 +331,7 @@ export default function ReservasPage() {
   const [loading, setLoading]   = useState(true);
   const [activeFilter, setActiveFilter] = useState("Todas");
   const [discountingAppt, setDiscountingAppt] = useState<Appointment | null>(null);
+  const [deletingAppt, setDeletingAppt]       = useState<Appointment | null>(null);
 
   // Auto-transición de estados al cargar la página (IN_PROGRESS / COMPLETED)
   useEffect(() => {
@@ -310,6 +376,23 @@ export default function ReservasPage() {
     }
   }
 
+  async function handleDeleteConfirm() {
+    if (!deletingAppt) return;
+    const id = deletingAppt.id;
+    setDeletingAppt(null);
+    setReservas(prev => prev.filter(r => r.id !== id)); // optimistic remove
+    try {
+      const res = await fetch(`/api/appointments/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        // Revert: volver a cargar
+        const params = new URLSearchParams({ barbershopId: barbershop!.id, pageSize: "50" });
+        fetch(`/api/appointments?${params}`).then(r => r.json()).then(({ data }) => setReservas(data ?? []));
+      }
+    } catch {
+      console.error("Error eliminando reserva");
+    }
+  }
+
   async function handleDiscountConfirm(paidAmount: number) {
     if (!discountingAppt) return;
     const appt = discountingAppt;
@@ -334,6 +417,13 @@ export default function ReservasPage() {
         appointment={discountingAppt}
         onConfirm={handleDiscountConfirm}
         onCancel={() => setDiscountingAppt(null)}
+      />
+    )}
+    {deletingAppt && (
+      <DeleteConfirmModal
+        appointment={deletingAppt}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeletingAppt(null)}
       />
     )}
     <div className="flex flex-col gap-5">
@@ -398,7 +488,7 @@ export default function ReservasPage() {
                       </p>
                     </div>
                     <span className="text-xs font-semibold px-2 py-1 rounded-full flex-shrink-0 font-body" style={{ color: st.color, backgroundColor: st.bg }}>{st.label}</span>
-                    <ActionMenu appointment={r} onStatusChange={handleStatusChange} onDiscount={setDiscountingAppt} />
+                    <ActionMenu appointment={r} onStatusChange={handleStatusChange} onDiscount={setDiscountingAppt} onDelete={setDeletingAppt} />
                   </div>
                 );
               })
@@ -476,7 +566,7 @@ export default function ReservasPage() {
                     </div>
                     <div className="col-span-1 flex items-center gap-2">
                       <span className="text-xs font-medium px-2.5 py-1 rounded-full font-body whitespace-nowrap" style={{ color: st.color, backgroundColor: st.bg }}>{st.label}</span>
-                      <ActionMenu appointment={r} onStatusChange={handleStatusChange} onDiscount={setDiscountingAppt} />
+                      <ActionMenu appointment={r} onStatusChange={handleStatusChange} onDiscount={setDiscountingAppt} onDelete={setDeletingAppt} />
                     </div>
                   </div>
                 );

@@ -12,6 +12,8 @@ interface AppointmentReminderEmailProps {
   startsAt:       Date | string;
   totalPrice:     number;
   bookingUrl?:    string;
+  confirmUrl?:    string;
+  cancelUrl?:     string;
   hoursAhead:     number; // 24 o 1
 }
 
@@ -37,6 +39,8 @@ export default function AppointmentReminderEmail({
   startsAt       = new Date(),
   totalPrice     = 0,
   bookingUrl,
+  confirmUrl,
+  cancelUrl,
   hoursAhead     = 24,
 }: AppointmentReminderEmailProps) {
   const isOneHour = hoursAhead === 1;
@@ -116,7 +120,35 @@ export default function AppointmentReminderEmail({
               </Row>
             </Section>
 
-            {bookingUrl && (
+            {/* Botones confirmar / cancelar */}
+            {(confirmUrl || cancelUrl) && (
+              <Section className="mb-4">
+                <Row>
+                  {confirmUrl && (
+                    <Column className="pr-2">
+                      <Button
+                        href={confirmUrl}
+                        className="w-full bg-[#CA8A04] text-black text-sm font-semibold px-4 py-3 rounded-xl no-underline text-center block"
+                      >
+                        ✅ Sí, confirmar
+                      </Button>
+                    </Column>
+                  )}
+                  {cancelUrl && (
+                    <Column className="pl-2">
+                      <Button
+                        href={cancelUrl}
+                        className="w-full bg-[#1c1c1c] text-[#ef4444] text-sm font-semibold px-4 py-3 rounded-xl no-underline text-center block border border-[#3f1212]"
+                      >
+                        ❌ No puedo ir
+                      </Button>
+                    </Column>
+                  )}
+                </Row>
+              </Section>
+            )}
+
+            {bookingUrl && !confirmUrl && (
               <Section className="text-center mb-4">
                 <Button href={bookingUrl}
                   className="bg-white text-black text-sm font-semibold px-6 py-3 rounded-xl no-underline">
@@ -127,7 +159,7 @@ export default function AppointmentReminderEmail({
 
             <Section className="text-center">
               <Text className="text-[#525252] text-xs m-0">
-                Si no podés asistir, avisanos con anticipación.
+                Si no podés asistir, por favor cancelá con anticipación para liberar el turno.
               </Text>
               <Text className="text-[#525252] text-xs m-0 mt-2">
                 Powered by <strong className="text-[#737373]">Mibarberia</strong>

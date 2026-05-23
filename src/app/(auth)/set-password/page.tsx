@@ -16,13 +16,26 @@ export default function SetPasswordPage() {
   const [done,        setDone]        = useState(false);
   const [sessionOk,   setSessionOk]   = useState<boolean | null>(null);
 
-  // Supabase envía el token en el hash: #access_token=...&type=invite|recovery
-  // El cliente de Supabase lo procesa automáticamente al montar
+  // Supabase procesa el #access_token del hash automáticamente al montar el cliente.
+  // Esperamos hasta que la sesión esté lista y luego linkeamos al barbero si aplica.
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(({ data }) => {
-      setSessionOk(!!data.session);
+
+    // onAuthStateChange captura el evento SIGNED_IN que dispara Supabase
+    // cuando procesa el hash de invite/recovery
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        setSessionOk(true);
+        // Si es un barbero invitado, vincular su cuenta en la DB
+        if (session.user.user_metadata?.role === "BARBER") {
+          await fetch("/api/auth/link-barber", { method: "POST" }).catch(console.error);
+        }
+      } else if (event === "INITIAL_SESSION" && !session) {
+        setSessionOk(false);
+      }
     });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const strength = (() => {
