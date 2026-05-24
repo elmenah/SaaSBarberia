@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/auth-context";
 import {
   Plus, Edit2, Trash2, X, Check,
-  Calendar, DollarSign, Scissors, Power, Crown,
+  Calendar, DollarSign, Scissors, Power, Crown, Mail,
 } from "lucide-react";
 import Link from "next/link";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -17,7 +17,7 @@ type BarberFromAPI = {
   bio: string | null;
   isActive: boolean;
   createdAt: string;
-  user: { id: string; name: string; phone: string | null; email: string };
+  user: { id: string; name: string; phone: string | null; email: string; supabaseId: string };
   stats?: { turnosMes: number; ingresosMes: number };
 };
 
@@ -42,8 +42,9 @@ export default function MibarberiaPage() {
   const [editing,    setEditing]    = useState<BarberFromAPI | null>(null);
   const [form,       setForm]       = useState<BarberForm>(EMPTY_FORM);
   const [saving,     setSaving]     = useState(false);
-  const [deleteId,   setDeleteId]   = useState<string | null>(null);
-  const [error,      setError]      = useState("");
+  const [deleteId,     setDeleteId]     = useState<string | null>(null);
+  const [resendingId,  setResendingId]  = useState<string | null>(null);
+  const [error,        setError]        = useState("");
 
   // Estado para crear perfil propio del dueño
   const [ownerHasProfile, setOwnerHasProfile] = useState<boolean | null>(null);
@@ -143,6 +144,23 @@ export default function MibarberiaPage() {
     await fetch(`/api/barbers/${deleteId}`, { method: "DELETE" });
     setDeleteId(null);
     fetchBarbers();
+  }
+
+  async function resendInvite(b: BarberFromAPI) {
+    setResendingId(b.id);
+    try {
+      const res = await fetch(`/api/barbers/${b.id}/resend-invite`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error ?? "Error al reenviar la invitación");
+      } else {
+        alert(`Invitación reenviada a ${b.user.email}`);
+      }
+    } catch {
+      alert("Error de conexión");
+    } finally {
+      setResendingId(null);
+    }
   }
 
   const activeCount   = barbers.filter((b) => b.isActive).length;
@@ -370,6 +388,18 @@ export default function MibarberiaPage() {
                       </Link>
                     ) : (
                       <>
+                        {/* Reenviar invitación si aún no activó la cuenta */}
+                        {b.user.supabaseId.startsWith("placeholder-") && (
+                          <button
+                            onClick={() => resendInvite(b)}
+                            disabled={resendingId === b.id}
+                            title="Reenviar invitación"
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold font-body transition-all hover:opacity-80 disabled:opacity-40"
+                            style={{ backgroundColor: "rgba(59,130,246,0.08)", color: "#3B82F6", border: "1px solid rgba(59,130,246,0.2)" }}>
+                            <Mail className="w-3.5 h-3.5" />
+                            {resendingId === b.id ? "Enviando…" : "Reenviar invite"}
+                          </button>
+                        )}
                         <button onClick={() => openEdit(b)}
                           className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-white/5"
                           style={{ color: "#71717A", border: "1px solid rgba(255,255,255,0.07)" }}>
