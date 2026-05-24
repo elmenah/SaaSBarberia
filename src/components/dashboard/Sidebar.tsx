@@ -127,8 +127,8 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* ── Plan / Trial badge ─────────────────────────────────────────── */}
-      {barbershop && !collapsed && (
+      {/* ── Plan / Trial badge — solo owners ──────────────────────────── */}
+      {barbershop && !collapsed && !isBarber && (
         <div className="px-3 pb-3">
           <Link
             href="/dashboard/billing"
@@ -201,8 +201,8 @@ export function Sidebar() {
         </div>
       )}
 
-      {/* Icono compacto cuando está colapsado */}
-      {barbershop && collapsed && (
+      {/* Icono compacto cuando está colapsado — solo owners */}
+      {barbershop && collapsed && !isBarber && (
         <div className="flex justify-center pb-2">
           <Link href="/dashboard/billing" title={`Plan ${planLabel}${isTrialing && daysLeft !== null ? ` — ${daysLeft}d` : ""}`}>
             <div

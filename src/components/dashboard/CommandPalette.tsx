@@ -1,22 +1,28 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search, LayoutDashboard, Calendar, ClipboardList,
-  Users, UserCog, Scissors, Zap, Settings, CreditCard, X,
+  UserCog, Scissors, Zap, Settings, CreditCard, X,
 } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
-const NAV_LINKS = [
+const OWNER_LINKS = [
   { label: "Dashboard",        href: "/dashboard",                  icon: LayoutDashboard, group: "Páginas" },
   { label: "Agenda",           href: "/dashboard/agenda",           icon: Calendar,        group: "Páginas" },
   { label: "Reservas",         href: "/dashboard/reservas",         icon: ClipboardList,   group: "Páginas" },
-  { label: "Clientes",         href: "/dashboard/clientes",         icon: Users,           group: "Páginas" },
   { label: "Barbería",         href: "/dashboard/barberos",         icon: UserCog,         group: "Páginas" },
   { label: "Servicios",        href: "/dashboard/servicios",        icon: Scissors,        group: "Páginas" },
   { label: "Automatizaciones", href: "/dashboard/automatizaciones", icon: Zap,             group: "Páginas" },
   { label: "Facturación",      href: "/dashboard/billing",          icon: CreditCard,      group: "Páginas" },
   { label: "Configuración",    href: "/dashboard/configuracion",    icon: Settings,        group: "Páginas" },
+];
+
+const BARBER_LINKS = [
+  { label: "Agenda",    href: "/dashboard/agenda",          icon: Calendar,     group: "Páginas" },
+  { label: "Reservas",  href: "/dashboard/reservas",        icon: ClipboardList,group: "Páginas" },
+  { label: "Mi perfil", href: "/dashboard/barberos/perfil", icon: UserCog,      group: "Páginas" },
 ];
 
 type Result = {
@@ -28,12 +34,15 @@ type Result = {
 };
 
 export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const router  = useRouter();
+  const router    = useRouter();
+  const { isBarber } = useAuth();
+  const NAV_LINKS = isBarber ? BARBER_LINKS : OWNER_LINKS;
+
   const [query,   setQuery]   = useState("");
   const [results, setResults] = useState<Result[]>(NAV_LINKS);
   const [active,  setActive]  = useState(0);
 
-  // Filtrar resultados
+  // Filtrar resultados según rol y query
   useEffect(() => {
     if (!query.trim()) {
       setResults(NAV_LINKS);
@@ -43,7 +52,8 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     const q = query.toLowerCase();
     setResults(NAV_LINKS.filter((l) => l.label.toLowerCase().includes(q)));
     setActive(0);
-  }, [query]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, isBarber]);
 
   // Cerrar con Escape
   useEffect(() => {
