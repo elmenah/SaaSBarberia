@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -66,12 +66,18 @@ function Skeleton({ className = "" }: { className?: string }) {
 }
 
 export default function DashboardPage() {
-  const { barbershop } = useAuth();
+  const { barbershop, isBarber } = useAuth();
+  const router       = useRouter();
   const searchParams = useSearchParams();
   const [metrics, setMetrics]   = useState<Metrics | null>(null);
   const [today,   setToday]     = useState<Appointment[]>([]);
   const [loading, setLoading]   = useState(true);
   const [copied,  setCopied]    = useState(false);
+
+  // Barberos no tienen acceso al dashboard de métricas → redirigir a agenda
+  useEffect(() => {
+    if (isBarber) router.replace("/dashboard/agenda");
+  }, [isBarber, router]);
 
   // Toast de bienvenida al iniciar sesión
   useEffect(() => {

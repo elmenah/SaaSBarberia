@@ -35,11 +35,9 @@ const OWNER_NAV = [
 ];
 
 const BARBER_NAV = [
-  { label: "Dashboard",  href: "/dashboard",          icon: LayoutDashboard },
-  { label: "Agenda",     href: "/dashboard/agenda",   icon: Calendar        },
-  { label: "Reservas",   href: "/dashboard/reservas", icon: ClipboardList   },
-  { label: "Clientes",   href: "/dashboard/clientes", icon: Users           },
-  { label: "Mi perfil",  href: "/dashboard/barberos/perfil", icon: UserCog  },
+  { label: "Agenda",    href: "/dashboard/agenda",          icon: Calendar     },
+  { label: "Reservas",  href: "/dashboard/reservas",        icon: ClipboardList},
+  { label: "Mi perfil", href: "/dashboard/barberos/perfil", icon: UserCog      },
 ];
 
 export function Sidebar() {

@@ -326,7 +326,7 @@ function DeleteConfirmModal({
 }
 
 export default function ReservasPage() {
-  const { barbershop }          = useAuth();
+  const { barbershop, isBarber } = useAuth();
   const [reservas, setReservas] = useState<Appointment[]>([]);
   const [loading, setLoading]   = useState(true);
   const [activeFilter, setActiveFilter] = useState("Todas");
@@ -455,10 +455,12 @@ export default function ReservasPage() {
           <button className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-colors" style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.07)", color: "#52525B" }}>
             <Filter className="w-4 h-4" />
           </button>
-          <Link href="/dashboard/reservas/nueva" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold font-body text-black transition-all hover:opacity-90" style={{ backgroundColor: "#CA8A04" }}>
-            <Plus className="w-4 h-4" />
-            Nueva reserva
-          </Link>
+          {!isBarber && (
+            <Link href="/dashboard/reservas/nueva" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold font-body text-black transition-all hover:opacity-90" style={{ backgroundColor: "#CA8A04" }}>
+              <Plus className="w-4 h-4" />
+              Nueva reserva
+            </Link>
+          )}
         </div>
       </div>
 

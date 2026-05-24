@@ -110,7 +110,12 @@ function Skeleton({ className = "" }: { className?: string }) {
 ════════════════════════════════════════════════════════════════════════════ */
 export default function NuevaReservaPage() {
   const router = useRouter();
-  const { barbershop } = useAuth();
+  const { barbershop, isBarber } = useAuth();
+
+  // Barberos no pueden crear reservas manuales
+  useEffect(() => {
+    if (isBarber) router.replace("/dashboard/agenda");
+  }, [isBarber, router]);
 
   const [paso,     setPaso]     = useState(0);
   const [cargando, setCargando] = useState(false);

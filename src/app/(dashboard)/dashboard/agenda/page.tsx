@@ -138,7 +138,7 @@ function Skeleton({ className = "" }: { className?: string }) {
 
 /* ════════════════════════════════════════════════════════════════════════════ */
 export default function AgendaPage() {
-  const { barbershop, loading: authLoading } = useAuth();
+  const { barbershop, loading: authLoading, isBarber } = useAuth();
 
   const [currentDate,  setCurrentDate]  = useState(() => new Date());
   const [viewMode,     setViewMode]     = useState<"week" | "month">("week");
@@ -368,13 +368,15 @@ export default function AgendaPage() {
               Click en celda vacía para bloquear
             </div>
           )}
-          <NextLink href="/dashboard/reservas/nueva">
-            <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold font-body text-black hover:opacity-90 transition-all"
-              style={{ backgroundColor: "#CA8A04" }}>
-              <Plus className="w-4 h-4" />
-              Nueva reserva
-            </button>
-          </NextLink>
+          {!isBarber && (
+            <NextLink href="/dashboard/reservas/nueva">
+              <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold font-body text-black hover:opacity-90 transition-all"
+                style={{ backgroundColor: "#CA8A04" }}>
+                <Plus className="w-4 h-4" />
+                Nueva reserva
+              </button>
+            </NextLink>
+          )}
         </div>
       </div>
 

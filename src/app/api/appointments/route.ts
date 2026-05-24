@@ -32,11 +32,21 @@ export async function GET(request: NextRequest) {
 
   const dateFrom    = searchParams.get("dateFrom");
   const dateTo      = searchParams.get("dateTo");
-  // startsAtFrom / startsAtTo: ISO timestamp strings (timezone-aware, from client)
   const startsAtFrom = searchParams.get("startsAtFrom");
   const startsAtTo   = searchParams.get("startsAtTo");
 
   const where: Record<string, unknown> = { barbershopId };
+
+  // Si el usuario es BARBER → solo ve sus propios turnos (server-side, no bypasseable)
+  if (user.user_metadata?.role === "BARBER") {
+    const dbUser = await prisma.user.findUnique({
+      where:   { supabaseId: user.id },
+      include: { barberProfile: true },
+    });
+    if (dbUser?.barberProfile) {
+      where.barberId = dbUser.barberProfile.id;
+    }
+  }
 
   if (startsAtFrom || startsAtTo) {
     // Prioridad: timestamps explícitos del cliente (ya en UTC, sin conversión)
@@ -100,6 +110,11 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Barberos no pueden crear reservas manualmente
+  if (user.user_metadata?.role === "BARBER") {
+    return NextResponse.json({ error: "Solo el dueño puede crear reservas." }, { status: 403 });
+  }
 
   const body = await request.json();
   const parse = CreateAppointmentSchema.safeParse(body);
