@@ -250,7 +250,7 @@ export default function BookPage() {
   const [selectedBarber,   setSelectedBarber]   = useState<BarberData | null>(null);
   const [selectedDate,     setSelectedDate]     = useState<string>("");
   const [selectedTime,     setSelectedTime]     = useState<string>("");
-  const [form,             setForm]             = useState({ name: "", phone: "", email: "" });
+  const [form,             setForm]             = useState({ name: "", phone: "", email: "", birthdate: "" });
 
   // Flujo multi-servicio
   type SeparateBooking = {
@@ -346,12 +346,13 @@ export default function BookPage() {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                barberId:    sb.barberId,
-                serviceIds:  [sb.service.id],
-                startsAt:    new Date(`${sb.date}T${sb.time}:00`).toISOString(),
-                clientName:  form.name.trim(),
-                clientPhone: form.phone.trim(),
-                clientEmail: form.email.trim() || null,
+                barberId:        sb.barberId,
+                serviceIds:      [sb.service.id],
+                startsAt:        new Date(`${sb.date}T${sb.time}:00`).toISOString(),
+                clientName:      form.name.trim(),
+                clientPhone:     form.phone.trim(),
+                clientEmail:     form.email.trim() || null,
+                clientBirthdate: form.birthdate || null,
               }),
             })
           )
@@ -377,11 +378,12 @@ export default function BookPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             barberId,
-            serviceIds:  selectedServices.map((s) => s.id),
-            startsAt:    new Date(`${selectedDate}T${selectedTime}:00`).toISOString(),
-            clientName:  form.name.trim(),
-            clientPhone: form.phone.trim(),
-            clientEmail: form.email.trim() || null,
+            serviceIds:      selectedServices.map((s) => s.id),
+            startsAt:        new Date(`${selectedDate}T${selectedTime}:00`).toISOString(),
+            clientName:      form.name.trim(),
+            clientPhone:     form.phone.trim(),
+            clientEmail:     form.email.trim() || null,
+            clientBirthdate: form.birthdate || null,
           }),
         });
         if (!res.ok) {
@@ -424,7 +426,7 @@ export default function BookPage() {
   function resetBooking() {
     setStep(0); setSelectedServices([]); setSelectedBarber(null);
     setSelectedDate(""); setSelectedTime(""); setSlots([]);
-    setForm({ name: "", phone: "", email: "" }); setConfirmed(false);
+    setForm({ name: "", phone: "", email: "", birthdate: "" }); setConfirmed(false);
     setSubmitError(""); setBookingMode(null); setShowModeSelect(false);
     setSeparateBookings([]); setCurrentSepIdx(0);
     setReviewRating(0); setReviewComment(""); setReviewSent(false);
@@ -1073,6 +1075,28 @@ export default function BookPage() {
               style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.08)" }} />
           </div>
         ))}
+
+        {/* Fecha de nacimiento — opcional, para cumpleaños */}
+        <div>
+          <label className="text-xs font-body font-medium mb-1.5 flex items-center gap-1.5 block" style={{ color: "#A1A1AA" }}>
+            Fecha de nacimiento
+            <span className="text-[10px] px-1.5 py-0.5 rounded font-body" style={{ backgroundColor: "rgba(202,138,4,0.08)", color: "#CA8A04" }}>
+              Opcional · para enviarte saludos 🎂
+            </span>
+          </label>
+          <input
+            type="date"
+            value={form.birthdate}
+            onChange={(e) => setForm((f) => ({ ...f, birthdate: e.target.value }))}
+            max={new Date().toISOString().split("T")[0]}
+            className="w-full px-4 py-3 rounded-xl text-sm font-body text-white outline-none transition-all"
+            style={{
+              backgroundColor: "#111111",
+              border: "1px solid rgba(255,255,255,0.08)",
+              colorScheme: "dark",
+            }}
+          />
+        </div>
       </div>
       {submitError && (
         <div className="flex items-start gap-2 p-3 rounded-xl"

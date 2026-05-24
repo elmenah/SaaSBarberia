@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
+import { useOwnerOnly } from "@/hooks/useOwnerOnly";
 import {
   Check, Zap, Crown, Building2,
   CreditCard, AlertTriangle, Clock, Loader2,
@@ -163,6 +164,7 @@ function CancelModal({
 // ─── Página principal ──────────────────────────────────────────────────────────
 
 export default function BillingPage() {
+  useOwnerOnly();
   const { barbershop, refreshBarbershop } = useAuth();
   const [loadingPlan,   setLoadingPlan]   = useState<string | null>(null);
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -251,42 +253,47 @@ export default function BillingPage() {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h1 className="text-base font-bold text-white font-body">
-                {PLAN_LABELS[currentPlan] ?? currentPlan}
+                {currentStatus === "TRIALING"
+                  ? `${PLAN_LABELS[currentPlan] ?? currentPlan} — Prueba gratuita`
+                  : PLAN_LABELS[currentPlan] ?? currentPlan}
               </h1>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full font-body"
-                style={{ color: statusStyle.color, backgroundColor: statusStyle.bg }}>
-                {statusStyle.label}
-              </span>
+              {currentStatus !== "TRIALING" && (
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full font-body"
+                  style={{ color: statusStyle.color, backgroundColor: statusStyle.bg }}>
+                  {statusStyle.label}
+                </span>
+              )}
             </div>
             <p className="text-xs font-body" style={{ color: "#52525B" }}>
-              {currentStatus === "TRIALING" && daysLeft !== null
-                ? `Trial: ${daysLeft} día${daysLeft !== 1 ? "s" : ""} restante${daysLeft !== 1 ? "s" : ""}`
-                : currentStatus === "ACTIVE"
-                  ? "Renovación automática mensual"
-                  : currentStatus === "CANCELLED"
-                    ? "Plan cancelado — upgrade disponible"
-                    : currentStatus === "PAST_DUE"
-                      ? "Hay un problema con tu pago"
-                      : "Facturación mensual"}
+              {currentStatus === "ACTIVE"
+                ? "Renovación automática mensual"
+                : currentStatus === "CANCELLED"
+                  ? "Plan cancelado — upgrade disponible"
+                  : currentStatus === "PAST_DUE"
+                    ? "Hay un problema con tu pago"
+                    : "Facturación mensual"}
             </p>
           </div>
 
-          {/* Alerta de trial por expirar */}
-          {currentStatus === "TRIALING" && daysLeft !== null && daysLeft <= 3 && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold font-body"
-              style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#EF4444", border: "1px solid rgba(239,68,68,0.15)" }}>
-              <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-              ¡Expira pronto!
-            </div>
-          )}
-
-          {/* Countdown visual */}
-          {currentStatus === "TRIALING" && daysLeft !== null && daysLeft > 3 && (
-            <div className="flex items-center gap-2 text-xs font-body"
-              style={{ color: "#CA8A04" }}>
-              <Clock className="w-3.5 h-3.5" />
-              {daysLeft}d de trial
-            </div>
+          {/* Estado del trial — una sola representación visual a la derecha */}
+          {currentStatus === "TRIALING" && daysLeft !== null && (
+            daysLeft <= 3 ? (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold font-body flex-shrink-0"
+                style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#EF4444", border: "1px solid rgba(239,68,68,0.15)" }}>
+                <AlertTriangle className="w-3.5 h-3.5" />
+                ¡Expira en {daysLeft}d!
+              </div>
+            ) : (
+              <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <div className="flex items-center gap-1.5 text-xs font-semibold font-body" style={{ color: "#CA8A04" }}>
+                  <Clock className="w-3.5 h-3.5" />
+                  {daysLeft} días de prueba
+                </div>
+                <div className="w-24 h-1 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.06)" }}>
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.round((daysLeft / 7) * 100))}%`, backgroundColor: "#CA8A04" }} />
+                </div>
+              </div>
+            )
           )}
         </div>
 

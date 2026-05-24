@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useOwnerOnly } from "@/hooks/useOwnerOnly";
 import { Zap, CheckCircle2, XCircle, Clock, RefreshCw, MessageSquare, AlertTriangle, Gift } from "lucide-react";
 
 type Trigger = {
@@ -27,6 +28,7 @@ const DEFAULT_TRIGGERS: Trigger[] = [
 type AutomationSettings = Record<string, boolean>;
 
 export default function AutomatizacionesPage() {
+  useOwnerOnly();
   const [triggers, setTriggers]   = useState<Trigger[]>(DEFAULT_TRIGGERS);
   const [loading, setLoading]     = useState(true);
   const [saving, setSaving]       = useState<string | null>(null);

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { requireAuth } from "@/lib/auth/session";
+import { requireOwner } from "@/lib/auth/session";
 
 const BUCKET   = "barbershop-assets";
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB (covers pueden ser más grandes)
 
 export async function POST(request: NextRequest) {
-  const session = await requireAuth();
-  if (!session?.barbershop) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const session = await requireOwner();
+  if (!session) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
   const formData = await request.formData().catch(() => null);

@@ -146,25 +146,15 @@ export function Sidebar() {
                   : "1px solid rgba(34,197,94,0.15)",
             }}
           >
-            {/* Fila superior: plan + días */}
+            {/* Fila superior: plan */}
             <div className="flex items-center justify-between mb-1">
               <span
                 className="text-xs font-semibold font-body"
                 style={{ color: urgentTrial ? "#EF4444" : isTrialing ? "#CA8A04" : "#22C55E" }}
               >
-                {planLabel}
+                {isTrialing ? "Prueba gratuita" : planLabel}
               </span>
-              {isTrialing && daysLeft !== null && (
-                <div className="flex items-center gap-1">
-                  {urgentTrial && <AlertTriangle className="w-3 h-3" style={{ color: "#EF4444" }} />}
-                  <span
-                    className="text-xs font-bold font-body"
-                    style={{ color: urgentTrial ? "#EF4444" : "#CA8A04" }}
-                  >
-                    {daysLeft}d
-                  </span>
-                </div>
-              )}
+              {urgentTrial && <AlertTriangle className="w-3 h-3" style={{ color: "#EF4444" }} />}
               {isActive && (
                 <span className="text-xs font-body" style={{ color: "#22C55E" }}>Activo</span>
               )}
@@ -188,7 +178,7 @@ export function Sidebar() {
                 <p className="text-xs font-body" style={{ color: urgentTrial ? "#EF4444" : "#71717A" }}>
                   {urgentTrial
                     ? `¡Expira en ${daysLeft} día${daysLeft !== 1 ? "s" : ""}!`
-                    : `${daysLeft} día${daysLeft !== 1 ? "s" : ""} de prueba restantes`}
+                    : `${daysLeft} día${daysLeft !== 1 ? "s" : ""} restantes`}
                 </p>
               </>
             )}

@@ -34,8 +34,30 @@ type Cert = { id: string; name: string; issuer: string; year: string };
 
 const COLORS = ["#CA8A04","#3B82F6","#8B5CF6","#22C55E","#EF4444","#F59E0B","#EC4899","#14B8A6"];
 const EMPTY_CERT = { name: "", issuer: "", year: new Date().getFullYear().toString() };
-const TABS = ["Mi información", "Mis servicios", "Certificaciones"] as const;
+const TABS = ["Mi información", "Mis servicios", "Certificaciones", "Mi horario"] as const;
 type Tab = typeof TABS[number];
+
+/* ── Horario ─────────────────────────────────────────────────────────────── */
+type DaySchedule = { enabled: boolean; from: string; to: string; breakFrom: string; breakTo: string; hasBreak: boolean };
+type WeekSchedule = Record<string, DaySchedule>;
+const DAYS = [
+  { key: "lunes",     label: "Lunes"     },
+  { key: "martes",    label: "Martes"    },
+  { key: "miercoles", label: "Miércoles" },
+  { key: "jueves",    label: "Jueves"    },
+  { key: "viernes",   label: "Viernes"   },
+  { key: "sabado",    label: "Sábado"    },
+  { key: "domingo",   label: "Domingo"   },
+];
+const DEFAULT_SCHEDULE: WeekSchedule = {
+  lunes:     { enabled: true,  from: "09:00", to: "19:00", breakFrom: "13:00", breakTo: "14:00", hasBreak: true  },
+  martes:    { enabled: true,  from: "09:00", to: "19:00", breakFrom: "13:00", breakTo: "14:00", hasBreak: true  },
+  miercoles: { enabled: true,  from: "09:00", to: "19:00", breakFrom: "13:00", breakTo: "14:00", hasBreak: true  },
+  jueves:    { enabled: true,  from: "09:00", to: "19:00", breakFrom: "13:00", breakTo: "14:00", hasBreak: true  },
+  viernes:   { enabled: true,  from: "09:00", to: "20:00", breakFrom: "13:00", breakTo: "14:00", hasBreak: true  },
+  sabado:    { enabled: true,  from: "09:00", to: "15:00", breakFrom: "",      breakTo: "",      hasBreak: false },
+  domingo:   { enabled: false, from: "09:00", to: "14:00", breakFrom: "",      breakTo: "",      hasBreak: false },
+};
 
 function getInitials(name: string) {
   return name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
@@ -73,6 +95,11 @@ export default function BarberPerfilPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [certForm,  setCertForm]  = useState(EMPTY_CERT);
 
+  /* ── Horario ────────────────────────────────────────────────────────────── */
+  const [schedule,     setSchedule]     = useState<WeekSchedule>(DEFAULT_SCHEDULE);
+  const [savingSchd,   setSavingSchd]   = useState(false);
+  const [savedSchd,    setSavedSchd]    = useState(false);
+
   const [activeTab, setActiveTab] = useState<Tab>("Mi información");
 
   /* ── Fetch perfil ──────────────────────────────────────────────────────── */
@@ -94,6 +121,33 @@ export default function BarberPerfilPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  /* ── Fetch horario del barbero ─────────────────────────────────────────── */
+  useEffect(() => {
+    fetch("/api/barbers/me/schedule")
+      .then((r) => r.json())
+      .then(({ data }: { data: WeekSchedule | null }) => {
+        if (data && Object.keys(data).length > 0) setSchedule(data);
+      })
+      .catch(console.error);
+  }, []);
+
+  /* ── Guardar horario ────────────────────────────────────────────────────── */
+  async function guardarHorario() {
+    setSavingSchd(true);
+    setSavedSchd(false);
+    try {
+      const res = await fetch("/api/barbers/me/schedule", {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(schedule),
+      });
+      if (!res.ok) return;
+      setSavedSchd(true);
+      setTimeout(() => setSavedSchd(false), 2500);
+    } catch { /* silencioso */ }
+    finally { setSavingSchd(false); }
+  }
 
   /* ── Fetch todos los servicios de la barbería ──────────────────────────── */
   useEffect(() => {
@@ -553,6 +607,94 @@ export default function BarberPerfilPage() {
               <Plus className="w-4 h-4" /> Agregar certificación
             </button>
           )}
+        </div>
+      )}
+
+      {/* ── TAB: MI HORARIO ─────────────────────────────────────────────────── */}
+      {activeTab === "Mi horario" && (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start gap-3 p-4 rounded-xl"
+            style={{ backgroundColor: "rgba(202,138,4,0.06)", border: "1px solid rgba(202,138,4,0.15)" }}>
+            <Calendar className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#CA8A04" }} />
+            <p className="text-xs font-body leading-relaxed" style={{ color: "#71717A" }}>
+              Configurá los días y horarios en que trabajás. Esto reemplaza el horario general de la barbería para tus turnos.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {DAYS.map(({ key, label }) => {
+              const day = schedule[key] ?? DEFAULT_SCHEDULE[key];
+              return (
+                <div key={key} className="p-4 rounded-xl transition-all"
+                  style={{
+                    backgroundColor: "#111111",
+                    border: `1px solid ${day.enabled ? "rgba(202,138,4,0.2)" : "rgba(255,255,255,0.06)"}`,
+                    opacity: day.enabled ? 1 : 0.5,
+                  }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-semibold text-white font-body">{label}</p>
+                    {/* Toggle día */}
+                    <button
+                      onClick={() => setSchedule((s) => ({ ...s, [key]: { ...day, enabled: !day.enabled } }))}
+                      className="relative w-10 h-5 rounded-full transition-colors"
+                      style={{ backgroundColor: day.enabled ? "#CA8A04" : "#1A1A1A" }}>
+                      <div className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200"
+                        style={{ transform: day.enabled ? "translateX(21px)" : "translateX(2px)" }} />
+                    </button>
+                  </div>
+
+                  {day.enabled && (
+                    <div className="flex flex-wrap gap-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-body" style={{ color: "#52525B" }}>Desde</label>
+                        <input type="time" value={day.from}
+                          onChange={(e) => setSchedule((s) => ({ ...s, [key]: { ...day, from: e.target.value } }))}
+                          className="input-dark text-sm py-1.5 px-3 w-28" />
+                        <label className="text-xs font-body" style={{ color: "#52525B" }}>Hasta</label>
+                        <input type="time" value={day.to}
+                          onChange={(e) => setSchedule((s) => ({ ...s, [key]: { ...day, to: e.target.value } }))}
+                          className="input-dark text-sm py-1.5 px-3 w-28" />
+                      </div>
+
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <div
+                          onClick={() => setSchedule((s) => ({ ...s, [key]: { ...day, hasBreak: !day.hasBreak } }))}
+                          className="w-4 h-4 rounded flex items-center justify-center transition-colors"
+                          style={{
+                            backgroundColor: day.hasBreak ? "#CA8A04" : "transparent",
+                            border: `2px solid ${day.hasBreak ? "#CA8A04" : "rgba(255,255,255,0.15)"}`,
+                          }}>
+                          {day.hasBreak && <Check className="w-2.5 h-2.5 text-black" />}
+                        </div>
+                        <span className="text-xs font-body" style={{ color: "#71717A" }}>Descanso</span>
+                      </label>
+
+                      {day.hasBreak && (
+                        <div className="flex items-center gap-2">
+                          <input type="time" value={day.breakFrom}
+                            onChange={(e) => setSchedule((s) => ({ ...s, [key]: { ...day, breakFrom: e.target.value } }))}
+                            className="input-dark text-sm py-1.5 px-3 w-28" />
+                          <span className="text-xs font-body" style={{ color: "#3F3F46" }}>—</span>
+                          <input type="time" value={day.breakTo}
+                            onChange={(e) => setSchedule((s) => ({ ...s, [key]: { ...day, breakTo: e.target.value } }))}
+                            className="input-dark text-sm py-1.5 px-3 w-28" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <button onClick={guardarHorario} disabled={savingSchd}
+            className="self-start flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold font-body text-black hover:opacity-90 disabled:opacity-40"
+            style={{ backgroundColor: savedSchd ? "#22C55E" : "#CA8A04" }}>
+            {savedSchd
+              ? <><Check className="w-4 h-4" /> Guardado</>
+              : savingSchd ? "Guardando..." : <><Check className="w-4 h-4" /> Guardar horario</>
+            }
+          </button>
         </div>
       )}
     </div>

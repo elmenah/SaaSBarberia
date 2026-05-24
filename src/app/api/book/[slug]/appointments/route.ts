@@ -7,12 +7,13 @@ import { rateLimit, getClientIp, rateLimitResponse, BOOK_LIMIT } from "@/lib/rat
 import { z } from "zod";
 
 const BookSchema = z.object({
-  barberId:    z.string().uuid(),
-  serviceIds:  z.array(z.string().uuid()).min(1),
-  startsAt:    z.string().datetime(),
-  clientName:  z.string().min(2),
-  clientPhone: z.string().min(6),
-  clientEmail: z.string().email().optional().nullable(),
+  barberId:        z.string().uuid(),
+  serviceIds:      z.array(z.string().uuid()).min(1),
+  startsAt:        z.string().datetime(),
+  clientName:      z.string().min(2),
+  clientPhone:     z.string().min(6),
+  clientEmail:     z.string().email().optional().nullable(),
+  clientBirthdate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
 });
 
 // POST /api/book/[slug]/appointments — crear turno desde la página pública
@@ -42,7 +43,7 @@ export async function POST(
     return NextResponse.json({ error: parse.error.errors.map(e => e.message).join(", ") }, { status: 422 });
   }
 
-  const { barberId, serviceIds, startsAt, clientName, clientPhone, clientEmail } = parse.data;
+  const { barberId, serviceIds, startsAt, clientName, clientPhone, clientEmail, clientBirthdate } = parse.data;
 
   // Verificar que el barbero pertenece a la barbería
   const barber = await prisma.barber.findFirst({
@@ -84,21 +85,26 @@ export async function POST(
     where: { phone, barbershopId: barbershop.id },
   });
 
+  const birthdate = clientBirthdate ? new Date(clientBirthdate + "T12:00:00Z") : null;
+
   if (!client) {
     client = await prisma.client.create({
       data: {
         name:        clientName.trim(),
         phone,
         email:       clientEmail ?? null,
+        birthdate:   birthdate ?? null,
         barbershopId: barbershop.id,
       },
     });
-  } else if (clientEmail && !client.email) {
-    // Cliente existente sin email → actualizar con el que acaba de proveer
-    client = await prisma.client.update({
-      where: { id: client.id },
-      data:  { email: clientEmail },
-    });
+  } else {
+    // Actualizar campos opcionales si el cliente no los tenía aún
+    const updates: Record<string, unknown> = {};
+    if (clientEmail && !client.email) updates.email = clientEmail;
+    if (birthdate && !client.birthdate) updates.birthdate = birthdate;
+    if (Object.keys(updates).length > 0) {
+      client = await prisma.client.update({ where: { id: client.id }, data: updates });
+    }
   }
 
   // Crear la cita

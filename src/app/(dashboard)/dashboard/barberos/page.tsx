@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/auth-context";
+import { useOwnerOnly } from "@/hooks/useOwnerOnly";
 import {
   Plus, Edit2, Trash2, X, Check,
   Calendar, DollarSign, Scissors, Power, Crown, Mail,
@@ -35,6 +36,7 @@ function getInitials(name: string) {
 }
 
 export default function MibarberiaPage() {
+  useOwnerOnly();
   const { barbershop, user } = useAuth();
   const [barbers,    setBarbers]    = useState<BarberFromAPI[]>([]);
   const [loading,    setLoading]    = useState(true);

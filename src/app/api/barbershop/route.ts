@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/auth/session";
+import { requireAuth, requireOwner } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { writeAuditLog } from "@/lib/audit";
 import { NextRequest, NextResponse } from "next/server";
@@ -41,9 +41,9 @@ export async function GET() {
  * Actualiza datos del perfil o configuración de la barbería.
  */
 export async function PATCH(req: NextRequest) {
-  const session = await requireAuth();
-  if (!session?.barbershop) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const session = await requireOwner();
+  if (!session) {
+    return NextResponse.json({ error: "Solo el dueño puede modificar la barbería." }, { status: 403 });
   }
 
   const { barbershop } = session;

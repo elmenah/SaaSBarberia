@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
   const startOfDay       = new Date(now); startOfDay.setHours(0, 0, 0, 0);
   const endOfDay         = new Date(now); endOfDay.setHours(23, 59, 59, 999);
   const threeMonthsAgo   = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+  // Sparkline: últimos 7 días
+  const sevenDaysAgo     = new Date(now); sevenDaysAgo.setDate(now.getDate() - 6); sevenDaysAgo.setHours(0, 0, 0, 0);
 
   const [
     // 0 — reservas del mes actual (sin canceladas/no-show)
@@ -49,6 +51,8 @@ export async function GET(request: NextRequest) {
     bestDayRaw,
     // 11 — top servicios del mes
     topServicesRaw,
+    // 12 — ingresos diarios últimos 7 días (sparkline)
+    sparklineRaw,
   ] = await Promise.all([
     prisma.appointment.aggregate({
       where: {
@@ -140,6 +144,20 @@ export async function GET(request: NextRequest) {
       orderBy: { _count: { serviceId: "desc" } },
       take: 5,
     }),
+
+    // Ingresos diarios para sparkline (últimos 7 días)
+    prisma.$queryRaw<Array<{ day: string; revenue: string; count: string }>>`
+      SELECT DATE(starts_at)::text AS day,
+             COALESCE(SUM(COALESCE(paid_amount, total_price)), 0)::text AS revenue,
+             COUNT(*)::text AS count
+      FROM appointments
+      WHERE barbershop_id = ${barbershopId}
+        AND starts_at >= ${sevenDaysAgo}
+        AND starts_at <= ${endOfDay}
+        AND status = 'COMPLETED'
+      GROUP BY DATE(starts_at)
+      ORDER BY DATE(starts_at) ASC
+    `,
   ]);
 
   // ── Top servicios — resolver nombres ────────────────────────────────────────
@@ -157,6 +175,24 @@ export async function GET(request: NextRequest) {
     count:     s._count.serviceId,
     revenue:   Number(s._sum.price ?? 0),
   }));
+
+  // ── Sparkline: llenar los 7 días aunque no haya datos ───────────────────────
+  const sparklineMap = Object.fromEntries(
+    (sparklineRaw as Array<{ day: string; revenue: string; count: string }>).map((r) => [
+      r.day,
+      { revenue: Number(r.revenue), count: Number(r.count) },
+    ])
+  );
+  const sparkline = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(sevenDaysAgo);
+    d.setDate(sevenDaysAgo.getDate() + i);
+    const key = d.toISOString().split("T")[0]; // YYYY-MM-DD
+    return {
+      date:    key,
+      revenue: sparklineMap[key]?.revenue ?? 0,
+      count:   sparklineMap[key]?.count   ?? 0,
+    };
+  });
 
   // ── Ingresos mensuales ───────────────────────────────────────────────────────
   const currentRevenue = Number((currentMonthRevenueRaw as [{ total: string }])[0]?.total ?? 0);
@@ -195,6 +231,8 @@ export async function GET(request: NextRequest) {
       todayAvgTicket: Math.round(todayAvgTicket),
       // Insight
       bestDayOfWeek,
+      // Sparkline últimos 7 días
+      sparkline,
     },
   });
 }

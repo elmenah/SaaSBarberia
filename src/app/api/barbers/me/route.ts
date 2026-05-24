@@ -10,6 +10,9 @@ export async function GET() {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
+  const now       = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
   const barber = await prisma.barber.findFirst({
     where: {
       userId:       session.dbUser.id,
@@ -25,7 +28,7 @@ export async function GET() {
           appointments: {
             where: {
               status:   { notIn: ["CANCELLED", "NO_SHOW"] },
-              startsAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
+              startsAt: { gte: monthStart },
             },
           },
         },
@@ -37,6 +40,20 @@ export async function GET() {
     return NextResponse.json({ data: null });
   }
 
+  // Calcular ingresos del mes (solo turnos COMPLETADOS)
+  const completedThisMonth = await prisma.appointment.findMany({
+    where: {
+      barberId:  barber.id,
+      status:    "COMPLETED",
+      startsAt:  { gte: monthStart },
+    },
+    select: { paidAmount: true, totalPrice: true },
+  });
+  const ingresosMes = completedThisMonth.reduce(
+    (sum, a) => sum + Number(a.paidAmount ?? a.totalPrice),
+    0
+  );
+
   return NextResponse.json({
     data: {
       id:             barber.id,
@@ -47,6 +64,7 @@ export async function GET() {
       createdAt:      barber.createdAt,
       user:           barber.user,
       turnosMes:      barber._count.appointments,
+      ingresosMes,
       services:       barber.services.map((bs) => bs.service),
       certifications: (barber.certifications as unknown[]) ?? [],
     },

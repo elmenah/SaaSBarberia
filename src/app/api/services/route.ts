@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/auth/session";
+import { requireAuth, requireOwner } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -25,10 +25,10 @@ export async function GET() {
   return NextResponse.json({ data: services });
 }
 
-// POST /api/services
+// POST /api/services — solo dueños
 export async function POST(request: Request) {
-  const session = await requireAuth();
-  if (!session?.barbershop) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const session = await requireOwner();
+  if (!session) return NextResponse.json({ error: "Solo el dueño puede crear servicios." }, { status: 403 });
 
   const body  = await request.json();
   const parse = CreateServiceSchema.safeParse(body);

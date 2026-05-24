@@ -5,6 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { Search, Plus, Filter, MoreHorizontal, Clock, XCircle, UserX, DollarSign, Tag, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
+import { BarberStatsBar } from "@/components/dashboard/BarberStatsBar";
 
 type Appointment = {
   id: string;
@@ -427,6 +428,9 @@ export default function ReservasPage() {
       />
     )}
     <div className="flex flex-col gap-5">
+
+      {/* ── Stats del barbero (solo visible para rol BARBER) ─────────── */}
+      {isBarber && <BarberStatsBar />}
 
       {/* ── Barra de acciones ─────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-3">

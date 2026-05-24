@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/auth-context";
+import { useOwnerOnly } from "@/hooks/useOwnerOnly";
 import {
   Search, Plus, Filter, Star, Phone, Mail,
   Calendar, MoreHorizontal, TrendingUp, Zap, Hash, Gift,
@@ -37,6 +38,7 @@ function Skeleton({ className = "" }: { className?: string }) {
 }
 
 export default function ClientesPage() {
+  useOwnerOnly();
   const { barbershop } = useAuth();
   const [clients,     setClients]     = useState<Client[]>([]);
   const [loading,     setLoading]     = useState(true);

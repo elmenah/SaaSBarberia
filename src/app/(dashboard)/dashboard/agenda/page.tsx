@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import NextLink from "next/link";
 import { useAuth } from "@/context/auth-context";
+import { BarberStatsBar } from "@/components/dashboard/BarberStatsBar";
 
 /* ── Constantes de grilla ────────────────────────────────────────────────── */
 const SLOT_H  = 40;
@@ -324,6 +325,9 @@ export default function AgendaPage() {
   /* ── Render ──────────────────────────────────────────────────────────── */
   return (
     <div className="flex flex-col gap-4">
+
+      {/* Stats del barbero (solo visible para rol BARBER) */}
+      {isBarber && <BarberStatsBar />}
 
       {/* Toolbar */}
       <div className="flex items-center justify-between flex-wrap gap-3">

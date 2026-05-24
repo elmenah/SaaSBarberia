@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/auth/session";
+import { requireOwner } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,9 +9,9 @@ export async function POST(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireAuth();
-  if (!session?.barbershop) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const session = await requireOwner();
+  if (!session) {
+    return NextResponse.json({ error: "Solo el dueño puede reenviar invitaciones." }, { status: 403 });
   }
 
   const { id } = await params;

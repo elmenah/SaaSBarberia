@@ -5,6 +5,7 @@ import { Check, Copy, ExternalLink, Clock, Globe, CheckCircle2, Plus, Trash2, Ba
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
+import { useOwnerOnly } from "@/hooks/useOwnerOnly";
 
 /* ── Tipos ───────────────────────────────────────────────────────────────── */
 type DaySchedule = {
@@ -80,6 +81,7 @@ function Skeleton({ className = "" }: { className?: string }) {
    COMPONENTE
 ════════════════════════════════════════════════════════════════════════════ */
 export default function ConfiguracionPage() {
+  useOwnerOnly();
   const { barbershop: authBarbershop, refreshBarbershop } = useAuth();
 
   const [activeTab,  setActiveTab]  = useState<Tab>("Horarios");

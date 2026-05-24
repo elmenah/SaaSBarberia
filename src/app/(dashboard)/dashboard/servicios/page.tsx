@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/auth-context";
+import { useOwnerOnly } from "@/hooks/useOwnerOnly";
 import { Plus, Edit2, Scissors, Clock, DollarSign, MoreHorizontal, X, Check, Trash2 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -43,6 +44,7 @@ function Skeleton({ className = "" }: { className?: string }) {
 }
 
 export default function ServiciosPage() {
+  useOwnerOnly();
   const { barbershop }   = useAuth();
   const [services,        setServices]       = useState<Service[]>([]);
   const [topServiceName,  setTopServiceName] = useState<string | null>(null);

@@ -57,6 +57,20 @@ export async function requireAuth() {
   return { authUser, dbUser, barbershop };
 }
 
+/**
+ * Como requireAuth() pero exige que el usuario sea DUEÑO de al menos una barbería.
+ * Barberos invitados reciben 403.
+ */
+export async function requireOwner() {
+  const authUser = await getAuthUser();
+  if (!authUser) return null;
+  const dbUser = await getDbUser();
+  if (!dbUser) return null;
+  const barbershop = dbUser.ownedBarbershops[0] ?? null;
+  if (!barbershop) return null; // es barbero, no dueño
+  return { authUser, dbUser, barbershop };
+}
+
 /** Solo verifica si hay sesión activa (sin DB) — útil para middleware-like checks */
 export async function isAuthenticated(): Promise<boolean> {
   const user = await getAuthUser();

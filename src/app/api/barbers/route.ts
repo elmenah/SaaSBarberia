@@ -1,4 +1,4 @@
-﻿import { requireAuth } from "@/lib/auth/session";
+﻿import { requireAuth, requireOwner } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -70,9 +70,9 @@ export async function POST(request: NextRequest) {
   const rl = rateLimit(`barbers:${ip}`, API_LIMIT.limit, API_LIMIT.windowMs);
   if (!rl.success) return rateLimitResponse(rl.retryAfter) as NextResponse;
 
-  // ── Auth ───────────────────────────────────────────────────────────────────
-  const session = await requireAuth();
-  if (!session?.barbershop) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  // ── Auth — solo dueños pueden agregar barberos ─────────────────────────────
+  const session = await requireOwner();
+  if (!session) return NextResponse.json({ error: "Solo el dueño puede agregar barberos." }, { status: 403 });
 
   const { barbershop, dbUser } = session;
 
