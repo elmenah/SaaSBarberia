@@ -16,26 +16,49 @@ export default function SetPasswordPage() {
   const [done,        setDone]        = useState(false);
   const [sessionOk,   setSessionOk]   = useState<boolean | null>(null);
 
-  // Supabase procesa el #access_token del hash automáticamente al montar el cliente.
-  // Esperamos hasta que la sesión esté lista y luego linkeamos al barbero si aplica.
+  // Procesamos el hash MANUALMENTE para evitar la race condition donde
+  // INITIAL_SESSION (null) llega antes de que Supabase termine de procesar
+  // el #access_token del link de invitación/recuperación.
   useEffect(() => {
     const supabase = createClient();
 
-    // onAuthStateChange captura el evento SIGNED_IN que dispara Supabase
-    // cuando procesa el hash de invite/recovery
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session) {
-        setSessionOk(true);
-        // Si es un barbero invitado, vincular su cuenta en la DB
-        if (session.user.user_metadata?.role === "BARBER") {
-          await fetch("/api/auth/link-barber", { method: "POST" }).catch(console.error);
-        }
-      } else if (event === "INITIAL_SESSION" && !session) {
-        setSessionOk(false);
-      }
-    });
+    async function processHashSession() {
+      const hash = window.location.hash;
 
-    return () => subscription.unsubscribe();
+      if (hash) {
+        const params     = new URLSearchParams(hash.substring(1));
+        const accessToken  = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
+
+        if (accessToken && refreshToken) {
+          const { data, error } = await supabase.auth.setSession({
+            access_token:  accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (error || !data.session) {
+            setSessionOk(false);
+            return;
+          }
+
+          // Limpiar el hash de la URL sin recargar la página
+          window.history.replaceState(null, "", window.location.pathname);
+          setSessionOk(true);
+
+          // Si es un barbero invitado, vincular su supabaseId real en la DB
+          if (data.session.user.user_metadata?.role === "BARBER") {
+            await fetch("/api/auth/link-barber", { method: "POST" }).catch(console.error);
+          }
+          return;
+        }
+      }
+
+      // Sin hash → verificar si ya hay sesión activa (ej: usuario vuelve a la página)
+      const { data: { session } } = await supabase.auth.getSession();
+      setSessionOk(session ? true : false);
+    }
+
+    processHashSession();
   }, []);
 
   const strength = (() => {

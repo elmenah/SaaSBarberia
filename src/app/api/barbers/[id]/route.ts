@@ -79,7 +79,30 @@ export async function DELETE(
   });
   if (!barber) return NextResponse.json({ error: "Barbero no encontrado" }, { status: 404 });
 
-  await prisma.barber.delete({ where: { id } });
+  // Borrar en cascada manual (appointments no tiene onDelete:Cascade en barberId)
+  await prisma.$transaction([
+    // 1. appointment_services de los turnos de este barbero
+    prisma.appointmentService.deleteMany({
+      where: { appointment: { barberId: id } },
+    }),
+    // 2. automation_logs de esos turnos
+    prisma.automationLog.deleteMany({
+      where: { appointment: { barberId: id } },
+    }),
+    // 3. appointments del barbero
+    prisma.appointment.deleteMany({ where: { barberId: id } }),
+    // 4. audit_logs del user del barbero
+    prisma.auditLog.deleteMany({ where: { userId: barber.userId } }),
+    // 5. el barber (cascade borra barber_services)
+    prisma.barber.delete({ where: { id } }),
+    // 6. el user placeholder (si no es el owner)
+    prisma.user.deleteMany({
+      where: {
+        id: barber.userId,
+        supabaseId: { startsWith: "placeholder-" },
+      },
+    }),
+  ]);
 
   return NextResponse.json({ ok: true });
 }
