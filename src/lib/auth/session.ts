@@ -11,21 +11,27 @@ export const getAuthUser = cache(async () => {
   return user ?? null;
 });
 
-/** Usuario en nuestra DB (con barberías) */
+/** Usuario en nuestra DB (con barbería como owner o como barbero) */
 export const getDbUser = cache(async () => {
   const authUser = await getAuthUser();
   if (!authUser) return null;
   return prisma.user.findUnique({
     where: { supabaseId: authUser.id },
-    include: { ownedBarbershops: true },
+    include: {
+      ownedBarbershops: true,
+      barberProfile: { include: { barbershop: true } },
+    },
   });
 });
 
-/** Barbería activa del usuario (la primera que es owner) */
+/** Barbería activa del usuario:
+ *  - Si es OWNER → primera barbería propia
+ *  - Si es BARBER → la barbería a la que pertenece
+ */
 export const getBarbershop = cache(async () => {
   const dbUser = await getDbUser();
   if (!dbUser) return null;
-  return dbUser.ownedBarbershops[0] ?? null;
+  return dbUser.ownedBarbershops[0] ?? dbUser.barberProfile?.barbershop ?? null;
 });
 
 // ─── Helper para API Routes ───────────────────────────────────────────────────
@@ -45,7 +51,8 @@ export async function requireAuth() {
   const dbUser = await getDbUser();
   if (!dbUser) return null;
 
-  const barbershop = dbUser.ownedBarbershops[0] ?? null;
+  // Owner → usa su propia barbería | Barbero → usa la barbería donde trabaja
+  const barbershop = dbUser.ownedBarbershops[0] ?? dbUser.barberProfile?.barbershop ?? null;
 
   return { authUser, dbUser, barbershop };
 }

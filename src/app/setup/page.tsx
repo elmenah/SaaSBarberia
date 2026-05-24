@@ -29,10 +29,16 @@ export default function SetupPage() {
   }, [authLoading, barbershop, router]);
 
   // Pre-rellenar nombre desde metadata de Supabase si existe
+  // También: si es un barbero invitado → redirigir al dashboard (no puede crear barbería)
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { window.location.replace("/login"); return; }
+      // Barberos invitados nunca deben ver esta pantalla
+      if (user.user_metadata?.role === "BARBER") {
+        router.replace("/dashboard");
+        return;
+      }
       const meta = user.user_metadata ?? {};
       setForm((prev) => ({
         name:           prev.name           || meta.name || "",
