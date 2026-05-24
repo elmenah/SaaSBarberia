@@ -24,7 +24,7 @@ function trialDaysLeft(trialEndsAt: string | null): number | null {
 }
 
 /* ── Nav ─────────────────────────────────────────────────────────────────── */
-const NAV_ITEMS = [
+const OWNER_NAV = [
   { label: "Dashboard",        href: "/dashboard",                  icon: LayoutDashboard },
   { label: "Agenda",           href: "/dashboard/agenda",           icon: Calendar        },
   { label: "Reservas",         href: "/dashboard/reservas",         icon: ClipboardList   },
@@ -34,10 +34,20 @@ const NAV_ITEMS = [
   { label: "Automatizaciones", href: "/dashboard/automatizaciones", icon: Zap             },
 ];
 
+const BARBER_NAV = [
+  { label: "Dashboard",  href: "/dashboard",          icon: LayoutDashboard },
+  { label: "Agenda",     href: "/dashboard/agenda",   icon: Calendar        },
+  { label: "Reservas",   href: "/dashboard/reservas", icon: ClipboardList   },
+  { label: "Clientes",   href: "/dashboard/clientes", icon: Users           },
+  { label: "Mi perfil",  href: "/dashboard/barberos/perfil", icon: UserCog  },
+];
+
 export function Sidebar() {
   const pathname        = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const { barbershop }  = useAuth();
+  const { barbershop, isBarber }  = useAuth();
+
+  const NAV_ITEMS = isBarber ? BARBER_NAV : OWNER_NAV;
 
   const isTrialing  = barbershop?.subscriptionStatus === "TRIALING";
   const isActive    = barbershop?.subscriptionStatus === "ACTIVE";
@@ -215,33 +225,38 @@ export function Sidebar() {
         className="px-2 py-4 flex flex-col gap-0.5"
         style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
       >
-        <Link
-          href="/dashboard/billing"
-          title={collapsed ? "Facturación" : undefined}
-          className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/3 transition-all",
-            pathname.startsWith("/dashboard/billing") && "text-white",
-            collapsed && "justify-center px-0"
-          )}
-          style={pathname.startsWith("/dashboard/billing") ? { backgroundColor: "#161616" } : {}}
-        >
-          <CreditCard
-            className="w-4 h-4 flex-shrink-0"
-            style={{ color: pathname.startsWith("/dashboard/billing") ? "#CA8A04" : undefined }}
-          />
-          {!collapsed && <span>Facturación</span>}
-        </Link>
-        <Link
-          href="/dashboard/configuracion"
-          title={collapsed ? "Configuración" : undefined}
-          className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/3 transition-all",
-            collapsed && "justify-center px-0"
-          )}
-        >
-          <Settings className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && <span>Configuración</span>}
-        </Link>
+        {/* Solo owners ven Facturación y Configuración */}
+        {!isBarber && (
+          <>
+            <Link
+              href="/dashboard/billing"
+              title={collapsed ? "Facturación" : undefined}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/3 transition-all",
+                pathname.startsWith("/dashboard/billing") && "text-white",
+                collapsed && "justify-center px-0"
+              )}
+              style={pathname.startsWith("/dashboard/billing") ? { backgroundColor: "#161616" } : {}}
+            >
+              <CreditCard
+                className="w-4 h-4 flex-shrink-0"
+                style={{ color: pathname.startsWith("/dashboard/billing") ? "#CA8A04" : undefined }}
+              />
+              {!collapsed && <span>Facturación</span>}
+            </Link>
+            <Link
+              href="/dashboard/configuracion"
+              title={collapsed ? "Configuración" : undefined}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/3 transition-all",
+                collapsed && "justify-center px-0"
+              )}
+            >
+              <Settings className="w-4 h-4 flex-shrink-0" />
+              {!collapsed && <span>Configuración</span>}
+            </Link>
+          </>
+        )}
 
         {!collapsed && <PushButton />}
 

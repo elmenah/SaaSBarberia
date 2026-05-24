@@ -19,6 +19,8 @@ type AuthContextValue = {
   user: User | null;
   barbershop: BarbershopInfo | null;
   loading: boolean;
+  isOwner: boolean;    // true si es dueño de la barbería
+  isBarber: boolean;   // true si es barbero invitado (no dueño)
   signOut: () => Promise<void>;
   refreshBarbershop: () => Promise<void>;
 };
@@ -29,6 +31,8 @@ const AuthContext = createContext<AuthContextValue>({
   user: null,
   barbershop: null,
   loading: true,
+  isOwner: false,
+  isBarber: false,
   signOut: async () => {},
   refreshBarbershop: async () => {},
 });
@@ -85,11 +89,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setBarbershop(null);
   }
 
+  // El rol viene del user_metadata de Supabase:
+  // - Barberos invitados tienen role: "BARBER"
+  // - Dueños registrados no tienen este campo (o tienen "OWNER")
+  const isBarber = user?.user_metadata?.role === "BARBER";
+  const isOwner  = !!user && !isBarber;
+
   return (
     <AuthContext.Provider value={{
       user,
       barbershop,
       loading,
+      isOwner,
+      isBarber,
       signOut,
       refreshBarbershop: fetchBarbershop,
     }}>
