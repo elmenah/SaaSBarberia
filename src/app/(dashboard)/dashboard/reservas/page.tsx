@@ -526,7 +526,7 @@ export default function ReservasPage() {
               </div>
             ))
           : reservas.length === 0
-            ? <p className="text-center py-16 text-sm font-body" style={{ color: "#3F3F46" }}>Sin reservas — creá la primera con el botón "Nueva reserva"</p>
+            ? <p className="text-center py-16 text-sm font-body" style={{ color: "#3F3F46" }}>Sin reservas — crea la primera con el botón "Nueva reserva"</p>
             : reservas.map((r, idx) => {
                 const st = getStatus(r);
                 const expired = isExpired(r);

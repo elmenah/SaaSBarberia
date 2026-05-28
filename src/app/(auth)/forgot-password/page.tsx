@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
       }
       setSent(true);
     } catch {
-      toast.error("Error inesperado. Intentá nuevamente.");
+      toast.error("Error inesperado. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
@@ -53,13 +53,13 @@ export default function ForgotPasswordPage() {
               <CheckCircle2 className="w-7 h-7" style={{ color: "#22C55E" }} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white mb-2">Revisá tu email</h2>
+              <h2 className="text-lg font-bold text-white mb-2">Revisa tu email</h2>
               <p className="text-sm leading-relaxed" style={{ color: "#71717A" }}>
                 Te enviamos un link a <span className="text-white font-medium">{email}</span> para restablecer tu contraseña.
               </p>
             </div>
             <p className="text-xs" style={{ color: "#52525B" }}>
-              ¿No lo ves? Revisá la carpeta de spam.
+              ¿No lo ves? Revisa la carpeta de spam.
             </p>
             <Link
               href="/login"
@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
             <div className="mb-6">
               <h1 className="text-xl font-bold text-white mb-1">Restablecer contraseña</h1>
               <p className="text-sm" style={{ color: "#52525B" }}>
-                Ingresá tu email y te mandamos un link para crear una nueva contraseña.
+                Ingresa tu email y te mandamos un link para crear una nueva contraseña.
               </p>
             </div>
 

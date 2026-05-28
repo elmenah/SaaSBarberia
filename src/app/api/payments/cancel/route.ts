@@ -21,7 +21,7 @@ export async function POST() {
 
   if (!subscriptionId) {
     return NextResponse.json(
-      { error: "No tenés una suscripción activa registrada." },
+      { error: "No tienes una suscripción activa registrada." },
       { status: 400 }
     );
   }

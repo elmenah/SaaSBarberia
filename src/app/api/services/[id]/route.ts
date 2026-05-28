@@ -19,7 +19,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await requireOwner();
-  if (!session) return NextResponse.json({ error: "Solo el dueño puede modificar servicios." }, { status: 403 });
+  if (!session) return NextResponse.json({ error: "Solo el propietario puede modificar servicios." }, { status: 403 });
 
   const { id } = await params;
   const body  = await request.json();
@@ -45,7 +45,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await requireOwner();
-  if (!session) return NextResponse.json({ error: "Solo el dueño puede modificar servicios." }, { status: 403 });
+  if (!session) return NextResponse.json({ error: "Solo el propietario puede modificar servicios." }, { status: 403 });
 
   const { id } = await params;
 

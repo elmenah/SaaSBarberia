@@ -26,7 +26,7 @@ interface AppointmentConfirmationEmailProps {
 }
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat("es-AR", {
+  new Intl.NumberFormat("es-419", {
     style:                 "currency",
     currency:              "ARS",
     minimumFractionDigits: 0,
@@ -34,7 +34,7 @@ const fmt = (n: number) =>
 
 const fmtDate = (d: Date | string) => {
   const date = typeof d === "string" ? new Date(d) : d;
-  return date.toLocaleDateString("es-AR", {
+  return date.toLocaleDateString("es-419", {
     weekday: "long",
     day:     "numeric",
     month:   "long",
@@ -44,7 +44,7 @@ const fmtDate = (d: Date | string) => {
 
 const fmtTime = (d: Date | string) => {
   const date = typeof d === "string" ? new Date(d) : d;
-  return date.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString("es-419", { hour: "2-digit", minute: "2-digit" });
 };
 
 export default function AppointmentConfirmationEmail({

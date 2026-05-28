@@ -9,11 +9,16 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { searchParams } = request.nextUrl;
-  const barbershopId = searchParams.get("barbershopId");
+  // ── Seguridad: derivar barbershopId desde la sesión, nunca del cliente ──────
+  // Evita IDOR: un usuario autenticado no puede leer métricas de otro tenant.
+  const dbUser = await prisma.user.findUnique({
+    where: { supabaseId: user.id },
+    include: { ownedBarbershops: { take: 1 } },
+  });
+  const barbershopId = dbUser?.ownedBarbershops[0]?.id;
 
   if (!barbershopId) {
-    return NextResponse.json({ error: "barbershopId required" }, { status: 400 });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const now = new Date();

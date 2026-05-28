@@ -66,6 +66,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-CL" suppressHydrationWarning>
+      {/* Script anti-flash: aplica el tema guardado ANTES del primer render */}
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('barber-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className={`${montserrat.variable} ${cormorant.variable} font-body antialiased`}>
         <AuthProvider>
           {children}

@@ -185,7 +185,7 @@ export default function SetPasswordPage() {
             <div className="mb-6">
               <h1 className="text-xl font-bold text-white mb-1">Crear contraseña</h1>
               <p className="text-sm" style={{ color: "#52525B" }}>
-                Elegí una contraseña segura para tu cuenta.
+                Elige una contraseña segura para tu cuenta.
               </p>
             </div>
 

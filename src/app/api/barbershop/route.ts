@@ -43,7 +43,7 @@ export async function GET() {
 export async function PATCH(req: NextRequest) {
   const session = await requireOwner();
   if (!session) {
-    return NextResponse.json({ error: "Solo el dueño puede modificar la barbería." }, { status: 403 });
+    return NextResponse.json({ error: "Solo el propietario puede modificar la barbería." }, { status: 403 });
   }
 
   const { barbershop } = session;
@@ -74,7 +74,7 @@ export async function PATCH(req: NextRequest) {
     }
     const existing = await prisma.barbershop.findUnique({ where: { slug: data.slug } });
     if (existing) {
-      return NextResponse.json({ error: "Ese slug ya está en uso. Elegí otro." }, { status: 409 });
+      return NextResponse.json({ error: "Ese slug ya está en uso. Elige otro." }, { status: 409 });
     }
   }
 

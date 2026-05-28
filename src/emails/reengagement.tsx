@@ -34,8 +34,8 @@ export default function ReengagementEmail({
                 Hola <strong>{clientName}</strong>, hace {daysSinceVisit} días que no te vemos.
               </Text>
               <Text className="text-[#a3a3a3] text-sm m-0 mt-2">
-                Te extrañamos en {barbershopName}. Si necesitás un corte o simplemente arreglarte,
-                ya sabés dónde estamos. 😊
+                Te extrañamos en {barbershopName}. Si necesitas un corte o simplemente arreglarte,
+                ya sabes dónde estamos. 😊
               </Text>
             </Section>
 
@@ -50,7 +50,7 @@ export default function ReengagementEmail({
 
             <Section className="text-center">
               <Text className="text-[#525252] text-xs m-0">
-                Si no querés recibir más emails, ignorá este mensaje.
+                Si no quieres recibir más emails, ignora este mensaje.
               </Text>
               <Text className="text-[#525252] text-xs m-0 mt-2">
                 Powered by <strong className="text-[#737373]">Mibarberia</strong>

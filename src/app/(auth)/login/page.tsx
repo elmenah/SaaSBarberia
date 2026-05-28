@@ -75,7 +75,7 @@ export default function LoginPage() {
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-white mb-1">Bienvenido de vuelta</h1>
             <p className="text-sm" style={{ color: "#52525B" }}>
-              Ingresá a tu cuenta para continuar
+              Ingresa a tu cuenta para continuar
             </p>
           </div>
 
@@ -171,9 +171,9 @@ export default function LoginPage() {
           </form>
 
           <p className="text-center text-sm mt-8" style={{ color: "#52525B" }}>
-            ¿No tenés cuenta?{" "}
+            ¿No tienes cuenta?{" "}
             <Link href="/register" className="font-medium transition-colors" style={{ color: "#CA8A04" }}>
-              Registrate gratis
+              Regístrate gratis
             </Link>
           </p>
         </div>
@@ -196,7 +196,7 @@ export default function LoginPage() {
             Todo en un solo lugar
           </p>
           <h2 className="text-3xl font-light leading-snug text-white mb-8">
-            Tu barbería funcionando<br />mientras vos cortás
+            Tu barbería funcionando<br />mientras tú cortas
           </h2>
           <ul className="flex flex-col gap-4">
             {PERKS.map((perk) => (

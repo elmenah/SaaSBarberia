@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
   // ── Auth — solo dueños pueden agregar barberos ─────────────────────────────
   const session = await requireOwner();
-  if (!session) return NextResponse.json({ error: "Solo el dueño puede agregar barberos." }, { status: 403 });
+  if (!session) return NextResponse.json({ error: "Solo el propietario puede agregar barberos." }, { status: 403 });
 
   const { barbershop, dbUser } = session;
 

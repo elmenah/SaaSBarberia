@@ -37,13 +37,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  // ── 3. Verificar firma (si está configurado el secret) ───────────────────
-  if (process.env.MERCADOPAGO_WEBHOOK_SECRET) {
-    const valid = verifyMpSignature(xSignature, xRequestId, String(dataId));
-    if (!valid) {
-      console.warn("[mp/webhook] Firma inválida — ignorando evento");
-      return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
-    }
+  // ── 3. Verificar firma (SIEMPRE requerida en producción) ────────────────────
+  // Si MERCADOPAGO_WEBHOOK_SECRET no está configurado, rechazamos el request
+  // para evitar que un atacante active planes premium enviando webhooks falsos.
+  if (!process.env.MERCADOPAGO_WEBHOOK_SECRET) {
+    console.error("[mp/webhook] MERCADOPAGO_WEBHOOK_SECRET no configurado — rechazando evento");
+    return NextResponse.json({ error: "Webhook no configurado" }, { status: 500 });
+  }
+  const valid = verifyMpSignature(xSignature, xRequestId, String(dataId));
+  if (!valid) {
+    console.warn("[mp/webhook] Firma inválida — ignorando evento");
+    return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
   }
 
   // ── 4. Solo procesar eventos de suscripciones ────────────────────────────

@@ -76,7 +76,7 @@ export async function POST(
     },
   });
   if (conflict) {
-    return NextResponse.json({ error: "Ese horario ya no está disponible. Elegí otro." }, { status: 409 });
+    return NextResponse.json({ error: "Ese horario ya no está disponible. Elige otro." }, { status: 409 });
   }
 
   // Buscar cliente existente por teléfono en esta barbería, o crear uno nuevo
@@ -137,8 +137,8 @@ export async function POST(
   const serviceNames = services.map((s) => s.name).join(", ");
 
   // Push notification a los dispositivos del equipo
-  const hora = startsAtDate.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: barbershop.timezone });
-  const dia  = startsAtDate.toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "short", timeZone: barbershop.timezone });
+  const hora = startsAtDate.toLocaleTimeString("es-419", { hour: "2-digit", minute: "2-digit", timeZone: barbershop.timezone });
+  const dia  = startsAtDate.toLocaleDateString("es-419", { weekday: "long", day: "numeric", month: "short", timeZone: barbershop.timezone });
   sendPushToBarbershop(barbershop.id, {
     title: `🔔 Nueva reserva — ${client.name}`,
     body:  `${serviceNames} con ${barber.user.name} · ${dia} a las ${hora}`,

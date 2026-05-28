@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     where: { userId: session.dbUser.id, barbershopId: session.barbershop.id },
   });
   if (existing) {
-    return NextResponse.json({ error: "Ya tenés un perfil de barbero" }, { status: 409 });
+    return NextResponse.json({ error: "Ya tienes un perfil de barbero" }, { status: 409 });
   }
 
   const body  = await request.json();

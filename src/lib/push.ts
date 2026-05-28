@@ -9,7 +9,7 @@ function initWebPush() {
   const pubKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const prvKey = process.env.VAPID_PRIVATE_KEY;
   if (!email || !pubKey || !prvKey) {
-    throw new Error("[Push] Faltan variables de entorno VAPID. Configurá VAPID_EMAIL, NEXT_PUBLIC_VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY en Vercel.");
+    throw new Error("[Push] Faltan variables de entorno VAPID. Configura VAPID_EMAIL, NEXT_PUBLIC_VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY en Vercel.");
   }
   webpush.setVapidDetails(email, pubKey, prvKey);
   initialized = true;

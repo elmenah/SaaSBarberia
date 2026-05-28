@@ -288,7 +288,7 @@ export default function NuevaReservaPage() {
           clientId = data.id;
         }
       } else {
-        if (!reserva.cliente) { toast.error("Seleccioná un cliente"); return; }
+        if (!reserva.cliente) { toast.error("Selecciona un cliente"); return; }
         clientId = reserva.cliente.id;
       }
 
@@ -340,7 +340,7 @@ export default function NuevaReservaPage() {
       {/* Título */}
       <div className="mb-8">
         <h1 className="text-3xl font-display font-medium text-white tracking-tight">Registrar reserva manual</h1>
-        <p className="text-sm font-body font-light mt-1" style={{ color: "#52525B" }}>Completá los datos del turno a registrar</p>
+        <p className="text-sm font-body font-light mt-1" style={{ color: "#52525B" }}>Completa los datos del turno a registrar</p>
       </div>
 
       {/* ── Stepper ──────────────────────────────────────────────────────── */}
@@ -381,7 +381,7 @@ export default function NuevaReservaPage() {
             ) : Mibarberia.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-10">
                 <Scissors className="w-8 h-8" style={{ color: "#27272A" }} />
-                <p className="text-sm font-body" style={{ color: "#3F3F46" }}>No tenés Mibarberia activos todavía</p>
+                <p className="text-sm font-body" style={{ color: "#3F3F46" }}>No tienes barberos activos todavía</p>
                 <Link href="/dashboard/Mibarberia"
                   className="text-xs font-semibold font-body px-4 py-2 rounded-xl"
                   style={{ backgroundColor: "rgba(202,138,4,0.1)", color: "#CA8A04", border: "1px solid rgba(202,138,4,0.2)" }}>
@@ -435,7 +435,7 @@ export default function NuevaReservaPage() {
             ) : servicios.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-10">
                 <Scissors className="w-8 h-8" style={{ color: "#27272A" }} />
-                <p className="text-sm font-body" style={{ color: "#3F3F46" }}>No tenés servicios configurados todavía</p>
+                <p className="text-sm font-body" style={{ color: "#3F3F46" }}>No tienes servicios configurados todavía</p>
                 <Link href="/dashboard/servicios"
                   className="text-xs font-semibold font-body px-4 py-2 rounded-xl"
                   style={{ backgroundColor: "rgba(202,138,4,0.1)", color: "#CA8A04", border: "1px solid rgba(202,138,4,0.2)" }}>
@@ -511,7 +511,7 @@ export default function NuevaReservaPage() {
                   if (!val) { setReserva((r) => ({ ...r, fecha: "", hora: "" })); return; }
                   if (!isDayOpen(val)) {
                     const dayKey = DAY_JS_TO_KEY[new Date(val + "T12:00:00").getDay()];
-                    toast.error(`La barbería no abre los ${DAY_LABELS[dayKey]}. Elegí otro día.`);
+                    toast.error(`La barbería no abre los ${DAY_LABELS[dayKey]}. Elige otro día.`);
                     e.target.value = reserva.fecha; // revertir visualmente
                     return;
                   }

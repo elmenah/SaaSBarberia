@@ -132,7 +132,7 @@ function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
       className={`rounded animate-pulse ${className}`}
-      style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
+      style={{ backgroundColor: "var(--ds-skeleton)" }}
     />
   );
 }
@@ -161,7 +161,7 @@ export default function AgendaPage() {
   const [blockTo,    setBlockTo]    = useState(8.5);
 
   const weekDays  = getDaysOfWeek(currentDate);
-  const monthYear = currentDate.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+  const monthYear = currentDate.toLocaleDateString("es-419", { month: "long", year: "numeric" });
 
   /* ── Mibarberia ────────────────────────────────────────────────────────── */
   const fetchBarbers = useCallback(() => {
@@ -334,32 +334,32 @@ export default function AgendaPage() {
         <div className="flex items-center gap-2">
           <button onClick={prevPeriod}
             className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/5 transition-colors"
-            style={{ color: "#52525B" }}>
+            style={{ color: "var(--ds-text-3)" }}>
             <ChevronLeft className="w-4 h-4" />
           </button>
           <h2 className="text-sm font-medium text-white capitalize w-36 text-center">{monthYear}</h2>
           <button onClick={nextPeriod}
             className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/5 transition-colors"
-            style={{ color: "#52525B" }}>
+            style={{ color: "var(--ds-text-3)" }}>
             <ChevronRight className="w-4 h-4" />
           </button>
           <button onClick={() => setCurrentDate(new Date())}
             className="text-xs px-3 py-1.5 rounded-lg font-body transition-colors hover:text-zinc-300"
-            style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)", color: "#52525B" }}>
+            style={{ backgroundColor: "var(--ds-surface)", border: "1px solid var(--ds-border)", color: "var(--ds-text-3)" }}>
             Hoy
           </button>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Toggle Semana / Mes */}
-          <div className="flex items-center rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="flex items-center rounded-xl overflow-hidden" style={{ border: "1px solid var(--ds-border-md)" }}>
             {(["week", "month"] as const).map((mode) => (
               <button key={mode}
                 onClick={() => setViewMode(mode)}
                 className="px-3 py-1.5 text-xs font-semibold font-body transition-all"
                 style={viewMode === mode
                   ? { backgroundColor: "#CA8A04", color: "#000" }
-                  : { backgroundColor: "#111111", color: "#52525B" }}>
+                  : { backgroundColor: "var(--ds-surface)", color: "var(--ds-text-3)" }}>
                 {mode === "week" ? "Semana" : "Mes"}
               </button>
             ))}
@@ -387,14 +387,14 @@ export default function AgendaPage() {
       {/* Filtro barbero */}
       {!loading && barbers.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-body font-medium mr-1" style={{ color: "#3F3F46" }}>Ver agenda de:</span>
+          <span className="text-xs font-body font-medium mr-1" style={{ color: "var(--ds-text-4)" }}>Ver agenda de:</span>
           {[{ id: "todos", label: "Todos", color: "#CA8A04" }, ...barbers].map((b) => (
             <button key={b.id} onClick={() => setActiveBarber(b.id)}
               className="px-3 py-1.5 rounded-xl text-xs font-semibold font-body transition-all"
               style={
                 activeBarber === b.id
                   ? { backgroundColor: "#CA8A04", color: "#000" }
-                  : { backgroundColor: "#111111", color: "#52525B", border: "1px solid rgba(255,255,255,0.06)" }
+                  : { backgroundColor: "var(--ds-surface)", color: "var(--ds-text-3)", border: "1px solid var(--ds-border)" }
               }>
               {b.label}
             </button>
@@ -404,7 +404,7 @@ export default function AgendaPage() {
               {barbers.map((b) => (
                 <div key={b.id} className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: b.color }} />
-                  <span className="text-xs font-body" style={{ color: "#52525B" }}>{b.label}</span>
+                  <span className="text-xs font-body" style={{ color: "var(--ds-text-3)" }}>{b.label}</span>
                 </div>
               ))}
             </div>
@@ -425,11 +425,11 @@ export default function AgendaPage() {
         }, {});
 
         return (
-          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--ds-surface)", border: "1px solid var(--ds-border)" }}>
             {/* Cabecera días */}
-            <div className="grid grid-cols-7" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="grid grid-cols-7" style={{ borderBottom: "1px solid var(--ds-border)" }}>
               {MONTH_LABELS.map((l) => (
-                <div key={l} className="py-2.5 text-center text-xs font-semibold uppercase tracking-wider font-body" style={{ color: "#3F3F46" }}>
+                <div key={l} className="py-2.5 text-center text-xs font-semibold uppercase tracking-wider font-body" style={{ color: "var(--ds-text-4)" }}>
                   {l}
                 </div>
               ))}
@@ -490,7 +490,7 @@ export default function AgendaPage() {
                       })}
 
                       {extra > 0 && (
-                        <span className="text-[10px] font-body pl-0.5" style={{ color: "#52525B" }}>
+                        <span className="text-[10px] font-body pl-0.5" style={{ color: "var(--ds-text-3)" }}>
                           +{extra} más
                         </span>
                       )}
@@ -502,7 +502,7 @@ export default function AgendaPage() {
 
             {/* Empty state */}
             {!loading && appts.length === 0 && (
-              <p className="text-center py-8 text-sm font-body" style={{ color: "#3F3F46" }}>
+              <p className="text-center py-8 text-sm font-body" style={{ color: "var(--ds-text-4)" }}>
                 Sin turnos este mes
               </p>
             )}
@@ -512,18 +512,18 @@ export default function AgendaPage() {
 
       {/* ── Grilla SEMANAL ────────────────────────────────────────────── */}
       {viewMode === "week" && <div className="rounded-2xl overflow-hidden"
-        style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}>
+        style={{ backgroundColor: "var(--ds-surface)", border: "1px solid var(--ds-border)" }}>
 
         {/* Cabecera días */}
         <div className="grid grid-cols-8 sticky top-0 z-10"
-          style={{ backgroundColor: "#111111", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          style={{ backgroundColor: "var(--ds-surface)", borderBottom: "1px solid var(--ds-border)" }}>
           <div className="p-3" />
           {weekDays.map((day, idx) => {
             const isToday = day.toDateString() === today.toDateString();
             return (
               <div key={idx} className="p-3 text-center"
                 style={{ backgroundColor: isToday ? "rgba(202,138,4,0.04)" : undefined }}>
-                <p className="text-xs uppercase tracking-wider font-body" style={{ color: "#3F3F46" }}>
+                <p className="text-xs uppercase tracking-wider font-body" style={{ color: "var(--ds-text-4)" }}>
                   {WEEK_LABELS[day.getDay() === 0 ? 6 : day.getDay() - 1]}
                 </p>
                 <p className="text-lg font-bold mt-0.5 font-body"
@@ -659,7 +659,7 @@ export default function AgendaPage() {
           {!loading && appts.length === 0 && (
             <div className="py-16 flex flex-col items-center gap-2"
               style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-              <p className="text-sm font-body" style={{ color: "#3F3F46" }}>Sin turnos esta semana</p>
+              <p className="text-sm font-body" style={{ color: "var(--ds-text-4)" }}>Sin turnos esta semana</p>
               <NextLink href="/dashboard/reservas/nueva">
                 <button className="mt-2 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold font-body text-black"
                   style={{ backgroundColor: "#CA8A04" }}>
@@ -683,7 +683,7 @@ export default function AgendaPage() {
           />
           <div
             className="relative w-full max-w-sm rounded-2xl overflow-hidden animate-fade-up"
-            style={{ backgroundColor: "#111111", border: "1px solid rgba(239,68,68,0.2)" }}
+            style={{ backgroundColor: "var(--ds-surface)", border: "1px solid rgba(239,68,68,0.2)" }}
           >
             <div className="h-1.5 w-full" style={{ backgroundColor: "#EF4444" }} />
 
@@ -695,21 +695,21 @@ export default function AgendaPage() {
                     <h2 className="text-base font-bold text-white font-body">Bloquear horario</h2>
                   </div>
                   <p className="text-xs font-body capitalize" style={{ color: "#71717A" }}>
-                    {blockModal.dayDate.toLocaleDateString("es-AR", {
+                    {blockModal.dayDate.toLocaleDateString("es-419", {
                       weekday: "long", day: "numeric", month: "long",
                     })}
                   </p>
                 </div>
                 <button onClick={() => setBlockModal(null)}
                   className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/5"
-                  style={{ color: "#52525B" }}>
+                  style={{ color: "var(--ds-text-3)" }}>
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold uppercase tracking-wider font-body block mb-1.5" style={{ color: "#52525B" }}>
+                  <label className="text-xs font-semibold uppercase tracking-wider font-body block mb-1.5" style={{ color: "var(--ds-text-3)" }}>
                     Desde
                   </label>
                   <select value={blockFrom}
@@ -719,20 +719,20 @@ export default function AgendaPage() {
                       if (blockTo <= v) setBlockTo(Math.min(v + 0.25, END_H));
                     }}
                     className="w-full px-3 py-2.5 rounded-xl text-sm font-body text-white outline-none appearance-none"
-                    style={{ backgroundColor: "#1A1A1A", border: "1px solid rgba(255,255,255,0.08)", colorScheme: "dark" }}>
+                    style={{ backgroundColor: "var(--ds-surface)", border: "1px solid var(--ds-border-md)" }}>
                     {TIME_OPTIONS.filter((o) => o.value < END_H).map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold uppercase tracking-wider font-body block mb-1.5" style={{ color: "#52525B" }}>
+                  <label className="text-xs font-semibold uppercase tracking-wider font-body block mb-1.5" style={{ color: "var(--ds-text-3)" }}>
                     Hasta
                   </label>
                   <select value={blockTo}
                     onChange={(e) => setBlockTo(parseFloat(e.target.value))}
                     className="w-full px-3 py-2.5 rounded-xl text-sm font-body text-white outline-none appearance-none"
-                    style={{ backgroundColor: "#1A1A1A", border: "1px solid rgba(255,255,255,0.08)", colorScheme: "dark" }}>
+                    style={{ backgroundColor: "var(--ds-surface)", border: "1px solid var(--ds-border-md)" }}>
                     {TIME_OPTIONS.filter((o) => o.value > blockFrom).map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
@@ -760,7 +760,7 @@ export default function AgendaPage() {
                   style={{ backgroundColor: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
                   <X className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#EF4444" }} />
                   <p className="text-xs font-body" style={{ color: "#EF4444" }}>
-                    Hay un turno reservado en ese rango. Cambiá el horario.
+                    Hay un turno reservado en ese rango. Cambia el horario.
                   </p>
                 </div>
               )}
@@ -768,7 +768,7 @@ export default function AgendaPage() {
               <div className="flex gap-3">
                 <button onClick={() => setBlockModal(null)}
                   className="flex-1 py-2.5 rounded-xl text-sm font-semibold font-body"
-                  style={{ border: "1px solid rgba(255,255,255,0.08)", color: "#71717A" }}>
+                  style={{ border: "1px solid var(--ds-border-md)", color: "#71717A" }}>
                   Cancelar
                 </button>
                 <button onClick={confirmBlock}
@@ -796,7 +796,7 @@ export default function AgendaPage() {
             onClick={closeModal} />
 
           <div className="relative w-full max-w-sm rounded-2xl overflow-hidden"
-            style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.08)" }}>
+            style={{ backgroundColor: "var(--ds-surface)", border: "1px solid var(--ds-border-md)" }}>
 
             <div className="h-1.5 w-full" style={{ backgroundColor: selStyle.text }} />
 
@@ -810,12 +810,12 @@ export default function AgendaPage() {
                 </div>
                 <button onClick={closeModal}
                   className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/5"
-                  style={{ color: "#52525B" }}>
+                  style={{ color: "var(--ds-text-3)" }}>
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="flex flex-col gap-2 p-3 rounded-xl" style={{ backgroundColor: "#0D0D0D" }}>
+              <div className="flex flex-col gap-2 p-3 rounded-xl" style={{ backgroundColor: "var(--ds-surface-2)" }}>
                 {[
                   { icon: Scissors, text: selected.service },
                   { icon: User,     text: selBarberInfo?.label ?? "Barbero" },
@@ -847,7 +847,7 @@ export default function AgendaPage() {
 
               {transferMode && (
                 <div className="flex flex-col gap-2">
-                  <p className="text-xs font-body font-semibold uppercase tracking-wider" style={{ color: "#52525B" }}>
+                  <p className="text-xs font-body font-semibold uppercase tracking-wider" style={{ color: "var(--ds-text-3)" }}>
                     Transferir a:
                   </p>
                   {barbers.filter((b) => b.id !== selected.barber).map((b) => {
@@ -875,7 +875,7 @@ export default function AgendaPage() {
                   <div className="flex gap-3 mt-1">
                     <button onClick={() => { setTransferMode(false); setTargetBarber(null); }}
                       className="flex-1 py-2.5 rounded-xl text-sm font-semibold font-body"
-                      style={{ border: "1px solid rgba(255,255,255,0.08)", color: "#71717A" }}>
+                      style={{ border: "1px solid var(--ds-border-md)", color: "#71717A" }}>
                       Cancelar
                     </button>
                     <button onClick={confirmTransfer} disabled={!targetBarber}

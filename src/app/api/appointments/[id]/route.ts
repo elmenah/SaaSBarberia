@@ -61,7 +61,7 @@ export async function PATCH(
       include: { barberProfile: true },
     });
     if (!dbUser?.barberProfile || dbUser.barberProfile.id !== existing.barberId) {
-      return NextResponse.json({ error: "Solo podés modificar tus propios turnos." }, { status: 403 });
+      return NextResponse.json({ error: "Solo puedes modificar tus propios turnos." }, { status: 403 });
     }
   } else {
     // Owner: verificar que el turno pertenece a su barbería
@@ -155,7 +155,7 @@ export async function DELETE(
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   if (user.user_metadata?.role === "BARBER") {
-    return NextResponse.json({ error: "Solo el dueño puede eliminar reservas." }, { status: 403 });
+    return NextResponse.json({ error: "Solo el propietario puede eliminar reservas." }, { status: 403 });
   }
 
   const { id } = await params;
@@ -163,8 +163,20 @@ export async function DELETE(
   // Si el turno estaba COMPLETADO, revertir stats del cliente
   const appt = await prisma.appointment.findUnique({
     where:   { id },
-    select:  { status: true, clientId: true, totalPrice: true, paidAmount: true, startsAt: true },
+    select:  { status: true, clientId: true, totalPrice: true, paidAmount: true, startsAt: true, barbershopId: true },
   });
+
+  // ── Seguridad: verificar ownership antes de eliminar ───────────────────────
+  if (appt) {
+    const dbUserDel = await prisma.user.findUnique({
+      where:   { supabaseId: user.id },
+      include: { ownedBarbershops: { select: { id: true } } },
+    });
+    const ownsAppt = dbUserDel?.ownedBarbershops.some(b => b.id === appt.barbershopId);
+    if (!ownsAppt) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
 
   if (appt?.status === "COMPLETED") {
     const charged = Number(appt.paidAmount ?? appt.totalPrice);

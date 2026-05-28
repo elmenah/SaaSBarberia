@@ -11,7 +11,7 @@ export async function POST(
 ) {
   const session = await requireOwner();
   if (!session) {
-    return NextResponse.json({ error: "Solo el dueño puede reenviar invitaciones." }, { status: 403 });
+    return NextResponse.json({ error: "Solo el propietario puede reenviar invitaciones." }, { status: 403 });
   }
 
   const { id } = await params;

@@ -233,9 +233,9 @@ export default function ConfiguracionPage() {
   }
 
   function formatBlockDate(from: string, to: string) {
-    const f = new Date(from + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
+    const f = new Date(from + "T12:00:00").toLocaleDateString("es-419", { day: "numeric", month: "short", year: "numeric" });
     if (!to || to === from) return f;
-    const t = new Date(to + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
+    const t = new Date(to + "T12:00:00").toLocaleDateString("es-419", { day: "numeric", month: "short", year: "numeric" });
     return `${f} → ${t}`;
   }
 
@@ -285,7 +285,7 @@ export default function ConfiguracionPage() {
       setTimeout(() => setSavedProfile(false), 2500);
     } catch (e) {
       console.error(e);
-      setProfileError("Error de conexión. Intentá de nuevo.");
+      setProfileError("Error de conexión. Intenta de nuevo.");
     } finally {
       setSavingProfile(false);
     }
@@ -786,7 +786,7 @@ export default function ConfiguracionPage() {
               {[
                 { icon: "💬", label: "WhatsApp", desc: "Pega el link en tu estado o en la bio" },
                 { icon: "📸", label: "Instagram", desc: "Ponlo en la bio o en stories como swipe-up" },
-                { icon: "🔗", label: "Google Maps", desc: "Agrérgalo al perfil de tu negocio en Maps" },
+                { icon: "🔗", label: "Google Maps", desc: "Agrégalo al perfil de tu negocio en Maps" },
               ].map((c) => (
                 <div key={c.label} className="p-3 rounded-xl text-center" style={{ backgroundColor: "#0D0D0D" }}>
                   <span className="text-2xl">{c.icon}</span>
@@ -980,7 +980,7 @@ export default function ConfiguracionPage() {
                     type="url"
                     value={profileLogoUrl}
                     onChange={(e) => { setProfileLogoUrl(e.target.value); setLogoPreview(""); }}
-                    placeholder="O pegá una URL de imagen..."
+                    placeholder="O pega una URL de imagen..."
                     className="input-dark text-xs"
                     style={{ fontSize: "12px" }}
                   />
@@ -993,7 +993,7 @@ export default function ConfiguracionPage() {
                   <div className="flex items-center gap-1.5"><ImageIcon className="w-3 h-3" /> Foto de portada (banner)</div>
                 </label>
                 <p className="text-xs font-body mb-2" style={{ color: "#3F3F46" }}>
-                  Aparece como fondo en la parte superior de tu página pública. Si no subís foto, se usa el color de portada.
+                  Aparece como fondo en la parte superior de tu página pública. Si no subes foto, se usa el color de portada.
                 </p>
                 <input
                   ref={coverInputRef}

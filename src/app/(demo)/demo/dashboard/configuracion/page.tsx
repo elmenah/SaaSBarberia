@@ -64,9 +64,9 @@ export default function DemoConfiguracionPage() {
   }
   function deleteBlock(id: string) { setBlocks((prev) => prev.filter((b) => b.id !== id)); }
   function formatBlockDate(from: string, to: string) {
-    const f = new Date(from + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
+    const f = new Date(from + "T12:00:00").toLocaleDateString("es-419", { day: "numeric", month: "short", year: "numeric" });
     if (!to || to === from) return f;
-    const t = new Date(to + "T12:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
+    const t = new Date(to + "T12:00:00").toLocaleDateString("es-419", { day: "numeric", month: "short", year: "numeric" });
     return `${f} → ${t}`;
   }
   function copyLink() {
@@ -101,7 +101,7 @@ export default function DemoConfiguracionPage() {
             <div>
               <p className="text-sm font-semibold text-white font-body">Tus horarios de atención</p>
               <p className="text-xs font-body mt-0.5" style={{ color: "#71717A" }}>
-                Actualmente tenés <strong style={{ color: "#CA8A04" }}>{activeDays} días</strong> habilitados.
+                Actualmente tienes <strong style={{ color: "#CA8A04" }}>{activeDays} días</strong> habilitados.
               </p>
             </div>
           </div>

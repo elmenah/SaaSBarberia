@@ -5,8 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amount: number, currency = "ARS") {
-  return new Intl.NumberFormat("es-AR", {
+export function formatCurrency(amount: number, currency = "CLP") {
+  return new Intl.NumberFormat("es-419", {
     style: "currency",
     currency,
     minimumFractionDigits: 0,
@@ -14,7 +14,7 @@ export function formatCurrency(amount: number, currency = "ARS") {
 }
 
 export function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
-  return new Intl.DateTimeFormat("es-AR", {
+  return new Intl.DateTimeFormat("es-419", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -23,7 +23,7 @@ export function formatDate(date: Date | string, options?: Intl.DateTimeFormatOpt
 }
 
 export function formatTime(date: Date | string) {
-  return new Intl.DateTimeFormat("es-AR", {
+  return new Intl.DateTimeFormat("es-419", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,

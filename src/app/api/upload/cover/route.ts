@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { requireOwner } from "@/lib/auth/session";
 
-const BUCKET   = "barbershop-assets";
-const MAX_BYTES = 5 * 1024 * 1024; // 5 MB (covers pueden ser más grandes)
+const BUCKET       = "barbershop-assets";
+const MAX_BYTES    = 5 * 1024 * 1024; // 5 MB (covers pueden ser más grandes)
+const ALLOWED_EXT  = ["jpg", "jpeg", "png", "webp", "gif"] as const;
+const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
 
 export async function POST(request: NextRequest) {
   const session = await requireOwner();
@@ -17,12 +19,13 @@ export async function POST(request: NextRequest) {
   const file = formData.get("file") as File | null;
   if (!file)  return NextResponse.json({ error: "No se recibió ningún archivo" }, { status: 400 });
 
-  if (!file.type.startsWith("image/"))
-    return NextResponse.json({ error: "Solo se aceptan imágenes" }, { status: 400 });
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+  if (!(ALLOWED_EXT as readonly string[]).includes(ext))
+    return NextResponse.json({ error: "Formato no permitido. Usa JPG, PNG, WebP o GIF." }, { status: 400 });
+  if (!(ALLOWED_MIME as readonly string[]).includes(file.type as typeof ALLOWED_MIME[number]))
+    return NextResponse.json({ error: "Tipo de archivo no permitido." }, { status: 400 });
   if (file.size > MAX_BYTES)
     return NextResponse.json({ error: "El archivo supera los 5 MB" }, { status: 400 });
-
-  const ext   = file.name.split(".").pop() ?? "jpg";
   const path  = `covers/${session.barbershop.id}.${ext}`;
   const bytes = await file.arrayBuffer();
 

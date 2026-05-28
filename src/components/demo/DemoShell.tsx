@@ -216,7 +216,7 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
                 </h1>
               </div>
               <p className="text-xs mt-0.5 font-body" style={{ color: "#27272A" }}>
-                {new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })}
+                {new Date().toLocaleDateString("es-419", { weekday: "long", day: "numeric", month: "long" })}
               </p>
             </div>
 

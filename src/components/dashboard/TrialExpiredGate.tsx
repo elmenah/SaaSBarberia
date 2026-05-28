@@ -63,7 +63,7 @@ export function TrialExpiredGate({ children }: { children: React.ReactNode }) {
             <Crown className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#CA8A04" }} />
             <p className="text-xs font-body font-medium" style={{ color: "#CA8A04" }}>
               Tu trial vence en <strong>{daysLeft} día{daysLeft !== 1 ? "s" : ""}</strong>.
-              Elegí un plan para no perder el acceso.
+              Elige un plan para no perder el acceso.
             </p>
           </div>
           <button

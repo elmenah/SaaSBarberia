@@ -7,32 +7,37 @@
 
 /* ── ProMax Design Tokens — OLED Dark + Gold ─────────────────────────────── */
 :root {
-  --bg-black:    #000000;
-  --bg-dark:     #0A0A0A;
-  --bg-surface:  #111111;
-  --bg-card:     #141414;
-  --bg-hover:    #1A1A1A;
-
+  /* ── Gold accent — igual en ambos modos ── */
   --gold:        #CA8A04;
   --gold-light:  #EAB308;
   --gold-pale:   #FDE68A;
   --gold-glow:   rgba(202,138,4,0.12);
   --gold-border: rgba(202,138,4,0.28);
 
-  --text-white:  #FFFFFF;
-  --text-mid:    #A1A1AA;
-  --text-muted:  #52525B;
-  --text-dim:    #3F3F46;
-
-  --border:      rgba(255,255,255,0.06);
-  --border-md:   rgba(255,255,255,0.10);
-
+  /* ── Semantic status ── */
   --success: #22C55E;
   --error:   #EF4444;
   --warning: #F59E0B;
   --info:    #3B82F6;
 
-  /* shadcn tokens */
+  /* ── DARK MODE (default) ── */
+  --ds-page:         #0A0A0A;
+  --ds-shell:        #080808;
+  --ds-surface:      #111111;
+  --ds-surface-2:    #0D0D0D;
+  --ds-hover:        rgba(255,255,255,0.025);
+  --ds-border:       rgba(255,255,255,0.06);
+  --ds-border-md:    rgba(255,255,255,0.10);
+  --ds-text-1:       #FFFFFF;
+  --ds-text-2:       #A1A1AA;
+  --ds-text-3:       #52525B;
+  --ds-text-4:       #3F3F46;
+  --ds-skeleton:     rgba(255,255,255,0.05);
+  --ds-gold-surface: rgba(202,138,4,0.05);
+  --ds-gold-border:  rgba(202,138,4,0.20);
+  --ds-scrollbar:    rgba(255,255,255,0.08);
+
+  /* shadcn tokens — dark */
   --background: 0 0% 0%;
   --foreground:  0 0% 100%;
   --card:        0 0% 8%;
@@ -66,6 +71,76 @@
   --chart-3: 221 83% 53%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
+
+  /* legacy aliases — no remover: usan otros componentes */
+  --bg-black:    #000000;
+  --bg-dark:     var(--ds-page);
+  --bg-surface:  var(--ds-surface);
+  --bg-card:     var(--ds-surface);
+  --bg-hover:    var(--ds-hover);
+  --text-white:  var(--ds-text-1);
+  --text-mid:    var(--ds-text-2);
+  --text-muted:  var(--ds-text-3);
+  --text-dim:    var(--ds-text-4);
+}
+
+/* ── LIGHT MODE ───────────────────────────────────────────────────────────── */
+/* Se activa con data-theme="light" en <html>                                  */
+[data-theme="light"] {
+  --ds-page:         #F5F3EE;
+  --ds-shell:        #EDE9E2;
+  --ds-surface:      #FFFFFF;
+  --ds-surface-2:    #F7F5F1;
+  --ds-hover:        rgba(0,0,0,0.03);
+  --ds-border:       rgba(120,100,60,0.12);
+  --ds-border-md:    rgba(120,100,60,0.20);
+  --ds-text-1:       #1A1714;
+  --ds-text-2:       #4A4540;
+  --ds-text-3:       #7A7470;
+  --ds-text-4:       #ADA8A5;
+  --ds-skeleton:     rgba(0,0,0,0.06);
+  --ds-gold-surface: rgba(202,138,4,0.06);
+  --ds-gold-border:  rgba(202,138,4,0.25);
+  --ds-scrollbar:    rgba(0,0,0,0.12);
+
+  /* shadcn tokens — light */
+  --background: 36 27% 93%;
+  --foreground:  24 9% 10%;
+  --card:        0 0% 100%;
+  --card-foreground: 24 9% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 24 9% 10%;
+  --primary: 45 93% 40%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 36 15% 90%;
+  --secondary-foreground: 24 9% 10%;
+  --muted: 36 15% 92%;
+  --muted-foreground: 24 5% 47%;
+  --accent: 36 15% 90%;
+  --accent-foreground: 24 9% 10%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 36 15% 85%;
+  --input:  36 15% 90%;
+  --ring:   45 93% 40%;
+  --sidebar-background: 36 20% 89%;
+  --sidebar-foreground: 24 9% 25%;
+  --sidebar-primary: 45 93% 40%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 36 15% 93%;
+  --sidebar-accent-foreground: 24 9% 25%;
+  --sidebar-border: 36 15% 82%;
+  --sidebar-ring: 45 93% 40%;
+
+  /* legacy aliases */
+  --bg-dark:     var(--ds-page);
+  --bg-surface:  var(--ds-surface);
+  --bg-card:     var(--ds-surface);
+  --bg-hover:    var(--ds-hover);
+  --text-white:  var(--ds-text-1);
+  --text-mid:    var(--ds-text-2);
+  --text-muted:  var(--ds-text-3);
+  --text-dim:    var(--ds-text-4);
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
@@ -74,10 +149,10 @@
   html { scroll-behavior: smooth; }
 
   body {
-    background-color: var(--bg-black);
-    color: var(--text-white);
-    /* ProMax: Montserrat body, Cormorant para headings vía clase */
+    background-color: var(--ds-page);
+    color: var(--ds-text-1);
     font-family: 'Montserrat', system-ui, sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
     @apply antialiased;
   }
 
@@ -87,7 +162,7 @@
 
   ::-webkit-scrollbar       { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb { background: var(--ds-scrollbar); border-radius: 999px; }
 }
 
 /* ── Components ───────────────────────────────────────────────────────────── */

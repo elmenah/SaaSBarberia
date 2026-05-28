@@ -25,7 +25,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#080808" }}
+        style={{ backgroundColor: "var(--ds-shell)" }}
       >
         <div className="flex flex-col items-center gap-3">
           <div
@@ -40,7 +40,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <RoleProvider>
-      <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "#080808" }}>
+      <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "var(--ds-shell)" }}>
         {/* Sidebar — solo visible en md+ */}
         <Sidebar />
 
@@ -48,7 +48,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <TopBar />
           <main
             className="flex-1 overflow-y-auto p-4 md:p-6"
-            style={{ backgroundColor: "#0A0A0A" }}
+            style={{ backgroundColor: "var(--ds-page)" }}
           >
             <TrialExpiredGate>
               {children}

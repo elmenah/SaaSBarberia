@@ -69,15 +69,15 @@ export default function RegisterPage() {
     setTouched({ name: true, barbershopName: true, email: true, password: true });
 
     if (!form.name.trim() || form.name.trim().length < 2) {
-      toast.error("Ingresá tu nombre completo");
+      toast.error("Ingresa tu nombre completo");
       return;
     }
     if (!form.barbershopName.trim()) {
-      toast.error("Ingresá el nombre de tu barbería");
+      toast.error("Ingresa el nombre de tu barbería");
       return;
     }
     if (!EMAIL_RE.test(form.email)) {
-      toast.error("Ingresá un email válido");
+      toast.error("Ingresa un email válido");
       return;
     }
     if (!pwdRules.length) {
@@ -140,11 +140,11 @@ export default function RegisterPage() {
           >
             <Mail className="w-8 h-8" style={{ color: "#CA8A04" }} />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Revisá tu correo</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Revisa tu correo</h1>
           <p className="text-sm mb-6" style={{ color: "#71717A" }}>
             Te enviamos un link de confirmación a{" "}
             <span className="text-white font-medium">{form.email}</span>.
-            Hacé clic en el link para activar tu cuenta.
+            Haz clic en el link para activar tu cuenta.
           </p>
           <p className="text-xs" style={{ color: "#3F3F46" }}>
             ¿No te llegó?{" "}
@@ -153,7 +153,7 @@ export default function RegisterPage() {
               style={{ color: "#CA8A04" }}
               onClick={() => setEmailSent(false)}
             >
-              Volvé a intentarlo
+              Vuelve a intentarlo
             </button>
           </p>
         </div>
@@ -238,7 +238,7 @@ export default function RegisterPage() {
                 }}
               />
               {touched.name && form.name.trim().length < 2 && (
-                <p className="text-xs" style={{ color: "#EF4444" }}>Ingresá tu nombre completo</p>
+                <p className="text-xs" style={{ color: "#EF4444" }}>Ingresa tu nombre completo</p>
               )}
             </div>
 
@@ -283,7 +283,7 @@ export default function RegisterPage() {
                 }}
               />
               {touched.email && form.email && !EMAIL_RE.test(form.email) && (
-                <p className="text-xs" style={{ color: "#EF4444" }}>Ingresá un email válido (ej: nombre@correo.com)</p>
+                <p className="text-xs" style={{ color: "#EF4444" }}>Ingresa un email válido (ej: nombre@correo.com)</p>
               )}
             </div>
 
@@ -358,7 +358,7 @@ export default function RegisterPage() {
             </button>
 
             <p className="text-center text-xs mt-1" style={{ color: "#3F3F46" }}>
-              Al registrarte aceptás los{" "}
+              Al registrarte aceptas los{" "}
               <Link href="/terms" className="underline" style={{ color: "#52525B" }}>
                 Términos de Servicio
               </Link>
@@ -366,7 +366,7 @@ export default function RegisterPage() {
           </form>
 
           <p className="text-center text-sm mt-8" style={{ color: "#52525B" }}>
-            ¿Ya tenés cuenta?{" "}
+            ¿Ya tienes cuenta?{" "}
             <Link href="/login" className="font-medium transition-colors" style={{ color: "#CA8A04" }}>
               Ingresar
             </Link>

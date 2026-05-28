@@ -18,16 +18,16 @@ interface AppointmentReminderEmailProps {
 }
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", minimumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("es-419", { style: "currency", currency: "ARS", minimumFractionDigits: 0 }).format(n);
 
 const fmtDate = (d: Date | string) => {
   const date = typeof d === "string" ? new Date(d) : d;
-  return date.toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
+  return date.toLocaleDateString("es-419", { weekday: "long", day: "numeric", month: "long" });
 };
 
 const fmtTime = (d: Date | string) => {
   const date = typeof d === "string" ? new Date(d) : d;
-  return date.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString("es-419", { hour: "2-digit", minute: "2-digit" });
 };
 
 export default function AppointmentReminderEmail({
@@ -69,7 +69,7 @@ export default function AppointmentReminderEmail({
 
             <Section className="mb-4">
               <Text className="text-white text-base m-0">
-                Hola <strong>{clientName}</strong>, te recordamos que tenés un turno próximamente:
+                Hola <strong>{clientName}</strong>, te recordamos que tienes un turno próximamente:
               </Text>
             </Section>
 
@@ -159,7 +159,7 @@ export default function AppointmentReminderEmail({
 
             <Section className="text-center">
               <Text className="text-[#525252] text-xs m-0">
-                Si no podés asistir, por favor cancelá con anticipación para liberar el turno.
+                Si no puedes asistir, por favor cancela con anticipación para liberar el turno.
               </Text>
               <Text className="text-[#525252] text-xs m-0 mt-2">
                 Powered by <strong className="text-[#737373]">Mibarberia</strong>

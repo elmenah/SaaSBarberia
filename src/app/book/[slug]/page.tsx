@@ -62,7 +62,7 @@ const DAY_LABELS_FULL: Record<string, string> = {
 };
 
 function fmt(n: number | string) {
-  return "$" + Number(n).toLocaleString("es-AR");
+  return "$" + Number(n).toLocaleString("es-419");
 }
 
 function toDateString(d: Date): string {
@@ -77,8 +77,8 @@ function getDays(schedule: WeekSchedule | undefined, count = 21) {
     d.setDate(today.getDate() + i);
     const dayKey = DAY_KEYS[d.getDay()];
     const isOpen = schedule?.[dayKey]?.enabled ?? true;
-    const dayName = d.toLocaleDateString("es-AR", { weekday: "short" }).replace(".", "");
-    const label   = d.toLocaleDateString("es-AR", { day: "numeric", month: "short" });
+    const dayName = d.toLocaleDateString("es-419", { weekday: "short" }).replace(".", "");
+    const label   = d.toLocaleDateString("es-419", { day: "numeric", month: "short" });
     days.push({ date: d, dateStr: toDateString(d), dayName, label, isToday: i === 0, isOpen, dayKey });
   }
   return days;
@@ -388,14 +388,14 @@ export default function BookPage() {
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
-          setSubmitError(err.error ?? "Error al confirmar. Intentá de nuevo."); return;
+          setSubmitError(err.error ?? "Error al confirmar. Intenta de nuevo."); return;
         }
         const json = await res.json().catch(() => ({}));
         setConfirmedIds(json.data?.id ? [json.data.id] : []);
       }
       setConfirmed(true); setStep(4);
     } catch {
-      setSubmitError("Error de conexión. Verificá tu internet e intentá de nuevo.");
+      setSubmitError("Error de conexión. Verifica tu internet e intenta de nuevo.");
     } finally {
       setSubmitting(false);
     }
@@ -657,7 +657,7 @@ export default function BookPage() {
   const ModeSelectStep = (
     <div className="flex flex-col gap-4">
       <div>
-        <h2 className="text-lg font-semibold text-white font-body mb-0.5">¿Cómo querés agendar?</h2>
+        <h2 className="text-lg font-semibold text-white font-body mb-0.5">¿Cómo quieres agendar?</h2>
         <p className="text-xs font-body" style={{ color: "#52525B" }}>Elegiste {selectedServices.length} servicios</p>
       </div>
       {[
@@ -675,7 +675,7 @@ export default function BookPage() {
         {
           mode: "separate" as const,
           title: "Por separado",
-          desc: "Elegís barbero, fecha y hora distinta para cada servicio.",
+          desc: "Elige barbero, fecha y hora distinta para cada servicio.",
           detail: `${selectedServices.length} turnos independientes`,
           icon: (
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#CA8A04" strokeWidth="2">
@@ -722,8 +722,8 @@ export default function BookPage() {
   const Step0 = (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-lg font-semibold text-white font-body mb-0.5">¿Qué servicio necesitás?</h2>
-        <p className="text-xs font-body" style={{ color: "#52525B" }}>Podés elegir más de uno</p>
+        <h2 className="text-lg font-semibold text-white font-body mb-0.5">¿Qué servicio necesitas?</h2>
+        <p className="text-xs font-body" style={{ color: "#52525B" }}>Puedes elegir más de uno</p>
       </div>
       {shop.services.length === 0 ? (
         <div className="py-12 text-center">
@@ -794,10 +794,10 @@ export default function BookPage() {
           <p className="text-xs font-body mb-0.5" style={{ color: "#CA8A04" }}>
             Servicio {currentSepIdx + 1} de {separateBookings.length}: <span className="font-semibold">{sepSvc1.name}</span>
           </p>
-          <h2 className="text-lg font-semibold text-white font-body">Elegí tu barbero</h2>
+          <h2 className="text-lg font-semibold text-white font-body">Elige tu barbero</h2>
         </div>
       ) : (
-        <h2 className="text-lg font-semibold text-white font-body mb-1">Elegí tu barbero</h2>
+        <h2 className="text-lg font-semibold text-white font-body mb-1">Elige tu barbero</h2>
       )}
       {shop.barbers.length === 0 ? (
         <p className="text-sm font-body py-8 text-center" style={{ color: "#3F3F46" }}>
@@ -931,10 +931,10 @@ export default function BookPage() {
           <p className="text-xs font-body mb-0.5" style={{ color: "#CA8A04" }}>
             Servicio {currentSepIdx + 1} de {separateBookings.length}: <span className="font-semibold">{sepSvc2.name}</span>
           </p>
-          <h2 className="text-lg font-semibold text-white font-body">Elegí fecha y hora</h2>
+          <h2 className="text-lg font-semibold text-white font-body">Elige fecha y hora</h2>
         </div>
       ) : (
-        <h2 className="text-lg font-semibold text-white font-body">Elegí fecha y hora</h2>
+        <h2 className="text-lg font-semibold text-white font-body">Elige fecha y hora</h2>
       )}
       <div>
         <p className="text-xs font-body mb-2" style={{ color: "#52525B" }}>Fecha</p>
@@ -968,7 +968,7 @@ export default function BookPage() {
           ) : dayClosed ? (
             <p className="text-sm font-body py-4 text-center" style={{ color: "#3F3F46" }}>La barbería está cerrada ese día.</p>
           ) : slots.length === 0 ? (
-            <p className="text-sm font-body py-4 text-center" style={{ color: "#3F3F46" }}>Sin horarios disponibles. Probá con otro día.</p>
+            <p className="text-sm font-body py-4 text-center" style={{ color: "#3F3F46" }}>Sin horarios disponibles. Prueba con otro día.</p>
           ) : (
             <div className="grid grid-cols-4 gap-2">
               {slots.map((t) => (
@@ -1106,7 +1106,7 @@ export default function BookPage() {
         </div>
       )}
       <p className="text-[11px] font-body leading-relaxed" style={{ color: "#3F3F46" }}>
-        Al confirmar aceptás recibir recordatorios por WhatsApp. No compartimos tus datos con terceros.
+        Al confirmar, aceptas recibir recordatorios por WhatsApp. No compartimos tus datos con terceros.
       </p>
       <div className="flex gap-3">
         <button onClick={() => setStep(2)} className="flex-1 py-3 rounded-2xl font-semibold text-sm font-body"
@@ -1159,8 +1159,8 @@ export default function BookPage() {
                 </p>
                 {[
                   { icon: User,     text: sb.barberName },
-                  { icon: Calendar, text: new Date(sb.date + "T12:00:00").toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" }) },
-                  { icon: Clock,    text: `${sb.time} · ${sb.service.durationMins} min · $${Number(sb.service.price).toLocaleString("es-AR")}` },
+                  { icon: Calendar, text: new Date(sb.date + "T12:00:00").toLocaleDateString("es-419", { weekday: "short", day: "numeric", month: "short" }) },
+                  { icon: Clock,    text: `${sb.time} · ${sb.service.durationMins} min · $${Number(sb.service.price).toLocaleString("es-419")}` },
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} className="flex items-center gap-2">
                     <Icon className="w-3 h-3 flex-shrink-0" style={{ color: "#CA8A04" }} />
@@ -1231,7 +1231,7 @@ export default function BookPage() {
               <textarea
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
-                placeholder="Contá cómo fue (opcional)..."
+                placeholder="Cuenta cómo fue (opcional)..."
                 rows={3}
                 maxLength={500}
                 className="w-full px-4 py-3 rounded-xl text-sm font-body text-white outline-none resize-none"

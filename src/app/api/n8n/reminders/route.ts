@@ -8,10 +8,14 @@ import { prisma } from "@/lib/prisma";
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
-  const type   = searchParams.get("type");
-  const secret = searchParams.get("secret");
+  const type = searchParams.get("type");
 
-  // Verificar secret
+  // ── Seguridad: leer secret del header Authorization (preferido) ─────────────
+  // Fallback al query param ?secret= por compatibilidad, pero el header evita
+  // que el secret quede expuesto en logs de Vercel, CDN y proxies.
+  const authHeader = request.headers.get("Authorization");
+  const secret     = authHeader?.replace(/^Bearer\s+/i, "") ?? searchParams.get("secret");
+
   const expectedSecret = process.env.N8N_INTERNAL_SECRET;
   if (!expectedSecret || secret !== expectedSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

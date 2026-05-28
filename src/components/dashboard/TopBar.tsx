@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, LogOut } from "lucide-react";
+import { Search, LogOut, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { getInitials } from "@/lib/utils";
@@ -31,6 +32,7 @@ export function TopBar() {
   const initials = getInitials(userName);
 
   const [cmdOpen, setCmdOpen] = useState(false);
+  const { toggle, isDark }   = useTheme();
 
   // Abrir con ⌘K o Ctrl+K
   useEffect(() => {
@@ -56,8 +58,9 @@ export function TopBar() {
       <header
         className="flex items-center justify-between px-6 py-4 flex-shrink-0"
         style={{
-          backgroundColor: "#080808",
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          backgroundColor: "var(--ds-shell)",
+          borderBottom: "1px solid var(--ds-border)",
+          transition: "background-color 0.25s ease",
         }}
       >
         {/* Título */}
@@ -77,7 +80,7 @@ export function TopBar() {
               <h1 className="text-[10px] font-semibold uppercase tracking-widest font-body" style={{ color: "#3F3F46" }}>{title}</h1>
             </div>
             <p className="text-xs mt-0.5 font-body" style={{ color: "#27272A" }}>
-              {new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })}
+              {new Date().toLocaleDateString("es-419", { weekday: "long", day: "numeric", month: "long" })}
             </p>
           </div>
         </div>
@@ -94,6 +97,23 @@ export function TopBar() {
             <kbd className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: "#1A1A1A", color: "#52525B" }}>
               ⌘K
             </kbd>
+          </button>
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggle}
+            title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+            className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:opacity-80 cursor-pointer"
+            style={{
+              backgroundColor: "var(--ds-surface)",
+              border: "1px solid var(--ds-border)",
+              color: "var(--ds-text-3)",
+            }}
+          >
+            {isDark
+              ? <Sun  className="w-3.5 h-3.5" />
+              : <Moon className="w-3.5 h-3.5" />
+            }
           </button>
 
           {/* Notificaciones */}

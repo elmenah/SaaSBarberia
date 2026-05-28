@@ -89,7 +89,7 @@ export default function DemoAgendaPage() {
   const [blockTo,      setBlockTo]      = useState(8.5);
 
   const weekDays  = getDaysOfWeek(currentDate);
-  const monthYear = currentDate.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+  const monthYear = currentDate.toLocaleDateString("es-419", { month: "long", year: "numeric" });
   const visible   = activeBarber === "todos" ? appts : appts.filter((a) => a.barber === activeBarber);
 
   function prevWeek() { const d = new Date(currentDate); d.setDate(d.getDate() - 7); setCurrentDate(d); }
@@ -269,7 +269,7 @@ export default function DemoAgendaPage() {
                     <h2 className="text-base font-bold text-white font-body">Bloquear horario</h2>
                   </div>
                   <p className="text-xs font-body capitalize" style={{ color: "#71717A" }}>
-                    {blockModal.dayDate.toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })}
+                    {blockModal.dayDate.toLocaleDateString("es-419", { weekday: "long", day: "numeric", month: "long" })}
                   </p>
                 </div>
                 <button onClick={() => setBlockModal(null)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/5" style={{ color: "#52525B" }}>

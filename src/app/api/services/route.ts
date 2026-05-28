@@ -28,7 +28,7 @@ export async function GET() {
 // POST /api/services — solo dueños
 export async function POST(request: Request) {
   const session = await requireOwner();
-  if (!session) return NextResponse.json({ error: "Solo el dueño puede crear servicios." }, { status: 403 });
+  if (!session) return NextResponse.json({ error: "Solo el propietario puede crear servicios." }, { status: 403 });
 
   const body  = await request.json();
   const parse = CreateServiceSchema.safeParse(body);

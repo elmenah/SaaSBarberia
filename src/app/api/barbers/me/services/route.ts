@@ -23,7 +23,7 @@ export async function PUT(request: Request) {
   });
 
   if (!barber) {
-    return NextResponse.json({ error: "No tenés perfil de barbero" }, { status: 404 });
+    return NextResponse.json({ error: "No tienes perfil de barbero" }, { status: 404 });
   }
 
   const body  = await request.json();

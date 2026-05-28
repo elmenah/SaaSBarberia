@@ -96,10 +96,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, slug: barbershop.slug });
 
   } catch (err: unknown) {
+    // Logear internamente pero NO exponer detalles al cliente
     const message = err instanceof Error ? err.message : String(err);
     console.error("[register] unexpected error:", message);
     return NextResponse.json(
-      { error: "Error interno del servidor", detail: message },
+      { error: "Error interno del servidor" },
       { status: 500 }
     );
   }

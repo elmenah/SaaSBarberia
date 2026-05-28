@@ -99,7 +99,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }
 };
 
 function formatPrice(n: number) {
-  return `$${n.toLocaleString("es-AR")}`;
+  return `$${n.toLocaleString("es-419")}`;
 }
 
 function trialDaysLeft(trialEndsAt: string | null): number | null {
@@ -189,7 +189,7 @@ export default function BillingPage() {
 
       if (!res.ok) {
         if (res.status === 503) {
-          toast.error("Pagos no configurados aún. Agregá MERCADOPAGO_ACCESS_TOKEN en Vercel.", { duration: 6000 });
+          toast.error("Pagos no configurados aún. Agrega MERCADOPAGO_ACCESS_TOKEN en Vercel.", { duration: 6000 });
         } else {
           toast.error(data.error ?? "Error al iniciar el pago");
         }
@@ -438,7 +438,7 @@ export default function BillingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { icon: ShieldCheck, text: "Pagos seguros con MercadoPago" },
-            { icon: Clock,       text: "Cancelá cuando quieras" },
+            { icon: Clock,       text: "Cancela cuando quieras" },
             { icon: CreditCard,  text: "Sin cargos ocultos" },
           ].map(({ icon: Icon, text }) => (
             <div key={text} className="flex items-center gap-2.5 p-3 rounded-xl"

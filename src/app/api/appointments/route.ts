@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 
   // Barberos no pueden crear reservas manualmente
   if (user.user_metadata?.role === "BARBER") {
-    return NextResponse.json({ error: "Solo el dueño puede crear reservas." }, { status: 403 });
+    return NextResponse.json({ error: "Solo el propietario puede crear reservas." }, { status: 403 });
   }
 
   const body = await request.json();

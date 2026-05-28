@@ -56,7 +56,7 @@ export function NotificationsDropdown() {
           }) => ({
             id:    a.id,
             title: `Nueva reserva — ${a.client?.name ?? "Cliente"}`,
-            body:  `${a.services?.[0]?.service?.name ?? "Servicio"} · ${new Date(a.startsAt).toLocaleDateString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`,
+            body:  `${a.services?.[0]?.service?.name ?? "Servicio"} · ${new Date(a.startsAt).toLocaleDateString("es-419", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`,
             href:  "/dashboard/reservas",
             time:  a.startsAt,
             read:  a.status !== "PENDING",

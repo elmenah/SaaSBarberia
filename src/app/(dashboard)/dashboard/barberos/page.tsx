@@ -229,9 +229,9 @@ export default function MibarberiaPage() {
           <div className="flex items-center gap-3">
             <Crown className="w-5 h-5 flex-shrink-0" style={{ color: "#CA8A04" }} />
             <div>
-              <p className="text-sm font-semibold text-white font-body">Vos también sos barbero</p>
+              <p className="text-sm font-semibold text-white font-body">Tú también eres barbero</p>
               <p className="text-xs font-body mt-0.5" style={{ color: "#71717A" }}>
-                Creá tu perfil para aparecer en la agenda y en la página de reservas.
+                Crea tu perfil para aparecer en la agenda y en la página de reservas.
               </p>
             </div>
           </div>

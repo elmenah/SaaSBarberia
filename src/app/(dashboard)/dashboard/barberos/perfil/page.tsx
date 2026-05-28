@@ -282,9 +282,9 @@ export default function BarberPerfilPage() {
         style={{ backgroundColor: "rgba(202,138,4,0.08)" }}>
         <Scissors className="w-6 h-6" style={{ color: "#CA8A04" }} />
       </div>
-      <p className="text-white font-semibold font-body text-lg">No tenés perfil de barbero</p>
+      <p className="text-white font-semibold font-body text-lg">No tienes perfil de barbero</p>
       <p className="text-sm font-body" style={{ color: "#52525B" }}>
-        Tu cuenta de dueño todavía no tiene un perfil de barbero asociado. Crealo desde la sección Mibarberia.
+        Tu cuenta de propietario todavía no tiene un perfil de barbero asociado. Créalo desde la sección Mibarberia.
       </p>
       <Link href="/dashboard/barberos"
         className="mt-2 px-5 py-2.5 rounded-xl text-sm font-bold font-body text-black"
@@ -388,7 +388,7 @@ export default function BarberPerfilPage() {
             </label>
             <textarea value={bio} rows={3}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Contale algo a tus clientes: experiencia, estilo, lo que te diferencia..."
+              placeholder="Cuéntales algo a tus clientes: experiencia, estilo, lo que te diferencia..."
               className="input-dark w-full resize-none" />
           </div>
 
@@ -432,7 +432,7 @@ export default function BarberPerfilPage() {
             style={{ backgroundColor: "rgba(202,138,4,0.06)", border: "1px solid rgba(202,138,4,0.15)" }}>
             <Tag className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#CA8A04" }} />
             <p className="text-xs font-body leading-relaxed" style={{ color: "#71717A" }}>
-              Marcá los servicios que vos realizás. Los clientes solo verán estos servicios cuando te elijan al agendar.
+              Marca los servicios que tú realizas. Los clientes solo verán estos servicios cuando te elijan al agendar.
             </p>
           </div>
 
@@ -556,7 +556,7 @@ export default function BarberPerfilPage() {
               style={{ border: "2px dashed rgba(255,255,255,0.06)", borderRadius: "16px" }}>
               <span className="text-4xl">🎓</span>
               <p className="text-sm font-body text-center" style={{ color: "#3F3F46" }}>
-                Todavía no cargaste ninguna certificación.<br />¡Agregá la primera!
+                Todavía no cargaste ninguna certificación.<br />¡Agrega la primera!
               </p>
             </div>
           )}
@@ -617,7 +617,7 @@ export default function BarberPerfilPage() {
             style={{ backgroundColor: "rgba(202,138,4,0.06)", border: "1px solid rgba(202,138,4,0.15)" }}>
             <Calendar className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#CA8A04" }} />
             <p className="text-xs font-body leading-relaxed" style={{ color: "#71717A" }}>
-              Configurá los días y horarios en que trabajás. Esto reemplaza el horario general de la barbería para tus turnos.
+              Configura los días y horarios en que trabajas. Esto reemplaza el horario general de la barbería para tus turnos.
             </p>
           </div>
 

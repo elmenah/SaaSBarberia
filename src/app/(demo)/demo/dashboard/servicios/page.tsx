@@ -198,7 +198,7 @@ export default function DemoServiciosPage() {
               style={{ backgroundColor: "rgba(202,138,4,0.06)", border: "1px solid rgba(202,138,4,0.15)" }}>
               <p className="text-sm font-body font-semibold text-white mb-1">Estás en modo demo</p>
               <p className="text-xs font-body" style={{ color: "#71717A" }}>
-                Creá tu cuenta gratuita para agregar tus servicios reales y que tus clientes puedan agendarlos online.
+                Crea tu cuenta gratuita para agregar tus servicios reales y que tus clientes puedan agendarlos online.
               </p>
             </div>
             <a

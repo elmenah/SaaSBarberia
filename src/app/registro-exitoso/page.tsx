@@ -64,7 +64,7 @@ export default function RegistroExitosoPage() {
         </Link>
 
         <p className="text-xs" style={{ color: "#52525B" }}>
-          Solo toma 2 minutos — luego ya podés empezar a recibir reservas
+          Solo toma 2 minutos — luego ya puedes empezar a recibir reservas
         </p>
       </div>
     </div>

@@ -19,14 +19,26 @@ export async function GET(request: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = request.nextUrl;
-  const barbershopId = searchParams.get("barbershopId");
-  const search = searchParams.get("search") ?? "";
-  const page = parseInt(searchParams.get("page") ?? "1");
+  const search   = searchParams.get("search") ?? "";
+  const page     = parseInt(searchParams.get("page") ?? "1");
   const pageSize = parseInt(searchParams.get("pageSize") ?? "20");
-  const isVip = searchParams.get("isVip");
+  const isVip    = searchParams.get("isVip");
+
+  // ── Seguridad: derivar barbershopId desde la sesión, nunca del cliente ──────
+  // Soporta dueños y barberos: cada uno solo ve los clientes de su barbería.
+  const dbUser = await prisma.user.findUnique({
+    where:   { supabaseId: user.id },
+    include: {
+      ownedBarbershops: { take: 1 },
+      barberProfile:    { select: { barbershopId: true } },
+    },
+  });
+  const barbershopId =
+    dbUser?.ownedBarbershops[0]?.id ??
+    (dbUser?.barberProfile as { barbershopId?: string } | null)?.barbershopId;
 
   if (!barbershopId) {
-    return NextResponse.json({ error: "barbershopId required" }, { status: 400 });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const where: Record<string, unknown> = {

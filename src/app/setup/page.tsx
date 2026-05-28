@@ -51,7 +51,7 @@ export default function SetupPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim() || !form.barbershopName.trim()) {
-      toast.error("Completá ambos campos");
+      toast.error("Completa ambos campos");
       return;
     }
 
@@ -151,7 +151,7 @@ export default function SetupPage() {
         </div>
 
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-1">Configurá tu barbería</h1>
+          <h1 className="text-2xl font-bold text-white mb-1">Configura tu barbería</h1>
           <p className="text-sm" style={{ color: "#52525B" }}>
             Solo necesitamos dos datos para dejarte listo en segundos.
           </p>

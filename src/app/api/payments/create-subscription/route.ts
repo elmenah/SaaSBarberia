@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     mpData.subscriptionId
   ) {
     return NextResponse.json(
-      { error: "Ya tenés este plan activo." },
+      { error: "Ya tienes este plan activo." },
       { status: 409 }
     );
   }

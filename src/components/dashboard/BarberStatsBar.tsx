@@ -68,8 +68,8 @@ export function BarberStatsBar() {
       <p className="text-xs font-semibold font-body" style={{ color: "#52525B" }}>
         Tus estadísticas de{" "}
         <span style={{ color }}>
-          {new Date().toLocaleString("es-AR", { month: "long" }).charAt(0).toUpperCase() +
-           new Date().toLocaleString("es-AR", { month: "long" }).slice(1)}
+          {new Date().toLocaleString("es-419", { month: "long" }).charAt(0).toUpperCase() +
+           new Date().toLocaleString("es-419", { month: "long" }).slice(1)}
         </span>
         , {nombre}
       </p>
