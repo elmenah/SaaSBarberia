@@ -132,8 +132,9 @@ function formatPhone(phone: string): string {
 }
 
 function formatWhatsAppDate(date: Date): string {
-  const fecha = date.toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" });
-  const hora  = date.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" });
+  const tz    = "America/Santiago";
+  const fecha = date.toLocaleDateString("es-CL",  { weekday: "long", day: "numeric", month: "long", timeZone: tz });
+  const hora  = date.toLocaleTimeString("es-CL",  { hour: "2-digit", minute: "2-digit", timeZone: tz });
   return `${fecha} a las ${hora}`;
 }
 
