@@ -198,17 +198,24 @@ export default function BarberPerfilPage() {
   async function guardarServicios() {
     setSavingServices(true);
     setSavedServices(false);
+    setError("");
     try {
       const res = await fetch("/api/barbers/me/services", {
         method:  "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ serviceIds: Array.from(selectedServices) }),
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setError(d.error ?? "Error al guardar servicios");
+        return;
+      }
       setSavedServices(true);
       setTimeout(() => setSavedServices(false), 2500);
+      // Re-sincronizar desde DB para que en el próximo render los checks estén correctos
+      fetchMe();
     } catch {
-      // silencioso
+      setError("Error de conexión al guardar servicios");
     } finally {
       setSavingServices(false);
     }

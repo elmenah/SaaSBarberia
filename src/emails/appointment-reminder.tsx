@@ -20,14 +20,16 @@ interface AppointmentReminderEmailProps {
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-419", { style: "currency", currency: "ARS", minimumFractionDigits: 0 }).format(n);
 
+const TZ = "America/Santiago";
+
 const fmtDate = (d: Date | string) => {
   const date = typeof d === "string" ? new Date(d) : d;
-  return date.toLocaleDateString("es-419", { weekday: "long", day: "numeric", month: "long" });
+  return date.toLocaleDateString("es-419", { weekday: "long", day: "numeric", month: "long", timeZone: TZ });
 };
 
 const fmtTime = (d: Date | string) => {
   const date = typeof d === "string" ? new Date(d) : d;
-  return date.toLocaleTimeString("es-419", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString("es-419", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
 };
 
 export default function AppointmentReminderEmail({

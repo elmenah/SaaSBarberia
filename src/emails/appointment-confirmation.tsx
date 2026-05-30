@@ -23,6 +23,7 @@ interface AppointmentConfirmationEmailProps {
   startsAt:       Date | string;
   totalPrice:     number;
   bookingUrl?:    string;
+  timezone?:      string;
 }
 
 const fmt = (n: number) =>
@@ -32,19 +33,20 @@ const fmt = (n: number) =>
     minimumFractionDigits: 0,
   }).format(n);
 
-const fmtDate = (d: Date | string) => {
+const fmtDate = (d: Date | string, tz = "America/Santiago") => {
   const date = typeof d === "string" ? new Date(d) : d;
   return date.toLocaleDateString("es-419", {
-    weekday: "long",
-    day:     "numeric",
-    month:   "long",
-    year:    "numeric",
+    weekday:  "long",
+    day:      "numeric",
+    month:    "long",
+    year:     "numeric",
+    timeZone: tz,
   });
 };
 
-const fmtTime = (d: Date | string) => {
+const fmtTime = (d: Date | string, tz = "America/Santiago") => {
   const date = typeof d === "string" ? new Date(d) : d;
-  return date.toLocaleTimeString("es-419", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString("es-419", { hour: "2-digit", minute: "2-digit", timeZone: tz });
 };
 
 export default function AppointmentConfirmationEmail({
@@ -56,8 +58,9 @@ export default function AppointmentConfirmationEmail({
   startsAt       = new Date(),
   totalPrice     = 0,
   bookingUrl,
+  timezone       = "America/Santiago",
 }: AppointmentConfirmationEmailProps) {
-  const preview = `Reserva confirmada en ${barbershopName} — ${fmtDate(startsAt)} a las ${fmtTime(startsAt)}`;
+  const preview = `Reserva confirmada en ${barbershopName} — ${fmtDate(startsAt, timezone)} a las ${fmtTime(startsAt, timezone)}`;
 
   return (
     <Html>
@@ -102,7 +105,7 @@ export default function AppointmentConfirmationEmail({
                 <Column>
                   <Text className="text-[#a3a3a3] text-xs m-0 uppercase tracking-wider">Fecha</Text>
                   <Text className="text-white text-sm font-medium m-0 capitalize">
-                    {fmtDate(startsAt)}
+                    {fmtDate(startsAt, timezone)}
                   </Text>
                 </Column>
               </Row>
@@ -114,7 +117,7 @@ export default function AppointmentConfirmationEmail({
                 <Column>
                   <Text className="text-[#a3a3a3] text-xs m-0 uppercase tracking-wider">Hora</Text>
                   <Text className="text-white text-sm font-medium m-0">
-                    {fmtTime(startsAt)}
+                    {fmtTime(startsAt, timezone)}
                   </Text>
                 </Column>
               </Row>
