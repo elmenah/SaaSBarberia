@@ -112,6 +112,7 @@ export default function ConfiguracionPage() {
   const [profileLogoUrl,   setProfileLogoUrl]   = useState("");
   const [profileCoverColor,setProfileCoverColor]= useState("#CA8A04");
   const [profileInstagram, setProfileInstagram] = useState("");
+  const [profileGooglePlaceId, setProfileGooglePlaceId] = useState("");
 
   const [profileCoverImageUrl, setProfileCoverImageUrl] = useState("");
   const [coverPreview,    setCoverPreview]    = useState<string>("");
@@ -150,6 +151,7 @@ export default function ConfiguracionPage() {
         setProfileCoverColor(s?.coverColor ?? "#CA8A04");
         setProfileCoverImageUrl(s?.coverImageUrl ?? "");
         setProfileInstagram(s?.instagramUrl ?? "");
+        setProfileGooglePlaceId(s?.googlePlaceId ?? "");
 
         // Cargar horarios desde settings.schedule (si existe)
         const savedSchedule = (barbershop.settings as Record<string, WeekSchedule>)?.schedule;
@@ -268,10 +270,11 @@ export default function ConfiguracionPage() {
             ...(full?.settings ?? {}),
             schedule,
             blocks,
-            description:   profileDesc.trim() || null,
-            coverColor:    profileCoverColor || "#CA8A04",
-            coverImageUrl: profileCoverImageUrl.trim() || null,
-            instagramUrl:  profileInstagram.trim() || null,
+            description:    profileDesc.trim() || null,
+            coverColor:     profileCoverColor || "#CA8A04",
+            coverImageUrl:  profileCoverImageUrl.trim() || null,
+            instagramUrl:   profileInstagram.trim() || null,
+            googlePlaceId:  profileGooglePlaceId.trim() || null,
           },
         }),
       });
@@ -1078,6 +1081,43 @@ export default function ConfiguracionPage() {
                   placeholder="https://instagram.com/tu.barberia"
                   className="input-dark"
                 />
+              </div>
+
+              {/* Google Place ID */}
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider font-body block mb-1.5" style={{ color: "#52525B" }}>
+                  <div className="flex items-center gap-1.5">
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+                    </svg>
+                    Google Place ID <span style={{ color: "#3F3F46", fontWeight: 400, textTransform: "none" }}>(reseñas)</span>
+                  </div>
+                </label>
+                <input
+                  type="text"
+                  value={profileGooglePlaceId}
+                  onChange={(e) => setProfileGooglePlaceId(e.target.value.trim())}
+                  placeholder="ChIJxxxxxxxxxxxxxxxx"
+                  className="input-dark"
+                />
+                <div className="flex items-start gap-2 mt-1.5 p-3 rounded-xl" style={{ backgroundColor: "rgba(202,138,4,0.04)", border: "1px solid rgba(202,138,4,0.12)" }}>
+                  <svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" style={{ color: "#CA8A04" }}>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                  <p className="text-xs font-body" style={{ color: "#71717A" }}>
+                    Cuando lo configures, los emails y WhatsApps de reseña llevan al cliente directo a tu perfil de Google.{" "}
+                    <a
+                      href="https://developers.google.com/maps/documentation/places/web-service/place-id#find-id"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                      style={{ color: "#CA8A04" }}
+                    >
+                      ¿Cómo encontrar mi Place ID?
+                    </a>
+                  </p>
+                </div>
               </div>
 
               {/* Descripción */}

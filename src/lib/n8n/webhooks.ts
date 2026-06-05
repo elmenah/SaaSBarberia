@@ -17,6 +17,7 @@ const WEBHOOK_URLS: Partial<Record<AutomationTrigger, string | undefined>> = {
   APPOINTMENT_REMINDER_24H: process.env.N8N_WEBHOOK_REMINDER,
   APPOINTMENT_REMINDER_1H:  process.env.N8N_WEBHOOK_REMINDER_1H,
   CLIENT_INACTIVE_30D:      process.env.N8N_WEBHOOK_INACTIVE_CLIENT,
+  POST_SERVICE_REVIEW:      process.env.N8N_WEBHOOK_REVIEW_REQUEST,
 };
 
 type FireWebhookArgs = {
@@ -310,6 +311,67 @@ export async function notifyInactiveClients(args: {
         lastVisitAt: c.lastVisitAt?.toISOString() ?? null,
       })),
       count: args.clients.length,
+    },
+  });
+}
+
+export async function notifyReviewRequest(args: {
+  barbershopId:   string;
+  barbershopName: string;
+  appointmentId:  string;
+  clientName:     string;
+  clientPhone:    string;
+  barberName:     string;
+  serviceName:    string;
+  googlePlaceId?: string | null;
+  barbershopSlug: string;
+}) {
+  // URL interna siempre disponible como segunda opción
+  const internalUrl = `${process.env.NEXT_PUBLIC_APP_URL}/review/${args.barbershopSlug}?appt=${args.appointmentId}`;
+  // URL de Google solo si hay Place ID configurado
+  const googleUrl   = args.googlePlaceId
+    ? `https://search.google.com/local/writereview?placeid=${args.googlePlaceId}`
+    : null;
+
+  const whatsappMessage = googleUrl
+    ? [
+        `⭐ *¿Cómo te fue hoy en ${args.barbershopName}?*`,
+        ``,
+        `Hola ${args.clientName}! Gracias por visitarnos. Tu opinión nos ayuda mucho.`,
+        ``,
+        `¿Dónde querés dejar tu reseña?`,
+        ``,
+        `🟡 *Google Maps* (recomendado):`,
+        googleUrl,
+        ``,
+        `💬 *En el sitio*:`,
+        internalUrl,
+      ].join("\n")
+    : [
+        `⭐ *¿Cómo te fue hoy en ${args.barbershopName}?*`,
+        ``,
+        `Hola ${args.clientName}! Gracias por visitarnos.`,
+        ``,
+        `Tu opinión nos ayuda a seguir mejorando. Solo 30 segundos:`,
+        internalUrl,
+      ].join("\n");
+
+  // reviewUrl para el payload (usamos Google si hay, sino interno)
+  const reviewUrl = googleUrl ?? internalUrl;
+
+  return fireWebhook({
+    trigger:        "POST_SERVICE_REVIEW",
+    barbershopId:   args.barbershopId,
+    barbershopName: args.barbershopName,
+    appointmentId:  args.appointmentId,
+    data: {
+      appointmentId:  args.appointmentId,
+      client:         { name: args.clientName, phone: formatPhone(args.clientPhone) },
+      barber:         args.barberName,
+      service:        args.serviceName,
+      reviewUrl,
+      whatsappPhone:   formatPhone(args.clientPhone),
+      whatsappMessage,
     },
   });
 }

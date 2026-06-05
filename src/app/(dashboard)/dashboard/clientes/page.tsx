@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { useOwnerOnly } from "@/hooks/useOwnerOnly";
 import {
   Search, Plus, Filter, Star, Phone, Mail,
-  Calendar, MoreHorizontal, TrendingUp, Zap, Hash, Gift,
+  Calendar, MoreHorizontal, TrendingUp, Zap, Hash, Gift, Download,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -154,6 +154,18 @@ export default function ClientesPage() {
               <Zap className="w-4 h-4" />
               Enviar promo
             </button>
+          )}
+          {barbershop?.subscriptionPlan === "ENTERPRISE" && (
+            <a
+              href="/api/export/clients"
+              download
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold font-body transition-all hover:opacity-80"
+              style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.1)", color: "#A1A1AA" }}
+              title="Exportar clientes a CSV"
+            >
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline">Exportar CSV</span>
+            </a>
           )}
           <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold font-body text-black transition-all hover:opacity-90"
             style={{ backgroundColor: "#CA8A04" }}>

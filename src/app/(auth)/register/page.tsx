@@ -87,29 +87,37 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.signUp({
-        email:    form.email,
-        password: form.password,
-        options: {
-          data: {
-            name:             form.name,
-            barbershop_name:  form.barbershopName,
-          },
-        },
+      // Llamar API route (tiene rate limiting) en vez de Supabase directo
+      const res = await fetch("/api/auth/signup", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          email:          form.email,
+          password:       form.password,
+          name:           form.name,
+          barbershopName: form.barbershopName,
+        }),
       });
 
-      if (error) {
-        toast.error(
-          error.message === "User already registered"
-            ? "Ya existe una cuenta con ese email"
-            : error.message
-        );
+      if (res.status === 429) {
+        toast.error("Demasiados intentos. Esperá 10 minutos antes de intentar de nuevo.");
         return;
       }
 
-      // Si Supabase devuelve sesión directa (email confirmation deshabilitado)
-      if (data.session) {
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        toast.error(data.error ?? "Error inesperado. Intenta nuevamente.");
+        return;
+      }
+
+      if (data.alreadyExists) {
+        toast.error("Ya existe una cuenta con ese email");
+        return;
+      }
+
+      // Si emailSent=false → sesión directa (email confirmation deshabilitado)
+      if (!data.emailSent) {
         await fetch("/api/auth/register", {
           method:  "POST",
           headers: { "Content-Type": "application/json" },
@@ -120,7 +128,7 @@ export default function RegisterPage() {
         return;
       }
 
-      // Si requiere confirmación de email → mostrar pantalla de "revisá tu correo"
+      // Requiere confirmación de email
       setEmailSent(true);
     } catch {
       toast.error("Error inesperado. Intenta nuevamente.");

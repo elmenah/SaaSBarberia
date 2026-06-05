@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendReviewRequest } from "@/lib/email/send-appointment-emails";
+import { notifyReviewRequest } from "@/lib/n8n/webhooks";
 
 // GET /api/cron/post-service — pide reseña 2h después de completar el turno
 // Vercel Cron cada 30 minutos
@@ -31,18 +32,41 @@ export async function GET(request: NextRequest) {
 
   let sent = 0;
   for (const appt of appts) {
-    if (!appt.client.email) continue;
     try {
-      await sendReviewRequest({
-        clientName:     appt.client.name,
-        clientEmail:    appt.client.email,
-        barbershopName: appt.barbershop.name,
-        barbershopId:   appt.barbershop.id,
-        barbershopSlug: appt.barbershop.slug,
-        barberName:     appt.barber.user.name,
-        serviceName:    appt.services.map(s => s.service.name).join(", "),
-        appointmentId:  appt.id,
-      });
+      const settings   = (appt.barbershop.settings ?? {}) as Record<string, unknown>;
+      const googlePlaceId = typeof settings.googlePlaceId === "string" ? settings.googlePlaceId : null;
+      const serviceNames  = appt.services.map(s => s.service.name).join(", ");
+
+      // ── Email (solo si tiene email) ────────────────────────────────────
+      if (appt.client.email) {
+        await sendReviewRequest({
+          clientName:     appt.client.name,
+          clientEmail:    appt.client.email,
+          barbershopName: appt.barbershop.name,
+          barbershopId:   appt.barbershop.id,
+          barbershopSlug: appt.barbershop.slug,
+          barberName:     appt.barber.user.name,
+          serviceName:    serviceNames,
+          appointmentId:  appt.id,
+          googlePlaceId,
+        });
+      }
+
+      // ── WhatsApp (si tiene teléfono — no requiere email) ───────────────
+      if (appt.client.phone) {
+        notifyReviewRequest({
+          barbershopId:   appt.barbershop.id,
+          barbershopName: appt.barbershop.name,
+          barbershopSlug: appt.barbershop.slug,
+          appointmentId:  appt.id,
+          clientName:     appt.client.name,
+          clientPhone:    appt.client.phone,
+          barberName:     appt.barber.user.name,
+          serviceName:    serviceNames,
+          googlePlaceId,
+        }).catch(console.error);
+      }
+
       await prisma.appointment.update({
         where: { id: appt.id },
         data:  { reviewRequestSentAt: new Date() },

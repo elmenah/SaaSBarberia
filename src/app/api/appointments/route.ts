@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { notifyNewAppointment } from "@/lib/n8n/webhooks";
+import { rateLimit, getClientIp, rateLimitResponse, API_LIMIT } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const CreateAppointmentSchema = z.object({
@@ -15,6 +16,10 @@ const CreateAppointmentSchema = z.object({
 
 // GET /api/appointments?barbershopId=&date=&status=&page=&pageSize=
 export async function GET(request: NextRequest) {
+  const ip = getClientIp(request);
+  const rl = rateLimit(`appointments:get:${ip}`, API_LIMIT.limit, API_LIMIT.windowMs);
+  if (!rl.success) return rateLimitResponse(rl.retryAfter) as NextResponse;
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

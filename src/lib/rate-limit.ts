@@ -99,3 +99,6 @@ export const API_LIMIT      = { limit: 120, windowMs: 60_000 };
 
 /** Webhooks de pagos: 30 por minuto (proteger el endpoint) */
 export const WEBHOOK_LIMIT  = { limit: 30, windowMs: 60_000 };
+
+/** Recuperar contraseña: 3 por 15 minutos — evita email bombing */
+export const FORGOT_LIMIT   = { limit: 3,  windowMs: 15 * 60_000 };

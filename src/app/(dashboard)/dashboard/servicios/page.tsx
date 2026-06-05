@@ -117,8 +117,10 @@ export default function ServiciosPage() {
     fetchServices();
   }
 
-  const totalRevenue = services.reduce((sum, s) => sum + Number(s.price) * 0, 0); // placeholder
   const activeCount  = services.filter((s) => s.isActive).length;
+  const avgPrice     = services.length > 0
+    ? services.reduce((sum, s) => sum + Number(s.price), 0) / services.length
+    : 0;
 
   return (
     <div className="flex flex-col gap-5">
@@ -134,8 +136,8 @@ export default function ServiciosPage() {
           : [
               { label: "Servicios activos",   value: activeCount,                                       icon: Scissors,   color: "#CA8A04" },
               { label: "Total servicios",     value: services.length,                                   icon: Clock,      color: "#3B82F6" },
-              { label: "Categorías",          value: new Set(services.map(s => s.category)).size,       icon: null,       color: "#22C55E" },
-              { label: "Más pedido (mes)",    value: topServiceName ?? "—",                             icon: DollarSign, color: "#8B5CF6" },
+              { label: "Precio promedio",     value: avgPrice > 0 ? formatCurrency(avgPrice) : "—",    icon: DollarSign, color: "#22C55E" },
+              { label: "Más pedido (mes)",    value: topServiceName ?? "—",                             icon: null,       color: "#8B5CF6" },
             ].map((s) => (
               <div key={s.label} className="p-4 rounded-2xl flex items-center gap-3"
                 style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.06)" }}>

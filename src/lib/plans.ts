@@ -38,7 +38,7 @@ export const PLAN_LIMITS: Record<string, PlanLimit> = {
     hasAdvancedReports:    false,
   },
   ENTERPRISE: {
-    maxBarbers:            10,
+    maxBarbers:            999,   // ilimitado en la práctica
     whatsappPerMonth:      500,
     hasEmailNotifications: true,
     hasAutomations:        true,

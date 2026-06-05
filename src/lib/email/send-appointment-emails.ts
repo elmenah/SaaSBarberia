@@ -143,6 +143,7 @@ export async function sendReviewRequest({
   barberName,
   serviceName,
   appointmentId,
+  googlePlaceId,
 }: {
   clientName:     string;
   clientEmail:    string;
@@ -152,13 +153,23 @@ export async function sendReviewRequest({
   barberName:     string;
   serviceName:    string;
   appointmentId:  string;
+  googlePlaceId?: string | null;
 }) {
+  // URL interna siempre disponible como fallback / segunda opción
   const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL}/review/${barbershopSlug}?appt=${appointmentId}`;
+
+  // URL de Google solo si la barbería configuró su Place ID
+  const googleReviewUrl = googlePlaceId
+    ? `https://search.google.com/local/writereview?placeid=${googlePlaceId}`
+    : undefined;
+
   await sendEmail({
     to:      clientEmail,
     subject: `⭐ ¿Cómo te fue en ${barbershopName}? Déjanos tu opinión`,
     react:   createElement(ReviewRequestEmail, {
-      clientName, barbershopName, barberName, serviceName, reviewUrl,
+      clientName, barbershopName, barberName, serviceName,
+      reviewUrl,
+      googleReviewUrl,
     }),
   });
 }

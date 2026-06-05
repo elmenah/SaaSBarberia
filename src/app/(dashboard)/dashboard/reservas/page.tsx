@@ -331,6 +331,7 @@ export default function ReservasPage() {
   const [reservas, setReservas] = useState<Appointment[]>([]);
   const [loading, setLoading]   = useState(true);
   const [activeFilter, setActiveFilter] = useState("Todas");
+  const [search, setSearch]     = useState("");
   const [discountingAppt, setDiscountingAppt] = useState<Appointment | null>(null);
   const [deletingAppt, setDeletingAppt]       = useState<Appointment | null>(null);
 
@@ -411,6 +412,15 @@ export default function ReservasPage() {
     }
   }
 
+  const q = search.trim().toLowerCase();
+  const filteredReservas = q
+    ? reservas.filter((r) =>
+        r.client.name.toLowerCase().includes(q) ||
+        r.barber.user.name.toLowerCase().includes(q) ||
+        r.services.some((s) => s.service.name.toLowerCase().includes(q))
+      )
+    : reservas;
+
   return (
     <>
     {discountingAppt && (
@@ -436,7 +446,12 @@ export default function ReservasPage() {
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl flex-1 min-w-[200px] max-w-xs" style={{ backgroundColor: "#111111", border: "1px solid rgba(255,255,255,0.07)" }}>
           <Search className="w-4 h-4 flex-shrink-0" style={{ color: "#3F3F46" }} />
-          <input placeholder="Buscar reserva..." className="bg-transparent text-white placeholder:text-zinc-600 text-sm outline-none w-full font-body" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por cliente, barbero o servicio..."
+            className="bg-transparent text-white placeholder:text-zinc-600 text-sm outline-none w-full font-body"
+          />
         </div>
 
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -477,13 +492,13 @@ export default function ReservasPage() {
                 <div className="flex-1 flex flex-col gap-1.5"><Skeleton className="h-3 w-32" /><Skeleton className="h-2.5 w-24" /></div>
               </div>
             ))
-          : reservas.length === 0
+          : filteredReservas.length === 0
             ? <p className="text-center py-10 text-sm font-body" style={{ color: "#3F3F46" }}>Sin reservas</p>
-            : reservas.map((r, idx) => {
+            : filteredReservas.map((r, idx) => {
                 const st = getStatus(r);
                 const expired = isExpired(r);
                 return (
-                  <div key={r.id} className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ borderBottom: idx < reservas.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none", opacity: expired ? 0.6 : 1 }}>
+                  <div key={r.id} className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ borderBottom: idx < filteredReservas.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none", opacity: expired ? 0.6 : 1 }}>
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold font-body flex-shrink-0" style={{ backgroundColor: "rgba(202,138,4,0.1)", color: "#CA8A04" }}>
                       {r.client.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
                     </div>
@@ -525,14 +540,14 @@ export default function ReservasPage() {
                 <Skeleton className="col-span-1 h-6 rounded-full" />
               </div>
             ))
-          : reservas.length === 0
+          : filteredReservas.length === 0
             ? <p className="text-center py-16 text-sm font-body" style={{ color: "#3F3F46" }}>Sin reservas — crea la primera con el botón "Nueva reserva"</p>
-            : reservas.map((r, idx) => {
+            : filteredReservas.map((r, idx) => {
                 const st = getStatus(r);
                 const expired = isExpired(r);
                 const shortId = r.id.slice(0, 6).toUpperCase();
                 return (
-                  <div key={r.id} className="grid grid-cols-12 gap-3 px-5 py-4 items-center hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ borderBottom: idx < reservas.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none", opacity: expired ? 0.6 : 1 }}>
+                  <div key={r.id} className="grid grid-cols-12 gap-3 px-5 py-4 items-center hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ borderBottom: idx < filteredReservas.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none", opacity: expired ? 0.6 : 1 }}>
                     <div className="col-span-1">
                       <span className="text-xs font-mono" style={{ color: "#3F3F46" }}>{shortId}</span>
                     </div>

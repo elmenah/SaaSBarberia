@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Mail, Scissors, CheckCircle2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
@@ -15,17 +14,25 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/set-password`,
+      const res = await fetch("/api/auth/forgot-password", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ email: email.trim() }),
       });
-      if (error) {
-        toast.error(error.message);
+
+      if (res.status === 429) {
+        const { error } = await res.json().catch(() => ({}));
+        toast.error(error ?? "Demasiados intentos. Esperá unos minutos.");
+        return;
+      }
+      if (!res.ok) {
+        const { error } = await res.json().catch(() => ({}));
+        toast.error(error ?? "Error inesperado. Intenta nuevamente.");
         return;
       }
       setSent(true);
     } catch {
-      toast.error("Error inesperado. Intenta nuevamente.");
+      toast.error("Error de conexión. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
