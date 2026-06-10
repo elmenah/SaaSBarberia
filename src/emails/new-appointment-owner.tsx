@@ -28,7 +28,7 @@ interface NewAppointmentOwnerEmailProps {
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-419", {
     style:                 "currency",
-    currency:              "ARS",
+    currency:              "CLP",
     minimumFractionDigits: 0,
   }).format(n);
 

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   ChevronLeft, ChevronRight, Plus, X,
   ArrowRightLeft, Check, Clock, User, Scissors, Lock, Ban,
@@ -155,6 +155,8 @@ export default function AgendaPage() {
   const [targetBarber, setTargetBarber] = useState<string | null>(null);
   const [transferred,  setTransferred]  = useState(false);
 
+  const gridRef = useRef<HTMLDivElement>(null);
+
   // Modal de bloqueo
   const [blockModal, setBlockModal] = useState<{ day: number; dayDate: Date } | null>(null);
   const [blockFrom,  setBlockFrom]  = useState(8);
@@ -246,6 +248,14 @@ export default function AgendaPage() {
 
   useEffect(() => { if (!authLoading) fetchBarbers(); }, [fetchBarbers, authLoading]);
   useEffect(() => { if (!authLoading) fetchAppts();   }, [fetchAppts,   authLoading]);
+
+  // Auto-scroll a la hora actual al cargar la vista semana
+  useEffect(() => {
+    if (viewMode !== "week" || loading || !gridRef.current) return;
+    const now = new Date();
+    const targetHour = Math.max(now.getHours() - 1, START_H);
+    gridRef.current.scrollTop = (targetHour - START_H) * 2 * SLOT_H;
+  }, [viewMode, loading]);
 
   /* ── Mapa de estilos por barbero (id → estilo) ───────────────────────── */
   const BS = useMemo<Record<string, BarberStyle>>(() => {
@@ -536,7 +546,7 @@ export default function AgendaPage() {
         </div>
 
         {/* Filas de slots */}
-        <div className="overflow-y-auto" style={{ maxHeight: "560px" }}>
+        <div ref={gridRef} className="overflow-y-auto" style={{ maxHeight: "560px" }}>
           {loading ? (
             /* Skeleton de la grilla */
             <div className="p-4 flex flex-col gap-2">

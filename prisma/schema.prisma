@@ -40,7 +40,7 @@ model Barbershop {
   email              String?
   whatsappNumber     String?            @map("whatsapp_number")
   timezone           String             @default("America/Argentina/Buenos_Aires")
-  currency           String             @default("ARS")
+  currency           String             @default("CLP")
   isActive           Boolean            @default(true) @map("is_active")
   settings           Json               @default("{}")
   ownerId            String             @map("owner_id")
