@@ -65,7 +65,7 @@ export default function AppointmentReminderEmail({
 
             <Section className="bg-[#1c1400] border border-[#ca8a04] rounded-xl px-6 py-4 mb-4 text-center">
               <Text className="text-[#fbbf24] text-base font-semibold m-0">
-                {isOneHour ? "⏰ Tu turno es en 1 hora" : "📅 Recordatorio — tu turno es mañana"}
+                {isOneHour ? "⏰ Tu turno es en 1 hora aproximadamente" : "📅 Recordatorio — tu turno es mañana"}
               </Text>
             </Section>
 

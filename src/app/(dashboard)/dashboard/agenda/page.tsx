@@ -573,11 +573,14 @@ export default function AgendaPage() {
 
                 {/* Celdas por día */}
                 {weekDays.map((_, dayIdx) => {
-                  const appt         = visible.find((a) => a.day === dayIdx && a.hour === slot);
+                  // Rango: captura appointments en cualquier minuto del slot (ej. 15:45 cae en slot 15:30)
+                  const appt         = visible.find((a) => a.day === dayIdx && a.hour >= slot && a.hour < slot + 0.5);
                   const blockEntry   = isBlockStart(dayIdx, slot);
                   const blockCovered = !blockEntry && isBlockCovered(dayIdx, slot);
                   const covered      = !appt && !blockEntry && isCovered(dayIdx, slot);
                   const s            = appt ? (BS[appt.barber] ?? hexToStyle("#CA8A04")) : null;
+                  // Offset en px dentro del slot para appointments con minutos no redondos (ej. :15 o :45)
+                  const topOffset    = appt ? (appt.hour - slot) * 2 * SLOT_H : 0;
 
                   return (
                     <div key={dayIdx}
@@ -588,8 +591,9 @@ export default function AgendaPage() {
                       {appt && s && (
                         <button
                           onClick={() => openDetail(appt)}
-                          className="absolute inset-x-0.5 top-0.5 rounded-xl p-2 text-left transition-opacity hover:opacity-75 z-10"
+                          className="absolute inset-x-0.5 rounded-xl p-2 text-left transition-opacity hover:opacity-75 z-10"
                           style={{
+                            top: `${topOffset + 2}px`,
                             height: `${appt.duration * 2 * SLOT_H - 4}px`,
                             backgroundColor: s.bg,
                             border: `1px solid ${s.border}`,

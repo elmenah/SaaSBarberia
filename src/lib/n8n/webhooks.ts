@@ -247,7 +247,7 @@ export async function notifyReminder(args: {
   const cancelUrl   = buildCancelUrl(args.appointmentId);
 
   const whatsappMessage = [
-    args.hoursAhead === 1 ? `⏰ *Recordatorio — tu turno es en 1 hora*` : `📅 *Recordatorio — tu turno es mañana*`,
+    args.hoursAhead === 1 ? `⏰ *Recordatorio — tu turno es pronto*` : `📅 *Recordatorio — tu turno es mañana*`,
     ``,
     `Hola ${args.clientName}! Te recordamos tu turno en *${args.barbershopName}*.`,
     ``,
@@ -256,7 +256,7 @@ export async function notifyReminder(args: {
     `✂️ *Servicio:* ${args.serviceName}`,
     precio ? `💰 *Precio:* ${precio}` : null,
     ``,
-    `¿Podés asistir?`,
+    `¿Podrás asistir?`,
     `✅ Confirmar: ${confirmUrl}`,
     `❌ Cancelar: ${cancelUrl}`,
   ].filter(Boolean).join("\n");

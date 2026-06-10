@@ -30,7 +30,11 @@ export async function POST(
 
   const barbershop = await prisma.barbershop.findUnique({
     where: { slug },
-    select: { id: true, name: true, phone: true, address: true, email: true, timezone: true },
+    select: {
+      id: true, name: true, phone: true, address: true, email: true, timezone: true,
+      // Fallback al email del dueño si la barbería no tiene email propio
+      owner: { select: { email: true } },
+    },
   });
 
   if (!barbershop) {
@@ -162,13 +166,15 @@ export async function POST(
 
   // Enviar emails de confirmación (no bloquea la respuesta)
   // Prioridad de email del cliente: DB (ya actualizado) > formulario > null
-  const emailForClient = client.email ?? clientEmail ?? null;
+  const emailForClient  = client.email ?? clientEmail ?? null;
+  // Prioridad de email del dueño: campo email de la barbería > email del usuario OWNER
+  const ownerEmail      = barbershop.email ?? barbershop.owner?.email ?? null;
   sendNewAppointmentEmails({
     clientName:        client.name,
     clientEmail:       emailForClient,
     clientPhone:       client.phone,
     barbershopName:    barbershop.name,
-    barbershopEmail:   barbershop.email,
+    barbershopEmail:   ownerEmail,
     barbershopAddress: barbershop.address,
     barberName:        barber.user.name,
     serviceName:       serviceNames,

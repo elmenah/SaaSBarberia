@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
         data: {
           name: barbershopName,
           slug,
+          email: user.email ?? null,
           ownerId: existing.id,
           subscriptionPlan: "FREE",
           subscriptionStatus: "TRIALING",
@@ -86,6 +87,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: barbershopName,
         slug,
+        email: user.email ?? null,
         ownerId: newUser.id,
         subscriptionPlan: "FREE",
         subscriptionStatus: "TRIALING",

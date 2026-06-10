@@ -25,6 +25,7 @@ export async function GET() {
       city:               barbershop.city,
       phone:              barbershop.phone,
       email:              barbershop.email,
+      ownerEmail:         session.dbUser.email,
       whatsappNumber:     barbershop.whatsappNumber,
       timezone:           barbershop.timezone,
       currency:           barbershop.currency,

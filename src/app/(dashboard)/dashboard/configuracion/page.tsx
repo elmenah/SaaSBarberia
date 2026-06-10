@@ -64,6 +64,7 @@ type FullBarbershop = {
   city: string | null;
   phone: string | null;
   email: string | null;
+  ownerEmail: string | null;
   whatsappNumber: string | null;
   settings: Record<string, unknown>;
 };
@@ -144,7 +145,7 @@ export default function ConfiguracionPage() {
         setProfileAddress(barbershop.address ?? "");
         setProfileCity(barbershop.city ?? "");
         setProfilePhone(barbershop.phone ?? "");
-        setProfileEmail(barbershop.email ?? "");
+        setProfileEmail(barbershop.email ?? barbershop.ownerEmail ?? "");
         setProfileLogoUrl(barbershop.logoUrl ?? "");
         const s = barbershop.settings as Record<string, string> | null ?? {};
         setProfileDesc(s?.description ?? "");
